@@ -43,6 +43,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "terrain": "WATER"
+    },
+    {
       "x": 0,
       "y": 1,
       "terrain": "WATER"
@@ -79,6 +119,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 1,
+      "terrain": "WATER"
+    },
+    {
       "x": 0,
       "y": 2,
       "terrain": "FIELD"
@@ -106,6 +186,46 @@
     },
     {
       "x": 7,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 2,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
       "y": 2,
       "terrain": "WATER"
     },
@@ -144,6 +264,46 @@
     },
     {
       "x": 7,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
       "y": 3,
       "terrain": "WATER"
     },
@@ -178,6 +338,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 4,
+      "terrain": "WATER"
+    },
+    {
       "x": 1,
       "y": 5,
       "terrain": "MOUNTAIN"
@@ -203,6 +403,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "terrain": "WATER"
+    },
+    {
       "x": 0,
       "y": 6,
       "terrain": "FOREST"
@@ -233,6 +473,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "terrain": "WATER"
+    },
+    {
       "x": 2,
       "y": 7,
       "terrain": "CITY"
@@ -254,6 +534,46 @@
     },
     {
       "x": 7,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 7,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
       "y": 7,
       "terrain": "WATER"
     },
@@ -288,6 +608,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "terrain": "WATER"
+    },
+    {
       "x": 0,
       "y": 9,
       "terrain": "WATER"
@@ -319,6 +679,46 @@
     },
     {
       "x": 7,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 9,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
       "y": 9,
       "terrain": "WATER"
     },
@@ -363,6 +763,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 10,
+      "terrain": "WATER"
+    },
+    {
       "x": 0,
       "y": 11,
       "terrain": "WATER"
@@ -403,6 +843,46 @@
       "terrain": "WATER"
     },
     {
+      "x": 8,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 11,
+      "terrain": "WATER"
+    },
+    {
       "x": 0,
       "y": 12,
       "terrain": "WATER"
@@ -440,6 +920,286 @@
     {
       "x": 7,
       "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 12,
+      "terrain": "WATER"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 2,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 3,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 4,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 6,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 13,
+      "terrain": "WATER"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 1,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 2,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 3,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 4,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 5,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 6,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 7,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 14,
+      "terrain": "WATER"
+    },
+    {
+      "x": 0,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 1,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 2,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 3,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 4,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 5,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 6,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 7,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 8,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 9,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 10,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 11,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 12,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 13,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 14,
+      "y": 15,
+      "terrain": "WATER"
+    },
+    {
+      "x": 15,
+      "y": 15,
       "terrain": "WATER"
     }
   ]
