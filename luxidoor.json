@@ -1,0 +1,246 @@
+{
+  "width": 16,
+  "height": 16,
+  "tiles": [
+    {
+      "x": 2,
+      "y": 0,
+      "terrain": "MOUNTAIN"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "terrain": "CITY"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "terrain": "MOUNTAIN"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "terrain": "FIELD",
+      "building": "FARM"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "terrain": "FIELD",
+      "building": "FARM"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "terrain": "CITY"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "terrain": "CITY"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "terrain": "FIELD",
+      "building": "FARM"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "terrain": "FIELD",
+      "building": "FARM"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "terrain": "FIELD",
+      "building": "FARM"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "terrain": "MOUNTAIN"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "terrain": "MOUNTAIN"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "terrain": "CITY"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "terrain": "CITY"
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "terrain": "MOUNTAIN"
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 7,
+      "y": 8,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "terrain": "MOUNTAIN"
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "terrain": "FOREST"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "terrain": "CITY"
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "terrain": "FIELD"
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "terrain": "CITY"
+    }
+  ]
+}
