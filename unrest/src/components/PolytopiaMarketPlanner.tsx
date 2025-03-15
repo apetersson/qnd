@@ -17,7 +17,7 @@ const terrainKeyMap: Record<string, Terrain> = {
   d: Terrain.Field,
   f: Terrain.Forest,
   h: Terrain.Mountain,
-  c: Terrain.City, // "c" legt eine Stadt fest
+  c: Terrain.City,
   a: Terrain.Water,
 };
 
@@ -32,8 +32,8 @@ const buildingKeyMap: Record<string, Building> = {
   i: Building.Mine,
 };
 
-const containerStyle: React.CSSProperties = {margin: "20px"};
-const boardStyle: React.CSSProperties = {display: "grid", gap: "2px"};
+const containerStyle: React.CSSProperties = { margin: "20px" };
+const boardStyle: React.CSSProperties = { display: "grid", gap: "2px" };
 const tileStyle: React.CSSProperties = {
   width: "40px",
   height: "40px",
@@ -46,18 +46,19 @@ const tileStyle: React.CSSProperties = {
   fontSize: "0.7rem",
   textAlign: "center",
 };
+
 function getTerrainColor(terrain: Terrain): string {
   switch (terrain) {
     case Terrain.Field:
-      return "#fff5d7"; // sehr helles Gelb
+      return "#fff9e6"; // helles Gelb
     case Terrain.Forest:
-      return "#e6f9e6"; // helles Grün
+      return "#e8f5e9"; // helles Grün
     case Terrain.Mountain:
-      return "#f2f2f2"; // helles Grau
+      return "#f5f5f5"; // helles Grau
     case Terrain.City:
-      return "#ffd700"; // Gold – bleibt unverändert
+      return "#8c63b3"; // kräftiges Indigo
     case Terrain.Water:
-      return "#00bfff"; // Wasser
+      return "#00bfff"; // Wasserblau
     default:
       return "#ffffff"; // Weiß
   }
@@ -66,19 +67,19 @@ function getTerrainColor(terrain: Terrain): string {
 function getBuildingColor(building: Building): string {
   switch (building) {
     case Building.Farm:
-      return "#ffe066"; // mittleres Gelb
+      return "#fff176"; // helles Gelb
     case Building.Windmill:
-      return "#ffcc00"; // dunkleres Gelb
+      return "#fdd835"; // dunkleres Gelb
     case Building.LumberHut:
-      return "#99cc99"; // mittleres Grün
+      return "#81c784"; // helles Grün
     case Building.Sawmill:
-      return "#669966"; // dunkleres Grün
+      return "#388e3c"; // dunkleres Grün
     case Building.Mine:
-      return "#cccccc"; // mittleres Grau
+      return "#b0bec5"; // helles Grau-Blau
     case Building.Forge:
-      return "#999999"; // dunkleres Grau
+      return "#78909c"; // dunkleres Grau-Blau
     case Building.Market:
-      return "#ff9933"; // kräftiges Orange
+      return "#ff8a65"; // kräftiges Orange
     default:
       return "transparent";
   }
@@ -86,8 +87,8 @@ function getBuildingColor(building: Building): string {
 
 
 /**
- * Berechnet für ein Tile, basierend auf seinen 4 kardinalen Nachbarn,
- * ob die Kante rot dargestellt werden soll (unterschiedliche cityId).
+ * Berechnet für ein Tile die Border-Stile:
+ * Zeigt rot, wenn benachbarte Tiles unterschiedliche cityId haben.
  */
 function computeTileBorderStyle(tile: TileData, board: Board): React.CSSProperties {
   const topTile = board.tiles.find(t => t.x === tile.x && t.y === tile.y - 1);
@@ -98,16 +99,16 @@ function computeTileBorderStyle(tile: TileData, board: Board): React.CSSProperti
   const borderRight = rightTile && rightTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
   const borderBottom = bottomTile && bottomTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
   const borderLeft = leftTile && leftTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
-  return {borderTop, borderRight, borderBottom, borderLeft};
+  return { borderTop, borderRight, borderBottom, borderLeft };
 }
 
 const gridSizes = [
-  {label: "Tiny (11x11)", width: 11, height: 11},
-  {label: "Small (14x14)", width: 14, height: 14},
-  {label: "Normal (16x16)", width: 16, height: 16},
-  {label: "Large (18x18)", width: 18, height: 18},
-  {label: "Huge (20x20)", width: 20, height: 20},
-  {label: "Massive (30x30)", width: 30, height: 30},
+  { label: "Tiny (11x11)", width: 11, height: 11 },
+  { label: "Small (14x14)", width: 14, height: 14 },
+  { label: "Normal (16x16)", width: 16, height: 16 },
+  { label: "Large (18x18)", width: 18, height: 18 },
+  { label: "Huge (20x20)", width: 20, height: 20 },
+  { label: "Massive (30x30)", width: 30, height: 30 },
 ];
 
 export default function PolytopiaMarketPlanner() {
@@ -118,30 +119,40 @@ export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
 
-  // Für die Optimierungsabschätzung
-  const emptyCandidateCount = board.tiles.filter(
+  // Checkbox-Zustände für fortgeschrittene Gebäudetypen
+  const [includeSawmill, setIncludeSawmill] = useState(true);
+  const [includeWindmill, setIncludeWindmill] = useState(true);
+  const [includeForge, setIncludeForge] = useState(true);
+
+  // Für die Optimierungsabschätzung: nur leere eligible Tiles in Städten
+  const emptyEligibleCount = board.tiles.filter(
     (tile) =>
       tile.terrain === Terrain.None &&
       tile.building === Building.None &&
       tile.cityId !== null
   ).length;
-  const estimatedStepsExponent = emptyCandidateCount * Math.log10(5);
-  const estimatedTime = estimateCompletionTime(emptyCandidateCount);
+
+  // Basis: none checked -> 2; 1 -> 3; 2 -> 4; 3 -> 5.
+  const activeOptions = (includeSawmill ? 1 : 0) + (includeWindmill ? 1 : 0) + (includeForge ? 1 : 0) + 2;
+  const estimatedStepsExponent = emptyEligibleCount * Math.log10(activeOptions);
+  const estimatedTime = estimateCompletionTime(emptyEligibleCount, activeOptions);
 
   // Cancellation-Token für die Optimierung
-  const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
+  const cancelTokenRef = useRef<{ canceled: boolean }>({ canceled: false });
   const [isOptimizing, setIsOptimizing] = useState(false);
 
-  // Startet die asynchrone Optimierung
   const startOptimization = async () => {
-    cancelTokenRef.current = {canceled: false};
+    cancelTokenRef.current = { canceled: false };
     setIsOptimizing(true);
-    const result = await optimizeAdvancedBuildingsAsync(board, cancelTokenRef.current);
+    const result = await optimizeAdvancedBuildingsAsync(board, cancelTokenRef.current, {
+      includeSawmill,
+      includeWindmill,
+      includeForge,
+    });
     setBoard(result);
     setIsOptimizing(false);
   };
 
-  // Stoppt die Optimierung, indem der Token gesetzt wird
   const stopOptimization = () => {
     cancelTokenRef.current.canceled = true;
     setIsOptimizing(false);
@@ -149,7 +160,6 @@ export default function PolytopiaMarketPlanner() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Keybind für "extend city" (Taste "e")
       if (e.key.toLowerCase() === "e") {
         if (hoveredTile && hoveredTile.terrain === Terrain.City && hoveredTile.cityId) {
           setBoard(extendCity(board, hoveredTile.cityId));
@@ -165,10 +175,10 @@ export default function PolytopiaMarketPlanner() {
           const updated = prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
               if (terrainCandidate === Terrain.City) {
-                const cityTile = {...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}`};
+                const cityTile = { ...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}` };
                 return cityTile;
               }
-              return {...t, terrain: terrainCandidate};
+              return { ...t, terrain: terrainCandidate };
             }
             return t;
           });
@@ -177,26 +187,24 @@ export default function PolytopiaMarketPlanner() {
               (t) => t.x === hoveredTile.x && t.y === hoveredTile.y
             );
             if (cityTile) {
-              return claimCityArea({...prev, tiles: updated}, cityTile);
+              return claimCityArea({ ...prev, tiles: updated }, cityTile);
             }
           }
-          return {...prev, tiles: updated};
+          return { ...prev, tiles: updated };
         });
       } else if (buildingCandidate !== undefined) {
         setBoard((prev) => ({
           ...prev,
           tiles: prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
-              // Bei "None" (0) soll das Gebäude entfernt werden, auch wenn eine cityId existiert.
               if (buildingCandidate === Building.None) {
                 return { ...t, building: Building.None };
               }
-              // Für fortgeschrittene Gebäude in Stadtgebieten: Prüfe, ob bereits dieser Typ existiert.
               if (t.cityId) {
                 const alreadyExists = prev.tiles.some(
                   (tile) => tile.cityId === t.cityId && tile.building === buildingCandidate
                 );
-                if (alreadyExists) return t; // falls bereits vorhanden, keine Änderung
+                if (alreadyExists) return t;
               }
               const forcedTerrain =
                 buildingCandidate === Building.Farm
@@ -217,7 +225,6 @@ export default function PolytopiaMarketPlanner() {
         }));
       }
     }
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hoveredTile, board]);
@@ -232,7 +239,7 @@ export default function PolytopiaMarketPlanner() {
       width: board.width,
       height: board.height,
       tiles: meaningfulTiles.map((t) => {
-        const obj: any = {x: t.x, y: t.y};
+        const obj: any = { x: t.x, y: t.y };
         if (t.terrain !== Terrain.None) obj.terrain = t.terrain;
         if (t.building !== Building.None) obj.building = t.building;
         if (t.cityId) obj.cityId = t.cityId;
@@ -285,7 +292,7 @@ export default function PolytopiaMarketPlanner() {
     const idx = Number(e.target.value);
     setSizeIndex(idx);
     if (idx >= 0 && idx < gridSizes.length) {
-      const {width, height} = gridSizes[idx];
+      const { width, height } = gridSizes[idx];
       setBoard(createInitialBoard(width, height));
     }
   }
@@ -305,9 +312,9 @@ export default function PolytopiaMarketPlanner() {
   return (
     <div style={containerStyle}>
       <h1>Polytopia Market Planner</h1>
-      <div style={{marginBottom: 12}}>
+      <div style={{ marginBottom: 12 }}>
         <strong>Grid Size:</strong>
-        <select onChange={handleSizeChange} value={sizeIndex} style={{marginLeft: 8}}>
+        <select onChange={handleSizeChange} value={sizeIndex} style={{ marginLeft: 8 }}>
           {gridSizes.map((sz, i) => (
             <option key={i} value={i}>
               {sz.label}
@@ -319,7 +326,7 @@ export default function PolytopiaMarketPlanner() {
           {board.width * board.height} tiles
         </p>
         <strong>Keyboard Shortcuts</strong>
-        <div style={{marginTop: 8}}>
+        <div style={{ marginTop: 8 }}>
           <p>
             <strong>Terrain</strong>
           </p>
@@ -345,42 +352,76 @@ export default function PolytopiaMarketPlanner() {
           </p>
         </div>
       </div>
-      <p>Market bonus: {totalMarketBonus}</p>
+      <div>
+        <strong>Advanced Building Options for Optimization:</strong>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={includeSawmill}
+              onChange={(e) => setIncludeSawmill(e.target.checked)}
+            />{" "}
+            Sawmill
+          </label>
+          <label style={{ marginLeft: "12px" }}>
+            <input
+              type="checkbox"
+              checked={includeWindmill}
+              onChange={(e) => setIncludeWindmill(e.target.checked)}
+            />{" "}
+            Windmill
+          </label>
+          <label style={{ marginLeft: "12px" }}>
+            <input
+              type="checkbox"
+              checked={includeForge}
+              onChange={(e) => setIncludeForge(e.target.checked)}
+            />{" "}
+            Forge
+          </label>
+        </div>
+        <p style={{ fontSize: "0.9rem", marginTop: "4px" }}>
+          {`Estimated combinations: ${activeOptions}^${emptyEligibleCount} ≈ 10^${estimatedStepsExponent.toFixed(
+            2
+          )} ; Estimated time: ${estimateCompletionTime(emptyEligibleCount, activeOptions)}`}
+        </p>
+      </div>
+      <p>Market bonus: {calculateMarketBonus(board)}</p>
       <button onClick={handleExportClick}>Export</button>
-      <button onClick={handleApplyClick} style={{marginLeft: 8}}>
+      <button onClick={handleApplyClick} style={{ marginLeft: 8 }}>
         Apply
       </button>
-      <button onClick={handlePlaceBasicBuildingsClick} style={{marginLeft: 8}}>
+      <button onClick={handlePlaceBasicBuildingsClick} style={{ marginLeft: 8 }}>
         Place Basic Buildings
       </button>
-      <button onClick={handlePlaceBuildingsClick} style={{marginLeft: 8}}>
+      <button onClick={handlePlaceBuildingsClick} style={{ marginLeft: 8 }}>
         Place Advanced Buildings
       </button>
-      <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
+      <div style={{ display: "inline-flex", alignItems: "center", marginLeft: 8 }}>
         <button onClick={startOptimization} disabled={isOptimizing}>
           {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
         </button>
         {isOptimizing && (
-          <button onClick={stopOptimization} style={{marginLeft: "8px"}}>
+          <button onClick={stopOptimization} style={{ marginLeft: "8px" }}>
             Stop Optimize
           </button>
         )}
-        <span style={{marginLeft: 8, fontSize: "0.9rem"}}>
-          {`Estimated combinations: 5^${emptyCandidateCount} ≈ 10^${estimatedStepsExponent.toFixed(
+        <span style={{ marginLeft: 8, fontSize: "0.9rem" }}>
+          {`Estimated combinations: ${activeOptions}^${emptyEligibleCount} ≈ 10^${estimatedStepsExponent.toFixed(
             2
-          )} ; Estimated time: ${estimatedTime}`}
+          )}`}
         </span>
       </div>
-      <button onClick={handleRemoveNonContributingClick} style={{marginLeft: 8}}>
+      <button onClick={handleRemoveNonContributingClick} style={{ marginLeft: 8 }}>
         Remove Non-Contributing Basics
       </button>
-      <p style={{marginTop: 8, marginBottom: 4}}>Board JSON:</p>
+      <p style={{ marginTop: 8, marginBottom: 4 }}>Board JSON:</p>
       <textarea
-        style={{width: "100%", height: "150px"}}
+        style={{ width: "100%", height: "150px" }}
         value={configText}
         onChange={handleConfigChange}
       />
-      <div style={{marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)`}}>
+      <div style={{ marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)` }}>
         {board.tiles.map((tile) => {
           const baseColor = getTerrainColor(tile.terrain);
           const bldgColor = getBuildingColor(tile.building);
@@ -392,13 +433,13 @@ export default function PolytopiaMarketPlanner() {
             } else if ([Building.Sawmill, Building.Windmill, Building.Forge].includes(tile.building)) {
               displayText = `${getBuildingLevel(tile, board)}`;
             } else {
-              displayText = tile.building.substr(0,1);
+              displayText = tile.building.substr(0, 1);
             }
           }
           return (
             <div
               key={`${tile.x}-${tile.y}`}
-              style={{...tileStyle, ...borderStyle, backgroundColor: baseColor}}
+              style={{ ...tileStyle, ...borderStyle, backgroundColor: baseColor }}
               onMouseEnter={() => setHoveredTile(tile)}
             >
               <div

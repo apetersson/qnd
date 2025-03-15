@@ -65,12 +65,16 @@ function copyBoard(board: Board): Board {
 }
 
 /**
- * Asynchrone Optimierung mit Cancellation-Token, die ausschließlich Kandidaten in
- * Stadtgebieten berücksichtigt und die Regel "1 Advanced Building pro Stadt und Typ" einhält.
+ * Asynchrone Optimierung mit Cancellation-Token.
+ * @param board Das zu optimierende Board
+ * @param cancelToken Token zum Abbruch
+ * @param advancedOptions Auswahl der fortgeschrittenen Gebäudetypen:
+ *        includeSawmill, includeWindmill, includeForge (Market wird immer berücksichtigt)
  */
 export async function optimizeAdvancedBuildingsAsync(
   board: Board,
-  cancelToken: { canceled: boolean }
+  cancelToken: { canceled: boolean },
+  advancedOptions: { includeSawmill: boolean; includeWindmill: boolean; includeForge: boolean }
 ): Promise<Board> {
   const initialBoard = removeAdvancedBuildings(board);
   const candidateIndices = initialBoard.tiles
@@ -104,7 +108,7 @@ export async function optimizeAdvancedBuildingsAsync(
     }
     const idx = candidateIndices[i];
     const tile = currentBoard.tiles[idx];
-    // Falls das Tile ausnahmsweise keine cityId hat, überspringen
+    // Sicherstellen, dass das Tile in einer Stadt liegt
     if (!tile.cityId) {
       await rec(i + 1, currentBoard, usedCityBuildings);
       return;
@@ -113,10 +117,15 @@ export async function optimizeAdvancedBuildingsAsync(
     await rec(i + 1, currentBoard, usedCityBuildings);
     if (cancelToken.canceled) return;
     const cityKey = tile.cityId;
-    const options: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
+    // Erstelle Optionsliste basierend auf den Checkbox-Optionen
+    const options: Building[] = [];
+    if (advancedOptions.includeSawmill) options.push(Building.Sawmill);
+    if (advancedOptions.includeWindmill) options.push(Building.Windmill);
+    if (advancedOptions.includeForge) options.push(Building.Forge);
+    // Market wird immer berücksichtigt
+    options.push(Building.Market);
     for (const option of options) {
       if (cancelToken.canceled) return;
-      // Prüfe, ob in dieser Stadt bereits dieser Gebäudetyp gesetzt wurde
       const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
       if (usedSet.has(option)) continue;
       currentBoard.tiles[idx].building = option;
