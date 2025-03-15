@@ -17,9 +17,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/riotCalc" element={<RiotProbabilityCalculator/>}/>
-        <Route path="/pmp" element={<PolytopiaMarketPlanner/>}/>
+        <Route path="/" element={<PolytopiaMarketPlanner/>}/>
+        {/*<Route path="/riotCalc" element={<RiotProbabilityCalculator/>}/>*/}
+        {/*<Route path="/pmp" element={<PolytopiaMarketPlanner/>}/>*/}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
