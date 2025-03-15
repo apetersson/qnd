@@ -24,6 +24,7 @@ export interface TileData {
   y: number;
   terrain: Terrain;
   building: Building;
+  cityId: string | null; // Neue Eigenschaft: Zugehörigkeit zu einer Stadt (identifiziert über Koordinate)
 }
 
 export interface Board {
@@ -36,7 +37,13 @@ export function createInitialBoard(width: number, height: number): Board {
   const tiles: TileData[] = [];
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      tiles.push({ x, y, terrain: Terrain.None, building: Building.None });
+      tiles.push({
+        x,
+        y,
+        terrain: Terrain.None,
+        building: Building.None,
+        cityId: null,
+      });
     }
   }
   return { width, height, tiles };

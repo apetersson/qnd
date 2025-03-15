@@ -40,9 +40,9 @@ export function parseBuildingValue(value: string | undefined): Building {
 }
 
 /**
- * Schätzt die Laufzeit der Optimierung (Brute Force),
+ * Schätzt die Laufzeit der Brute-Force-Optimierung,
  * basierend auf der Anzahl leerer Kandidaten-Tiles.
- * Maximale Kombinationen = 5^(emptyCandidateCount)
+ * Maximale Kombinationen = 5^(emptyCandidateCount) (5 Möglichkeiten pro Tile)
  * Bei 10.000 Iterationen pro Sekunde.
  */
 export function estimateCompletionTime(emptyCandidateCount: number): string {

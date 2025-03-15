@@ -1,5 +1,6 @@
 // src/optimization/optimizeAdvancedBuildings.ts
-import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
+import { Board, TileData, Building, Terrain } from "../models/Board";
+import { getNeighbors } from "../models/Board";
 
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
@@ -47,8 +48,8 @@ export function removeAdvancedBuildings(board: Board): Board {
     ...board,
     tiles: board.tiles.map((t) =>
       [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(t.building)
-        ? {...t, building: Building.None}
-        : {...t}
+        ? { ...t, building: Building.None }
+        : { ...t }
     ),
   };
 }
@@ -72,7 +73,7 @@ function copyBoard(board: Board): Board {
   return {
     width: board.width,
     height: board.height,
-    tiles: board.tiles.map((t) => ({...t})),
+    tiles: board.tiles.map((t) => ({ ...t })),
   };
 }
 

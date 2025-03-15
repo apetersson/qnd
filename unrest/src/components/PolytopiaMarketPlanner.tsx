@@ -1,20 +1,26 @@
 // src/components/PolytopiaMarketPlanner.tsx
-import React, { useState, useEffect, ChangeEvent } from "react";
-import { Board, createInitialBoard, Terrain, Building, TileData } from "../models/Board";
-import { parseTerrainValue, parseBuildingValue, estimateCompletionTime } from "../utils/helpers";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { Board, Building, createInitialBoard, Terrain, TileData } from "../models/Board";
+import { estimateCompletionTime, parseBuildingValue, parseTerrainValue } from "../utils/helpers";
 import {
-  placeBasicResourceBuildings,
+  getBuildingLevel,
   placeAdvancedBuildingsSimple,
-  removeNonContributingBasicBuildings, getBuildingLevel,
+  placeBasicResourceBuildings,
+  removeNonContributingBasicBuildings,
 } from "../placement/placement";
-import { optimizeAdvancedBuildings, calculateMarketBonus, getMarketLevel } from "../optimization/optimizeAdvancedBuildings";
+import {
+  calculateMarketBonus,
+  getMarketLevel,
+  optimizeAdvancedBuildings
+} from "../optimization/optimizeAdvancedBuildings";
+import { claimCityArea, extendCity } from "../placement/city";
 
 const terrainKeyMap: Record<string, Terrain> = {
   n: Terrain.None,
   d: Terrain.Field,
   f: Terrain.Forest,
   h: Terrain.Mountain,
-  c: Terrain.City,
+  c: Terrain.City, // "c" legt eine Stadt fest
   a: Terrain.Water,
 };
 
@@ -29,12 +35,14 @@ const buildingKeyMap: Record<string, Building> = {
   i: Building.Mine,
 };
 
-const containerStyle: React.CSSProperties = { margin: "20px" };
-const boardStyle: React.CSSProperties = { display: "grid", gap: "2px" };
+const containerStyle: React.CSSProperties = {margin: "20px"};
+
+const boardStyle: React.CSSProperties = {display: "grid", gap: "2px"};
+
 const tileStyle: React.CSSProperties = {
   width: "40px",
   height: "40px",
-  border: "1px solid #666",
+  // Die Border wird dynamisch gesetzt – Basis ist hier nur die Box-Gestaltung.
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -83,13 +91,29 @@ function getBuildingColor(building: Building): string {
   }
 }
 
+/**
+ * Berechnet für ein Tile, basierend auf seinen 4 kardinalen Nachbarn,
+ * ob die Kante rot dargestellt werden soll (unterschiedliche cityId).
+ */
+function computeTileBorderStyle(tile: TileData, board: Board): React.CSSProperties {
+  const topTile = board.tiles.find(t => t.x === tile.x && t.y === tile.y - 1);
+  const rightTile = board.tiles.find(t => t.x === tile.x + 1 && t.y === tile.y);
+  const bottomTile = board.tiles.find(t => t.x === tile.x && t.y === tile.y + 1);
+  const leftTile = board.tiles.find(t => t.x === tile.x - 1 && t.y === tile.y);
+  const borderTop = topTile && topTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  const borderRight = rightTile && rightTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  const borderBottom = bottomTile && bottomTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  const borderLeft = leftTile && leftTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  return {borderTop, borderRight, borderBottom, borderLeft};
+}
+
 const gridSizes = [
-  { label: "Tiny (11x11)", width: 11, height: 11 },
-  { label: "Small (14x14)", width: 14, height: 14 },
-  { label: "Normal (16x16)", width: 16, height: 16 },
-  { label: "Large (18x18)", width: 18, height: 18 },
-  { label: "Huge (20x20)", width: 20, height: 20 },
-  { label: "Massive (30x30)", width: 30, height: 30 },
+  {label: "Tiny (11x11)", width: 11, height: 11},
+  {label: "Small (14x14)", width: 14, height: 14},
+  {label: "Normal (16x16)", width: 16, height: 16},
+  {label: "Large (18x18)", width: 18, height: 18},
+  {label: "Huge (20x20)", width: 20, height: 20},
+  {label: "Massive (30x30)", width: 30, height: 30},
 ];
 
 export default function PolytopiaMarketPlanner() {
@@ -100,6 +124,7 @@ export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
 
+  // Für die Optimierungsabschätzung
   const emptyCandidateCount = board.tiles.filter(
     (tile) => tile.terrain === Terrain.None && tile.building === Building.None
   ).length;
@@ -108,20 +133,40 @@ export default function PolytopiaMarketPlanner() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      // Keybind für "extend city" (Taste "e")
+      if (e.key.toLowerCase() === "e") {
+        if (hoveredTile && hoveredTile.terrain === Terrain.City && hoveredTile.cityId) {
+          setBoard(extendCity(board, hoveredTile.cityId));
+        }
+        return;
+      }
       if (!hoveredTile) return;
       const key = e.key.toLowerCase();
       const terrainCandidate = terrainKeyMap[key];
       const buildingCandidate = buildingKeyMap[key];
       if (terrainCandidate !== undefined) {
-        setBoard((prev) => ({
-          ...prev,
-          tiles: prev.tiles.map((t) => {
+        setBoard((prev) => {
+          const updated = prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
-              return { ...t, terrain: terrainCandidate };
+              // Beim Setzen einer Stadt: claim die Stadtfläche
+              if (terrainCandidate === Terrain.City) {
+                const cityTile = {...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}`};
+                return cityTile;
+              }
+              return {...t, terrain: terrainCandidate};
             }
             return t;
-          }),
-        }));
+          });
+          if (terrainCandidate === Terrain.City) {
+            const cityTile = prev.tiles.find(
+              (t) => t.x === hoveredTile.x && t.y === hoveredTile.y
+            );
+            if (cityTile) {
+              return claimCityArea({...prev, tiles: updated}, cityTile);
+            }
+          }
+          return {...prev, tiles: updated};
+        });
       } else if (buildingCandidate !== undefined) {
         const forcedTerrain =
           buildingCandidate === Building.Farm
@@ -135,30 +180,36 @@ export default function PolytopiaMarketPlanner() {
           ...prev,
           tiles: prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
-              return { ...t, terrain: forcedTerrain !== Terrain.None ? forcedTerrain : t.terrain, building: buildingCandidate };
+              return {
+                ...t,
+                terrain: forcedTerrain !== Terrain.None ? forcedTerrain : t.terrain,
+                building: buildingCandidate,
+              };
             }
             return t;
           }),
         }));
       }
     }
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredTile]);
+  }, [hoveredTile, board]);
 
   const totalMarketBonus = calculateMarketBonus(board);
 
   function handleExportClick() {
     const meaningfulTiles = board.tiles.filter(
-      (t) => t.terrain !== Terrain.None || t.building !== Building.None
+      (t) => t.terrain !== Terrain.None || t.building !== Building.None || t.cityId !== null
     );
     const exportBoard = {
       width: board.width,
       height: board.height,
       tiles: meaningfulTiles.map((t) => {
-        const obj: any = { x: t.x, y: t.y };
+        const obj: any = {x: t.x, y: t.y};
         if (t.terrain !== Terrain.None) obj.terrain = t.terrain;
         if (t.building !== Building.None) obj.building = t.building;
+        if (t.cityId) obj.cityId = t.cityId;
         return obj;
       }),
     };
@@ -183,6 +234,7 @@ export default function PolytopiaMarketPlanner() {
               ...newBoard.tiles[index],
               terrain: parseTerrainValue(tileObj.terrain),
               building: parseBuildingValue(tileObj.building),
+              cityId: tileObj.cityId || null,
             };
           }
         }
@@ -207,7 +259,7 @@ export default function PolytopiaMarketPlanner() {
     const idx = Number(e.target.value);
     setSizeIndex(idx);
     if (idx >= 0 && idx < gridSizes.length) {
-      const { width, height } = gridSizes[idx];
+      const {width, height} = gridSizes[idx];
       setBoard(createInitialBoard(width, height));
     }
   }
@@ -256,9 +308,9 @@ export default function PolytopiaMarketPlanner() {
   return (
     <div style={containerStyle}>
       <h1>Polytopia Market Planner</h1>
-      <div style={{ marginBottom: 12 }}>
+      <div style={{marginBottom: 12}}>
         <strong>Grid Size:</strong>
-        <select onChange={handleSizeChange} value={sizeIndex} style={{ marginLeft: 8 }}>
+        <select onChange={handleSizeChange} value={sizeIndex} style={{marginLeft: 8}}>
           {gridSizes.map((sz, i) => (
             <option key={i} value={i}>
               {sz.label}
@@ -269,7 +321,7 @@ export default function PolytopiaMarketPlanner() {
           Current Board: {gridSizeLabel} with {board.width * board.height} tiles
         </p>
         <strong>Keyboard Shortcuts</strong>
-        <div style={{ marginTop: 8 }}>
+        <div style={{marginTop: 8}}>
           <p>
             <strong>Terrain</strong>
           </p>
@@ -290,43 +342,46 @@ export default function PolytopiaMarketPlanner() {
               </li>
             ))}
           </ul>
-          <p>Simply hover over a tile and press the corresponding key.</p>
+          <p>
+            Tip: Press "c" to set a tile as City (auto-claims adjacent tiles), "e" to extend the hovered city.
+          </p>
         </div>
       </div>
       <p>Market bonus: {totalMarketBonus}</p>
       <button onClick={handleExportClick}>Export</button>
-      <button onClick={handleApplyClick} style={{ marginLeft: 8 }}>
+      <button onClick={handleApplyClick} style={{marginLeft: 8}}>
         Apply
       </button>
-      <button onClick={handlePlaceBasicBuildingsClick} style={{ marginLeft: 8 }}>
+      <button onClick={handlePlaceBasicBuildingsClick} style={{marginLeft: 8}}>
         Place Basic Buildings
       </button>
-      <button onClick={handlePlaceBuildingsClick} style={{ marginLeft: 8 }}>
+      <button onClick={handlePlaceBuildingsClick} style={{marginLeft: 8}}>
         Place Buildings
       </button>
-      <div style={{ display: "inline-flex", alignItems: "center", marginLeft: 8 }}>
+      <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
         <button onClick={handleOptimizeClick}>
           Optimize Advanced Buildings (Brute Force)
         </button>
-        <span style={{ marginLeft: 8, fontSize: "0.9rem" }}>
+        <span style={{marginLeft: 8, fontSize: "0.9rem"}}>
           {`Estimated combinations: 5^${emptyCandidateCount} ≈ 10^${estimatedStepsExponent.toFixed(
             2
           )} ; Estimated time: ${estimatedTime}`}
         </span>
       </div>
-      <button onClick={handleRemoveNonContributingClick} style={{ marginLeft: 8 }}>
+      <button onClick={handleRemoveNonContributingClick} style={{marginLeft: 8}}>
         Remove Non-Contributing Basics
       </button>
-      <p style={{ marginTop: 8, marginBottom: 4 }}>Board JSON:</p>
+      <p style={{marginTop: 8, marginBottom: 4}}>Board JSON:</p>
       <textarea
-        style={{ width: "100%", height: "150px" }}
+        style={{width: "100%", height: "150px"}}
         value={configText}
         onChange={handleConfigChange}
       />
-      <div style={{ marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)` }}>
+      <div style={{marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)`}}>
         {board.tiles.map((tile) => {
           const baseColor = getTerrainColor(tile.terrain);
           const bldgColor = getBuildingColor(tile.building);
+          const borderStyle = computeTileBorderStyle(tile, board);
           let displayText = "";
           if (tile.building !== Building.None) {
             if (tile.building === Building.Market) {
@@ -340,7 +395,7 @@ export default function PolytopiaMarketPlanner() {
           return (
             <div
               key={`${tile.x}-${tile.y}`}
-              style={{ ...tileStyle, backgroundColor: baseColor }}
+              style={{...tileStyle, ...borderStyle, backgroundColor: baseColor}}
               onMouseEnter={() => setHoveredTile(tile)}
             >
               <div
