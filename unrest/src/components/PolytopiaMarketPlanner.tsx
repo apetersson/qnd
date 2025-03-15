@@ -1,18 +1,15 @@
 // src/components/PolytopiaMarketPlanner.tsx
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Board, Building, createInitialBoard, Terrain, TileData } from "../models/Board";
 import { estimateCompletionTime, parseBuildingValue, parseTerrainValue } from "../utils/helpers";
 import {
   getBuildingLevel,
+  getMarketLevel,
   placeAdvancedBuildingsSimple,
   placeBasicResourceBuildings,
   removeNonContributingBasicBuildings,
 } from "../placement/placement";
-import {
-  calculateMarketBonus,
-  getMarketLevel,
-  optimizeAdvancedBuildings
-} from "../optimization/optimizeAdvancedBuildings";
+import { calculateMarketBonus, optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
 import { claimCityArea, extendCity } from "../placement/city";
 
 const terrainKeyMap: Record<string, Terrain> = {
@@ -36,13 +33,10 @@ const buildingKeyMap: Record<string, Building> = {
 };
 
 const containerStyle: React.CSSProperties = {margin: "20px"};
-
 const boardStyle: React.CSSProperties = {display: "grid", gap: "2px"};
-
 const tileStyle: React.CSSProperties = {
   width: "40px",
   height: "40px",
-  // Die Border wird dynamisch gesetzt – Basis ist hier nur die Box-Gestaltung.
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -52,44 +46,44 @@ const tileStyle: React.CSSProperties = {
   fontSize: "0.7rem",
   textAlign: "center",
 };
-
 function getTerrainColor(terrain: Terrain): string {
   switch (terrain) {
-    case Terrain.Forest:
-      return "#d2f3d2";
     case Terrain.Field:
-      return "#f2efd0";
+      return "#fff5d7"; // sehr helles Gelb
+    case Terrain.Forest:
+      return "#e6f9e6"; // helles Grün
     case Terrain.Mountain:
-      return "#c2c2c2";
+      return "#f2f2f2"; // helles Grau
     case Terrain.City:
-      return "#ffd700";
+      return "#ffd700"; // Gold – bleibt unverändert
     case Terrain.Water:
-      return "#00bfff";
+      return "#00bfff"; // Wasser
     default:
-      return "#ffffff";
+      return "#ffffff"; // Weiß
   }
 }
 
 function getBuildingColor(building: Building): string {
   switch (building) {
-    case Building.Market:
-      return "#ffe080";
-    case Building.Sawmill:
-      return "#c2a079";
-    case Building.Windmill:
-      return "#c2e0c2";
-    case Building.Forge:
-      return "#c2c2e0";
     case Building.Farm:
-      return "#ffe0e0";
-    case Building.Mine:
-      return "#ccc";
+      return "#ffe066"; // mittleres Gelb
+    case Building.Windmill:
+      return "#ffcc00"; // dunkleres Gelb
     case Building.LumberHut:
-      return "#d9fdd9";
+      return "#99cc99"; // mittleres Grün
+    case Building.Sawmill:
+      return "#669966"; // dunkleres Grün
+    case Building.Mine:
+      return "#cccccc"; // mittleres Grau
+    case Building.Forge:
+      return "#999999"; // dunkleres Grau
+    case Building.Market:
+      return "#ff9933"; // kräftiges Orange
     default:
       return "transparent";
   }
 }
+
 
 /**
  * Berechnet für ein Tile, basierend auf seinen 4 kardinalen Nachbarn,
@@ -126,10 +120,32 @@ export default function PolytopiaMarketPlanner() {
 
   // Für die Optimierungsabschätzung
   const emptyCandidateCount = board.tiles.filter(
-    (tile) => tile.terrain === Terrain.None && tile.building === Building.None
+    (tile) =>
+      tile.terrain === Terrain.None &&
+      tile.building === Building.None &&
+      tile.cityId !== null
   ).length;
   const estimatedStepsExponent = emptyCandidateCount * Math.log10(5);
   const estimatedTime = estimateCompletionTime(emptyCandidateCount);
+
+  // Cancellation-Token für die Optimierung
+  const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  // Startet die asynchrone Optimierung
+  const startOptimization = async () => {
+    cancelTokenRef.current = {canceled: false};
+    setIsOptimizing(true);
+    const result = await optimizeAdvancedBuildingsAsync(board, cancelTokenRef.current);
+    setBoard(result);
+    setIsOptimizing(false);
+  };
+
+  // Stoppt die Optimierung, indem der Token gesetzt wird
+  const stopOptimization = () => {
+    cancelTokenRef.current.canceled = true;
+    setIsOptimizing(false);
+  };
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -148,7 +164,6 @@ export default function PolytopiaMarketPlanner() {
         setBoard((prev) => {
           const updated = prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
-              // Beim Setzen einer Stadt: claim die Stadtfläche
               if (terrainCandidate === Terrain.City) {
                 const cityTile = {...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}`};
                 return cityTile;
@@ -168,17 +183,20 @@ export default function PolytopiaMarketPlanner() {
           return {...prev, tiles: updated};
         });
       } else if (buildingCandidate !== undefined) {
-        // Falls advanced building und Stadtzugehörigkeit vorhanden:
         setBoard((prev) => ({
           ...prev,
           tiles: prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
-              // Wenn das Tile Teil einer Stadt ist, prüfen, ob in dieser Stadt schon dieser Gebäudetyp existiert
+              // Bei "None" (0) soll das Gebäude entfernt werden, auch wenn eine cityId existiert.
+              if (buildingCandidate === Building.None) {
+                return { ...t, building: Building.None };
+              }
+              // Für fortgeschrittene Gebäude in Stadtgebieten: Prüfe, ob bereits dieser Typ existiert.
               if (t.cityId) {
                 const alreadyExists = prev.tiles.some(
                   (tile) => tile.cityId === t.cityId && tile.building === buildingCandidate
                 );
-                if (alreadyExists) return t; // keine Änderung, wenn schon vorhanden
+                if (alreadyExists) return t; // falls bereits vorhanden, keine Änderung
               }
               const forcedTerrain =
                 buildingCandidate === Building.Farm
@@ -280,38 +298,9 @@ export default function PolytopiaMarketPlanner() {
     setBoard(placeAdvancedBuildingsSimple(board));
   }
 
-  function handleOptimizeClick() {
-    setBoard(optimizeAdvancedBuildings(board));
-  }
-
   function handleRemoveNonContributingClick() {
     setBoard(removeNonContributingBasicBuildings(board));
   }
-
-  const gridSizeLabel =
-    sizeIndex >= 0 && sizeIndex < gridSizes.length
-      ? `${gridSizes[sizeIndex].width}x${gridSizes[sizeIndex].height}`
-      : `${board.width}x${board.height}`;
-
-  const terrainLabels: Record<Terrain, string> = {
-    [Terrain.None]: "No Terrain",
-    [Terrain.Field]: "Field",
-    [Terrain.Forest]: "Forest",
-    [Terrain.Mountain]: "Mountain",
-    [Terrain.City]: "City",
-    [Terrain.Water]: "Water",
-  };
-
-  const buildingLabels: Record<Building, string> = {
-    [Building.None]: "Remove Building",
-    [Building.Farm]: "Farm",
-    [Building.LumberHut]: "Lumber Hut",
-    [Building.Mine]: "Mine",
-    [Building.Sawmill]: "Sawmill",
-    [Building.Windmill]: "Windmill",
-    [Building.Forge]: "Forge",
-    [Building.Market]: "Market",
-  };
 
   return (
     <div style={containerStyle}>
@@ -326,7 +315,8 @@ export default function PolytopiaMarketPlanner() {
           ))}
         </select>
         <p>
-          Current Board: {gridSizeLabel} with {board.width * board.height} tiles
+          Current Board: {`${gridSizes[sizeIndex].width}x${gridSizes[sizeIndex].height}`} with{" "}
+          {board.width * board.height} tiles
         </p>
         <strong>Keyboard Shortcuts</strong>
         <div style={{marginTop: 8}}>
@@ -336,7 +326,7 @@ export default function PolytopiaMarketPlanner() {
           <ul>
             {Object.entries(terrainKeyMap).map(([key, terrain]) => (
               <li key={`terrain-${key}`}>
-                <strong>{key}</strong> – {terrainLabels[terrain]}
+                <strong>{key}</strong> – {terrain}
               </li>
             ))}
           </ul>
@@ -346,7 +336,7 @@ export default function PolytopiaMarketPlanner() {
           <ul>
             {Object.entries(buildingKeyMap).map(([key, building]) => (
               <li key={`building-${key}`}>
-                <strong>{key}</strong> – {buildingLabels[building]}
+                <strong>{key}</strong> – {building}
               </li>
             ))}
           </ul>
@@ -367,9 +357,14 @@ export default function PolytopiaMarketPlanner() {
         Place Advanced Buildings
       </button>
       <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
-        <button onClick={handleOptimizeClick}>
-          Optimize Advanced Buildings (Brute Force)
+        <button onClick={startOptimization} disabled={isOptimizing}>
+          {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
         </button>
+        {isOptimizing && (
+          <button onClick={stopOptimization} style={{marginLeft: "8px"}}>
+            Stop Optimize
+          </button>
+        )}
         <span style={{marginLeft: 8, fontSize: "0.9rem"}}>
           {`Estimated combinations: 5^${emptyCandidateCount} ≈ 10^${estimatedStepsExponent.toFixed(
             2
@@ -397,7 +392,7 @@ export default function PolytopiaMarketPlanner() {
             } else if ([Building.Sawmill, Building.Windmill, Building.Forge].includes(tile.building)) {
               displayText = `${getBuildingLevel(tile, board)}`;
             } else {
-              displayText = tile.building;
+              displayText = tile.building.substr(0,1);
             }
           }
           return (

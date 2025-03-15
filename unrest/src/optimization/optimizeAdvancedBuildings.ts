@@ -14,18 +14,6 @@ function getBuildingLevel(tile: TileData, board: Board): number {
   }
 }
 
-export function getMarketLevel(tile: TileData, board: Board): number {
-  const MARKET_ADJ_BUILDINGS = [Building.Sawmill, Building.Windmill, Building.Forge];
-  let sum = 0;
-  const neighbors = getNeighbors(tile, board);
-  for (const nbr of neighbors) {
-    if (MARKET_ADJ_BUILDINGS.includes(nbr.building)) {
-      sum += getBuildingLevel(nbr, board);
-    }
-  }
-  return sum;
-}
-
 export function calculateMarketBonus(board: Board): number {
   return board.tiles.reduce((acc, t) => acc + calculateMarketBonusForTile(t, board), 0);
 }
@@ -76,11 +64,19 @@ function copyBoard(board: Board): Board {
   };
 }
 
-export function optimizeAdvancedBuildings(board: Board): Board {
+/**
+ * Asynchrone Optimierung mit Cancellation-Token, die ausschließlich Kandidaten in
+ * Stadtgebieten berücksichtigt und die Regel "1 Advanced Building pro Stadt und Typ" einhält.
+ */
+export async function optimizeAdvancedBuildingsAsync(
+  board: Board,
+  cancelToken: { canceled: boolean }
+): Promise<Board> {
   const initialBoard = removeAdvancedBuildings(board);
   const candidateIndices = initialBoard.tiles
     .map((tile, index) =>
-      tile.terrain === Terrain.None && tile.building === Building.None ? index : -1
+      // Nur Kandidaten, die bereits einer Stadt zugeordnet sind und leer sind:
+      tile.terrain === Terrain.None && tile.building === Building.None && tile.cityId !== null ? index : -1
     )
     .filter((index) => index !== -1);
 
@@ -88,13 +84,14 @@ export function optimizeAdvancedBuildings(board: Board): Board {
   let bestBoard = copyBoard(initialBoard);
   let iterationCount = 0;
 
-  // Verwende ein Map: cityKey -> Set von bereits platzierten fortgeschrittenen Gebäuden
-  function rec(i: number, currentBoard: Board, usedCityBuildings: Map<string, Set<Building>>) {
+  // Map: cityKey -> Set von bereits platzierten fortgeschrittenen Gebäuden
+  async function rec(i: number, currentBoard: Board, usedCityBuildings: Map<string, Set<Building>>): Promise<void> {
+    if (cancelToken.canceled) return;
     iterationCount++;
     if (iterationCount % 10000 === 0) {
-      console.log(
-        `Iteration ${iterationCount}, Kandidatenindex ${i}, aktueller Bestbonus: ${bestBonus}`
-      );
+      console.log(`Iteration ${iterationCount}, Kandidatenindex ${i}, aktueller Bestbonus: ${bestBonus}`);
+      await new Promise((resolve) => setTimeout(resolve, 0)); // yield control
+      if (cancelToken.canceled) return;
     }
     if (i === candidateIndices.length) {
       const bonus = calculateMarketBonus(currentBoard);
@@ -106,38 +103,32 @@ export function optimizeAdvancedBuildings(board: Board): Board {
       return;
     }
     const idx = candidateIndices[i];
-    // Option: keine Zuweisung
-    rec(i + 1, currentBoard, usedCityBuildings);
-
     const tile = currentBoard.tiles[idx];
-    const nearestCity = getNearestCity(tile, board);
-    const cityKey = nearestCity ? `${nearestCity.x}-${nearestCity.y}` : null;
+    // Falls das Tile ausnahmsweise keine cityId hat, überspringen
+    if (!tile.cityId) {
+      await rec(i + 1, currentBoard, usedCityBuildings);
+      return;
+    }
+    // Option: keine Zuweisung
+    await rec(i + 1, currentBoard, usedCityBuildings);
+    if (cancelToken.canceled) return;
+    const cityKey = tile.cityId;
     const options: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
     for (const option of options) {
-      if (cityKey) {
-        const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
-        if (usedSet.has(option)) continue;
-      }
+      if (cancelToken.canceled) return;
+      // Prüfe, ob in dieser Stadt bereits dieser Gebäudetyp gesetzt wurde
+      const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
+      if (usedSet.has(option)) continue;
       currentBoard.tiles[idx].building = option;
-      if (cityKey) {
-        const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
-        usedSet.add(option);
-        usedCityBuildings.set(cityKey, usedSet);
-      }
-      rec(i + 1, currentBoard, usedCityBuildings);
+      usedSet.add(option);
+      usedCityBuildings.set(cityKey, usedSet);
+      await rec(i + 1, currentBoard, usedCityBuildings);
       currentBoard.tiles[idx].building = Building.None;
-      if (cityKey) {
-        const usedSet = usedCityBuildings.get(cityKey);
-        if (usedSet) {
-          usedSet.delete(option);
-        }
-      }
+      usedSet.delete(option);
     }
   }
 
-  rec(0, initialBoard, new Map<string, Set<Building>>());
-  console.log(
-    `Optimierung abgeschlossen. Gesamtiterationen: ${iterationCount}. Bester Bonus: ${bestBonus}`
-  );
+  await rec(0, initialBoard, new Map<string, Set<Building>>());
+  console.log(`Optimierung abgeschlossen. Gesamtiterationen: ${iterationCount}. Bester Bonus: ${bestBonus}`);
   return bestBoard;
 }

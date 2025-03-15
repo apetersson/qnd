@@ -30,6 +30,8 @@ export function getMarketLevel(tile: TileData, board: Board): number {
 export function placeBasicResourceBuildings(board: Board): Board {
   const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
   newBoard.tiles.forEach((tile, i) => {
+    // Nur in Tiles, die einer Stadt zugeordnet sind, Basic-Gebäude platzieren
+    if (tile.cityId === null) return;
     if (tile.building !== Building.None) return;
     if (tile.terrain === Terrain.Field) {
       newBoard.tiles[i].building = Building.Farm;
@@ -42,35 +44,64 @@ export function placeBasicResourceBuildings(board: Board): Board {
   return newBoard;
 }
 
+
+/**
+ * Platziert fortgeschrittene Gebäude (S, W, O, M) nur in Stadtgebieten.
+ * Pro Stadt (identifiziert über cityId) wird für jeden Gebäudetyp – sofern noch nicht vorhanden –
+ * das optimale, leere Tile (terrain === NONE, building === NONE) mit maximalem Potenzial gewählt.
+ */
 export function placeAdvancedBuildingsSimple(board: Board): Board {
-  const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
-  newBoard.tiles.forEach((tile, i) => {
-    if (tile.terrain === Terrain.None && tile.building === Building.None) {
-      const neighbors = getNeighbors(tile, newBoard);
-      const bonusSawmill = neighbors.filter((t) => t.building === Building.LumberHut).length;
-      const bonusWindmill = neighbors.filter((t) => t.building === Building.Farm).length;
-      const bonusForge = neighbors.filter((t) => t.building === Building.Mine).length;
-      let candidate: Building = Building.None;
-      if (bonusSawmill > 0 || bonusWindmill > 0 || bonusForge > 0) {
-        if (bonusSawmill >= bonusWindmill && bonusSawmill >= bonusForge) {
-          candidate = Building.Sawmill;
-        } else if (bonusWindmill >= bonusForge) {
-          candidate = Building.Windmill;
+  const newBoard: Board = { ...board, tiles: board.tiles.map(t => ({ ...t })) };
+
+  // Ermitteln aller existierenden cityIds
+  const cityIds = Array.from(
+    new Set(newBoard.tiles.filter(t => t.cityId !== null).map(t => t.cityId))
+  ) as string[];
+
+  // Definiere die fortgeschrittenen Gebäudetypen
+  const advancedTypes: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
+
+  // Für jede Stadt und jeden fortgeschrittenen Typ
+  for (const cityId of cityIds) {
+    for (const advType of advancedTypes) {
+      // Überspringe, wenn in dieser Stadt schon dieser Typ vorhanden ist
+      const alreadyPlaced = newBoard.tiles.some(
+        t => t.cityId === cityId && t.building === advType
+      );
+      if (alreadyPlaced) continue;
+
+      // Filtere alle Kandidaten in dieser Stadt, die leer sind
+      const candidates = newBoard.tiles.filter(
+        t => t.cityId === cityId && t.terrain === Terrain.None && t.building === Building.None
+      );
+      let bestCandidate: TileData | null = null;
+      let bestPotential = 0;
+      for (const candidate of candidates) {
+        let potential = 0;
+        if (advType === Building.Market) {
+          potential = getMarketLevel(candidate, newBoard);
         } else {
-          candidate = Building.Forge;
+          // Simuliere das Setzen des fortgeschrittenen Gebäudes
+          // Hier nutzen wir getBuildingLevel als Indikator
+          const simulatedTile: TileData = { ...candidate, building: advType };
+          potential = getBuildingLevel(simulatedTile, newBoard);
+        }
+        if (potential > bestPotential) {
+          bestPotential = potential;
+          bestCandidate = candidate;
         }
       }
-      if (candidate !== Building.None) {
-        if (tile.cityId) {
-          const alreadyExists = newBoard.tiles.some(
-            (t) => t.cityId === tile.cityId && t.building === candidate
-          );
-          if (alreadyExists) return; // nicht platzieren, wenn bereits vorhanden
+      // Platziere das fortgeschrittene Gebäude, wenn ein Kandidat gefunden und Potenzial > 0 ist
+      if (bestCandidate && bestPotential > 0) {
+        const idx = newBoard.tiles.findIndex(
+          t => t.x === bestCandidate!.x && t.y === bestCandidate!.y
+        );
+        if (idx !== -1) {
+          newBoard.tiles[idx].building = advType;
         }
-        newBoard.tiles[i].building = candidate;
       }
     }
-  });
+  }
   return newBoard;
 }
 
