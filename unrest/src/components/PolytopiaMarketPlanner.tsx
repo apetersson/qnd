@@ -168,18 +168,26 @@ export default function PolytopiaMarketPlanner() {
           return {...prev, tiles: updated};
         });
       } else if (buildingCandidate !== undefined) {
-        const forcedTerrain =
-          buildingCandidate === Building.Farm
-            ? Terrain.Field
-            : buildingCandidate === Building.LumberHut
-              ? Terrain.Forest
-              : buildingCandidate === Building.Mine
-                ? Terrain.Mountain
-                : Terrain.None;
+        // Falls advanced building und Stadtzugehörigkeit vorhanden:
         setBoard((prev) => ({
           ...prev,
           tiles: prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
+              // Wenn das Tile Teil einer Stadt ist, prüfen, ob in dieser Stadt schon dieser Gebäudetyp existiert
+              if (t.cityId) {
+                const alreadyExists = prev.tiles.some(
+                  (tile) => tile.cityId === t.cityId && tile.building === buildingCandidate
+                );
+                if (alreadyExists) return t; // keine Änderung, wenn schon vorhanden
+              }
+              const forcedTerrain =
+                buildingCandidate === Building.Farm
+                  ? Terrain.Field
+                  : buildingCandidate === Building.LumberHut
+                    ? Terrain.Forest
+                    : buildingCandidate === Building.Mine
+                      ? Terrain.Mountain
+                      : Terrain.None;
               return {
                 ...t,
                 terrain: forcedTerrain !== Terrain.None ? forcedTerrain : t.terrain,
@@ -356,7 +364,7 @@ export default function PolytopiaMarketPlanner() {
         Place Basic Buildings
       </button>
       <button onClick={handlePlaceBuildingsClick} style={{marginLeft: 8}}>
-        Place Buildings
+        Place Advanced Buildings
       </button>
       <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
         <button onClick={handleOptimizeClick}>

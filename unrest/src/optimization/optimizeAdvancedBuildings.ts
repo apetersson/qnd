@@ -1,6 +1,5 @@
 // src/optimization/optimizeAdvancedBuildings.ts
-import { Board, TileData, Building, Terrain } from "../models/Board";
-import { getNeighbors } from "../models/Board";
+import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
 
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
@@ -48,8 +47,8 @@ export function removeAdvancedBuildings(board: Board): Board {
     ...board,
     tiles: board.tiles.map((t) =>
       [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(t.building)
-        ? { ...t, building: Building.None }
-        : { ...t }
+        ? {...t, building: Building.None}
+        : {...t}
     ),
   };
 }
@@ -73,7 +72,7 @@ function copyBoard(board: Board): Board {
   return {
     width: board.width,
     height: board.height,
-    tiles: board.tiles.map((t) => ({ ...t })),
+    tiles: board.tiles.map((t) => ({...t})),
   };
 }
 
@@ -89,7 +88,8 @@ export function optimizeAdvancedBuildings(board: Board): Board {
   let bestBoard = copyBoard(initialBoard);
   let iterationCount = 0;
 
-  function rec(i: number, currentBoard: Board, usedCities: Set<string>) {
+  // Verwende ein Map: cityKey -> Set von bereits platzierten fortgeschrittenen Gebäuden
+  function rec(i: number, currentBoard: Board, usedCityBuildings: Map<string, Set<Building>>) {
     iterationCount++;
     if (iterationCount % 10000 === 0) {
       console.log(
@@ -106,22 +106,36 @@ export function optimizeAdvancedBuildings(board: Board): Board {
       return;
     }
     const idx = candidateIndices[i];
-    rec(i + 1, currentBoard, usedCities);
+    // Option: keine Zuweisung
+    rec(i + 1, currentBoard, usedCityBuildings);
+
     const tile = currentBoard.tiles[idx];
     const nearestCity = getNearestCity(tile, board);
     const cityKey = nearestCity ? `${nearestCity.x}-${nearestCity.y}` : null;
     const options: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
     for (const option of options) {
-      if (cityKey && usedCities.has(cityKey)) continue;
+      if (cityKey) {
+        const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
+        if (usedSet.has(option)) continue;
+      }
       currentBoard.tiles[idx].building = option;
-      if (cityKey) usedCities.add(cityKey);
-      rec(i + 1, currentBoard, usedCities);
+      if (cityKey) {
+        const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
+        usedSet.add(option);
+        usedCityBuildings.set(cityKey, usedSet);
+      }
+      rec(i + 1, currentBoard, usedCityBuildings);
       currentBoard.tiles[idx].building = Building.None;
-      if (cityKey) usedCities.delete(cityKey);
+      if (cityKey) {
+        const usedSet = usedCityBuildings.get(cityKey);
+        if (usedSet) {
+          usedSet.delete(option);
+        }
+      }
     }
   }
 
-  rec(0, initialBoard, new Set<string>());
+  rec(0, initialBoard, new Map<string, Set<Building>>());
   console.log(
     `Optimierung abgeschlossen. Gesamtiterationen: ${iterationCount}. Bester Bonus: ${bestBonus}`
   );

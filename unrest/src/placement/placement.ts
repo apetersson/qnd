@@ -61,6 +61,12 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
         }
       }
       if (candidate !== Building.None) {
+        if (tile.cityId) {
+          const alreadyExists = newBoard.tiles.some(
+            (t) => t.cityId === tile.cityId && t.building === candidate
+          );
+          if (alreadyExists) return; // nicht platzieren, wenn bereits vorhanden
+        }
         newBoard.tiles[i].building = candidate;
       }
     }
