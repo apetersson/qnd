@@ -30,7 +30,7 @@ export function getMarketLevel(tile: TileData, board: Board): number {
 export function placeBasicResourceBuildings(board: Board): Board {
   const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
   newBoard.tiles.forEach((tile, i) => {
-    // Nur in Tiles, die einer Stadt zugeordnet sind, Basic-Gebäude platzieren
+    // Only place basic buildings in tiles assigned to a city
     if (tile.cityId === null) return;
     if (tile.building !== Building.None) return;
     if (tile.terrain === Terrain.Field) {
@@ -44,33 +44,32 @@ export function placeBasicResourceBuildings(board: Board): Board {
   return newBoard;
 }
 
-
 /**
- * Platziert fortgeschrittene Gebäude (S, W, O, M) nur in Stadtgebieten.
- * Pro Stadt (identifiziert über cityId) wird für jeden Gebäudetyp – sofern noch nicht vorhanden –
- * das optimale, leere Tile (terrain === NONE, building === NONE) mit maximalem Potenzial gewählt.
+ * Places advanced buildings (S, W, O, M) only in city areas.
+ * For each city (identified by cityId), for each advanced type – if not already present –
+ * selects the optimal, empty tile (terrain === NONE, building === NONE) with maximum potential.
  */
 export function placeAdvancedBuildingsSimple(board: Board): Board {
   const newBoard: Board = { ...board, tiles: board.tiles.map(t => ({ ...t })) };
 
-  // Ermitteln aller existierenden cityIds
+  // Get all existing city IDs
   const cityIds = Array.from(
     new Set(newBoard.tiles.filter(t => t.cityId !== null).map(t => t.cityId))
   ) as string[];
 
-  // Definiere die fortgeschrittenen Gebäudetypen
+  // Define advanced building types
   const advancedTypes: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
 
-  // Für jede Stadt und jeden fortgeschrittenen Typ
+  // For each city and each advanced type
   for (const cityId of cityIds) {
     for (const advType of advancedTypes) {
-      // Überspringe, wenn in dieser Stadt schon dieser Typ vorhanden ist
+      // Skip if this type is already placed in the city
       const alreadyPlaced = newBoard.tiles.some(
         t => t.cityId === cityId && t.building === advType
       );
       if (alreadyPlaced) continue;
 
-      // Filtere alle Kandidaten in dieser Stadt, die leer sind
+      // Filter all candidate tiles in the city that are empty
       const candidates = newBoard.tiles.filter(
         t => t.cityId === cityId && t.terrain === Terrain.None && t.building === Building.None
       );
@@ -81,8 +80,7 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
         if (advType === Building.Market) {
           potential = getMarketLevel(candidate, newBoard);
         } else {
-          // Simuliere das Setzen des fortgeschrittenen Gebäudes
-          // Hier nutzen wir getBuildingLevel als Indikator
+          // Simulate setting the advanced building; use getBuildingLevel as an indicator
           const simulatedTile: TileData = { ...candidate, building: advType };
           potential = getBuildingLevel(simulatedTile, newBoard);
         }
@@ -91,7 +89,7 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
           bestCandidate = candidate;
         }
       }
-      // Platziere das fortgeschrittene Gebäude, wenn ein Kandidat gefunden und Potenzial > 0 ist
+      // Place the advanced building if a candidate is found and potential > 0
       if (bestCandidate && bestPotential > 0) {
         const idx = newBoard.tiles.findIndex(
           t => t.x === bestCandidate!.x && t.y === bestCandidate!.y

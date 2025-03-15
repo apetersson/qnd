@@ -24,7 +24,7 @@ export interface TileData {
   y: number;
   terrain: Terrain;
   building: Building;
-  cityId: string | null; // Neue Eigenschaft: Zugehörigkeit zu einer Stadt (identifiziert über Koordinate)
+  cityId: string | null; // Property indicating city association (using coordinates as id)
 }
 
 export interface Board {

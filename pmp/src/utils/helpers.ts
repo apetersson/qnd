@@ -40,20 +40,20 @@ export function parseBuildingValue(value: string | undefined): Building {
 }
 
 /**
- * Schätzt die Laufzeit der Brute-Force-Optimierung,
- * basierend auf der Anzahl eligible Tiles und einer Basis (Anzahl Möglichkeiten pro Tile).
- * Gesamtiterationen = base^(eligibleCount), bei 10.000 Iterationen/Sekunde.
+ * Estimates the runtime of the brute-force optimization,
+ * based on the number of eligible tiles and a given base (number of options per tile).
+ * Total iterations = base^(eligibleCount), assuming 10,000 iterations per second.
  * log10(seconds) = eligibleCount * log10(base) - 4.
  */
 export function estimateCompletionTime(eligibleCount: number, base: number): string {
   const estimatedTimeLog = eligibleCount * Math.log10(base) - 4;
   if (estimatedTimeLog < 9) {
     const timeSeconds = Math.pow(10, estimatedTimeLog);
-    if (timeSeconds < 60) return `${timeSeconds.toFixed(2)} Sekunden`;
-    if (timeSeconds < 3600) return `${(timeSeconds / 60).toFixed(2)} Minuten`;
-    if (timeSeconds < 86400) return `${(timeSeconds / 3600).toFixed(2)} Stunden`;
-    if (timeSeconds < 31536000) return `${(timeSeconds / 86400).toFixed(2)} Tage`;
-    return `${(timeSeconds / 31536000).toFixed(2)} Jahre`;
+    if (timeSeconds < 60) return `${timeSeconds.toFixed(2)} seconds`;
+    if (timeSeconds < 3600) return `${(timeSeconds / 60).toFixed(2)} minutes`;
+    if (timeSeconds < 86400) return `${(timeSeconds / 3600).toFixed(2)} hours`;
+    if (timeSeconds < 31536000) return `${(timeSeconds / 86400).toFixed(2)} days`;
+    return `${(timeSeconds / 31536000).toFixed(2)} years`;
   }
-  return `etwa 10^${estimatedTimeLog.toFixed(2)} Sekunden`;
+  return `approximately 10^${estimatedTimeLog.toFixed(2)} seconds`;
 }
