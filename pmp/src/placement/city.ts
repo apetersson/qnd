@@ -56,3 +56,16 @@ export function extendCity(board: Board, cityId: string): Board {
   });
   return newBoard;
 }
+// Removes the city association from all tiles with the given cityId.
+export function removeCityAssociation(board: Board, cityId: string): Board {
+  const newBoard: Board = {
+    ...board,
+    tiles: board.tiles.map(tile => ({ ...tile })),
+  };
+  newBoard.tiles.forEach(tile => {
+    if (tile.cityId === cityId) {
+      tile.cityId = null;
+    }
+  });
+  return newBoard;
+}
