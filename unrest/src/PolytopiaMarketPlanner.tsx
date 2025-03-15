@@ -112,7 +112,7 @@ function getNeighbors(tile: TileData, board: Board): TileData[] {
     .filter((t): t is TileData => Boolean(t));
 }
 
-// Für fortschrittliche Gebäude (außer Market) entspricht der Level der Anzahl angrenzender unterstützender Gebäude.
+// Advanced buildings (Sawmill, Windmill, Forge) haben einen Level, der von angrenzenden Basic-Gebäuden abhängt.
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
     case Building.Sawmill:
@@ -126,7 +126,7 @@ function getBuildingLevel(tile: TileData, board: Board): number {
   }
 }
 
-// Für eine Market-Kachel summieren wir die Levels der angrenzenden unterstützenden Gebäude.
+// Für Marktkacheln: Summiert die Levels der angrenzenden unterstützenden Gebäude.
 function getMarketLevel(tile: TileData, board: Board): number {
   let sum = 0;
   const neighbors = getNeighbors(tile, board);
@@ -148,8 +148,7 @@ function calculateMarketBonusForTile(tile: TileData, board: Board): number {
   const neighbors = getNeighbors(tile, board);
   for (const nbr of neighbors) {
     if (MARKET_ADJ_BUILDINGS.includes(nbr.building)) {
-      const lvl = getBuildingLevel(nbr, board);
-      bonus += Math.min(lvl, 8);
+      bonus += Math.min(getBuildingLevel(nbr, board), 8);
     }
   }
   return bonus;
@@ -159,7 +158,6 @@ function calculateMarketBonusForTile(tile: TileData, board: Board): number {
 // Terrain-building constraints
 ////////////////////////////////////////////////////////////////////////////////
 
-// Blockiert Platzierungen auf Wasser, egal welchen Gebäudetyp.
 function canPlaceBuildingOnTerrain(building: Building, terrain: Terrain): boolean {
   if (terrain === Terrain.Water) return false;
   const required = requiredTerrainForBuilding(building);
@@ -212,10 +210,22 @@ const buildingKeyMap: Record<string, Building> = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Zusätzliche Funktionen: Optimierung und Entfernen nicht beitragender Basic-Gebäude
+// Brute-Force Optimierung fortschrittlicher Gebäude (mit Logging)
 ////////////////////////////////////////////////////////////////////////////////
 
-// Hilfsfunktion: Ermittelt die nächstgelegene Stadt (Manhattan-Distanz)
+// Entfernt alle Advanced-Gebäude (Sawmill, Windmill, Forge, Market) aus dem Board.
+function removeAdvancedBuildings(board: Board): Board {
+  return {
+    ...board,
+    tiles: board.tiles.map((t) =>
+      [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(t.building)
+        ? { ...t, building: Building.None }
+        : { ...t }
+    ),
+  };
+}
+
+// Liefert die nächstgelegene Stadt (basierend auf Manhattan-Distanz)
 function getNearestCity(tile: TileData, board: Board): TileData | null {
   let minDist = Infinity;
   let nearest: TileData | null = null;
@@ -231,103 +241,68 @@ function getNearestCity(tile: TileData, board: Board): TileData | null {
   return nearest;
 }
 
-// Optimiert die Platzierung fortschrittlicher Gebäude (Sawmill, Windmill, Forge)
-// unter Beachtung: max. 1 pro Stadt (nächste Stadt ermittelt via Manhattan-Distanz)
-function optimizeAdvancedBuildings(board: Board): Board {
-  // Entferne bestehende fortschrittliche Gebäude (Sawmill, Windmill, Forge, Market)
-  const newBoard: Board = {
-    ...board,
-    tiles: board.tiles.map((t) =>
-      [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(t.building)
-        ? { ...t, building: Building.None }
-        : { ...t }
-    ),
+// Kopiert ein Board (tiefe Kopie)
+function copyBoard(board: Board): Board {
+  return {
+    width: board.width,
+    height: board.height,
+    tiles: board.tiles.map((t) => ({ ...t })),
   };
-
-  type Candidate = {
-    tile: TileData;
-    candidateType: Building;
-    candidateValue: number;
-    cityKey: string | null;
-  };
-
-  const candidates: Candidate[] = [];
-  newBoard.tiles.forEach((tile) => {
-    if (tile.terrain === Terrain.None && tile.building === Building.None) {
-      const neighbors = getNeighbors(tile, newBoard);
-      const sawmillPotential = neighbors.filter((n) => n.building === Building.LumberHut).length;
-      const windmillPotential = neighbors.filter((n) => n.building === Building.Farm).length;
-      const forgePotential = neighbors.filter((n) => n.building === Building.Mine).length;
-      let candidateType: Building = Building.None;
-      let candidateValue = 0;
-      if (sawmillPotential > 0 || windmillPotential > 0 || forgePotential > 0) {
-        if (sawmillPotential >= windmillPotential && sawmillPotential >= forgePotential) {
-          candidateType = Building.Sawmill;
-          candidateValue = sawmillPotential;
-        } else if (windmillPotential >= forgePotential) {
-          candidateType = Building.Windmill;
-          candidateValue = windmillPotential;
-        } else {
-          candidateType = Building.Forge;
-          candidateValue = forgePotential;
-        }
-      }
-      if (candidateType !== Building.None) {
-        const nearestCity = getNearestCity(tile, newBoard);
-        const cityKey = nearestCity ? `${nearestCity.x}-${nearestCity.y}` : null;
-        candidates.push({ tile, candidateType, candidateValue, cityKey });
-      }
-    }
-  });
-
-  // Für jede Stadt: wähle den Kandidaten mit dem höchsten Wert
-  const bestCandidates: Record<string, Candidate> = {};
-  candidates.forEach((candidate) => {
-    if (candidate.cityKey) {
-      if (
-        !bestCandidates[candidate.cityKey] ||
-        candidate.candidateValue > bestCandidates[candidate.cityKey].candidateValue
-      ) {
-        bestCandidates[candidate.cityKey] = candidate;
-      }
-    }
-  });
-
-  Object.values(bestCandidates).forEach((candidate) => {
-    const index = newBoard.tiles.findIndex(
-      (t) => t.x === candidate.tile.x && t.y === candidate.tile.y
-    );
-    if (index !== -1) {
-      newBoard.tiles[index].building = candidate.candidateType;
-    }
-  });
-
-  return newBoard;
 }
 
-// Entfernt alle Basic-Gebäude (Farm, LumberHut, Mine),
-// die nicht angrenzend zu einem unterstützenden fortschrittlichen Gebäude liegen.
-function removeNonContributingBasicBuildings(board: Board): Board {
-  const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
-  newBoard.tiles.forEach((tile, i) => {
-    if (tile.building === Building.Farm) {
-      const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Windmill);
-      if (!supports) {
-        newBoard.tiles[i].building = Building.None;
-      }
-    } else if (tile.building === Building.LumberHut) {
-      const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Sawmill);
-      if (!supports) {
-        newBoard.tiles[i].building = Building.None;
-      }
-    } else if (tile.building === Building.Mine) {
-      const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Forge);
-      if (!supports) {
-        newBoard.tiles[i].building = Building.None;
-      }
+// Brute-Force-Optimierung: Alle legalen Kombinationen werden ausprobiert, wobei pro Stadt (nächste Stadt via Manhattan)
+// maximal ein Advanced Building gesetzt wird. Log-Ausgaben zeigen alle 10.000 Iterationen den Fortschritt.
+function optimizeAdvancedBuildings(board: Board): Board {
+  const initialBoard = removeAdvancedBuildings(board);
+  // Sammle alle Kandidaten (leere Tiles mit Terrain None)
+  const candidateIndices = initialBoard.tiles
+    .map((tile, index) => (tile.terrain === Terrain.None && tile.building === Building.None ? index : -1))
+    .filter((index) => index !== -1);
+
+  let bestBonus = calculateMarketBonus(initialBoard);
+  let bestBoard = copyBoard(initialBoard);
+  let iterationCount = 0;
+
+  // Rekursive Backtracking-Funktion
+  function rec(i: number, currentBoard: Board, usedCities: Set<string>) {
+    iterationCount++;
+    if (iterationCount % 10000 === 0) {
+      console.log(
+        `Iteration ${iterationCount}, Kandidatenindex ${i}, aktueller Bestbonus: ${bestBonus}`
+      );
     }
-  });
-  return newBoard;
+    if (i === candidateIndices.length) {
+      const bonus = calculateMarketBonus(currentBoard);
+      if (bonus > bestBonus) {
+        bestBonus = bonus;
+        bestBoard = copyBoard(currentBoard);
+        console.log(`Neuer Bestbonus: ${bestBonus} nach ${iterationCount} Iterationen.`);
+      }
+      return;
+    }
+    const idx = candidateIndices[i];
+    // Option: Keine Zuweisung
+    rec(i + 1, currentBoard, usedCities);
+
+    const tile = currentBoard.tiles[idx];
+    const nearestCity = getNearestCity(tile, board); // Städte bleiben fix
+    const cityKey = nearestCity ? `${nearestCity.x}-${nearestCity.y}` : null;
+    const options: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
+    for (const option of options) {
+      if (cityKey && usedCities.has(cityKey)) continue;
+      // Setze die Option
+      currentBoard.tiles[idx].building = option;
+      if (cityKey) usedCities.add(cityKey);
+      rec(i + 1, currentBoard, usedCities);
+      // Backtracking
+      currentBoard.tiles[idx].building = Building.None;
+      if (cityKey) usedCities.delete(cityKey);
+    }
+  }
+
+  rec(0, initialBoard, new Set<string>());
+  console.log(`Optimierung abgeschlossen. Gesamtiterationen: ${iterationCount}. Bester Bonus: ${bestBonus}`);
+  return bestBoard;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -470,6 +445,14 @@ export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
 
+  // Berechne die Anzahl leerer Kandidaten-Tiles (terrain NONE und ohne Gebäude)
+  const emptyCandidateCount = board.tiles.filter(
+    (tile) => tile.terrain === Terrain.None && tile.building === Building.None
+  ).length;
+  // Da es 5 Möglichkeiten gibt (keine Zuweisung, Sawmill, Windmill, Forge, Market)
+  // ergibt sich eine maximale Kombination von 5^(emptyCandidateCount)
+  const estimatedStepsExponent = emptyCandidateCount * Math.log10(5);
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!hoveredTile) return;
@@ -582,28 +565,53 @@ export default function PolytopiaMarketPlanner() {
     }
   }
 
-  // "Place Basic Buildings" button handler.
+  // "Place Basic Buildings" Button.
   function handlePlaceBasicBuildingsClick() {
     const newBoard = placeBasicResourceBuildings(board);
     setBoard(newBoard);
   }
 
-  // "Place Buildings" button handler for advanced buildings (Simple).
+  // "Place Buildings" Button (einfache fortschrittliche Platzierung).
   function handlePlaceBuildingsClick() {
     const newBoard = placeAdvancedBuildingsSimple(board);
     setBoard(newBoard);
   }
 
-  // Neues Feature: Optimale Platzierung fortschrittlicher Gebäude
+  // Neues Feature: Brute-Force Optimierung fortschrittlicher Gebäude (inkl. Märkte).
   function handleOptimizeClick() {
     const newBoard = optimizeAdvancedBuildings(board);
     setBoard(newBoard);
   }
 
-  // Neues Feature: Entferne nicht beitragende Basic-Gebäude
+  // Neues Feature: Entferne nicht beitragende Basic-Gebäude.
   function handleRemoveNonContributingClick() {
     const newBoard = removeNonContributingBasicBuildings(board);
     setBoard(newBoard);
+  }
+
+  // Entfernt alle Basic-Gebäude (Farm, LumberHut, Mine),
+  // die nicht angrenzend zu einem unterstützenden fortschrittlichen Gebäude liegen.
+  function removeNonContributingBasicBuildings(board: Board): Board {
+    const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
+    newBoard.tiles.forEach((tile, i) => {
+      if (tile.building === Building.Farm) {
+        const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Windmill);
+        if (!supports) {
+          newBoard.tiles[i].building = Building.None;
+        }
+      } else if (tile.building === Building.LumberHut) {
+        const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Sawmill);
+        if (!supports) {
+          newBoard.tiles[i].building = Building.None;
+        }
+      } else if (tile.building === Building.Mine) {
+        const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Forge);
+        if (!supports) {
+          newBoard.tiles[i].building = Building.None;
+        }
+      }
+    });
+    return newBoard;
   }
 
   const gridSizeLabel =
@@ -682,15 +690,30 @@ export default function PolytopiaMarketPlanner() {
       <button onClick={handlePlaceBuildingsClick} style={{ marginLeft: 8 }}>
         Place Buildings
       </button>
-      <button onClick={handleOptimizeClick} style={{ marginLeft: 8 }}>
-        Optimize Advanced Buildings
-      </button>
+      <div style={{ display: "inline-flex", alignItems: "center", marginLeft: 8 }}>
+        <button onClick={handleOptimizeClick}>
+          Optimize Advanced Buildings (Brute Force)
+        </button>
+        <span style={{ marginLeft: 8, fontSize: "0.9rem" }}>
+          {`Estimated combinations: 5^${emptyCandidateCount} ≈ 10^${estimatedStepsExponent.toFixed(2)}`}
+        </span>
+      </div>
       <button onClick={handleRemoveNonContributingClick} style={{ marginLeft: 8 }}>
         Remove Non-Contributing Basics
       </button>
       <p style={{ marginTop: 8, marginBottom: 4 }}>Board JSON:</p>
-      <textarea style={{ width: "100%", height: "150px" }} value={configText} onChange={handleConfigChange} />
-      <div style={{ marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)` }}>
+      <textarea
+        style={{ width: "100%", height: "150px" }}
+        value={configText}
+        onChange={handleConfigChange}
+      />
+      <div
+        style={{
+          marginTop: 20,
+          ...boardStyle,
+          gridTemplateColumns: `repeat(${board.width}, 40px)`,
+        }}
+      >
         {board.tiles.map((tile) => {
           const baseColor = getTerrainColor(tile.terrain);
           const bldgColor = getBuildingColor(tile.building);
