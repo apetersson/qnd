@@ -441,7 +441,10 @@ export default function PolytopiaMarketPlanner() {
         value={configText}
         onChange={handleConfigChange}
       />
-      <div style={{marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)`}}>
+      <div
+        style={{marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)`}}
+        onMouseLeave={() => setHoveredTile(null)}
+      >
         {board.tiles.map((tile) => {
           const baseColor = getTerrainColor(tile.terrain);
           const bldgColor = getBuildingColor(tile.building);
