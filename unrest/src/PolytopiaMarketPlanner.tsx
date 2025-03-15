@@ -10,6 +10,7 @@ enum Terrain {
   Forest = "FOREST",
   Mountain = "MOUNTAIN",
   City = "CITY",
+  Water = "WATER",
 }
 
 enum Building {
@@ -52,6 +53,8 @@ function parseTerrainValue(value: string | undefined): Terrain {
       return Terrain.Mountain;
     case "CITY":
       return Terrain.City;
+    case "WATER":
+      return Terrain.Water;
     default:
       return Terrain.None;
   }
@@ -109,6 +112,7 @@ function getNeighbors(tile: TileData, board: Board): TileData[] {
     .filter((t): t is TileData => Boolean(t));
 }
 
+// For advanced buildings (except Market), the level is the number of adjacent supporting buildings.
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
     case Building.Sawmill:
@@ -120,6 +124,18 @@ function getBuildingLevel(tile: TileData, board: Board): number {
     default:
       return 1;
   }
+}
+
+// For a Market tile, we return the sum of levels of adjacent supporting buildings.
+function getMarketLevel(tile: TileData, board: Board): number {
+  let sum = 0;
+  const neighbors = getNeighbors(tile, board);
+  for (const nbr of neighbors) {
+    if (MARKET_ADJ_BUILDINGS.includes(nbr.building)) {
+      sum += getBuildingLevel(nbr, board);
+    }
+  }
+  return sum;
 }
 
 function calculateMarketBonus(tile: TileData, board: Board): number {
@@ -143,6 +159,16 @@ function calculateTotalMarketBonus(board: Board): number {
 // Terrain-building constraints
 ////////////////////////////////////////////////////////////////////////////////
 
+// Blocks placements on Water regardless of building type.
+function canPlaceBuildingOnTerrain(building: Building, terrain: Terrain): boolean {
+  if (terrain === Terrain.Water) return false;
+  const required = requiredTerrainForBuilding(building);
+  if (required !== null) {
+    return required === terrain;
+  }
+  return true;
+}
+
 function requiredTerrainForBuilding(building: Building): Terrain | null {
   switch (building) {
     case Building.Farm:
@@ -161,52 +187,6 @@ function requiredTerrainForBuilding(building: Building): Terrain | null {
   }
 }
 
-function canPlaceBuildingOnTerrain(building: Building, terrain: Terrain): boolean {
-  const required = requiredTerrainForBuilding(building);
-  if (required !== null) {
-    return required === terrain;
-  }
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Unique City Association
-////////////////////////////////////////////////////////////////////////////////
-
-// For a given tile, return the index of the associated city (if any) – the closest city within Chebyshev distance 2.
-// If tied, the first city in the board order is used.
-function getAssociatedCityIndex(tile: TileData, board: Board): number | null {
-  let bestCityIndex: number | null = null;
-  let bestDistance = Infinity;
-  board.tiles.forEach((candidate, idx) => {
-    if (candidate.terrain === Terrain.City) {
-      const dx = Math.abs(candidate.x - tile.x);
-      const dy = Math.abs(candidate.y - tile.y);
-      const distance = Math.max(dx, dy);
-      if (distance <= 2 && distance < bestDistance) {
-        bestDistance = distance;
-        bestCityIndex = idx;
-      }
-    }
-  });
-  return bestCityIndex;
-}
-
-// Check if the associated city already has the candidate advanced building in its domain.
-function associatedCityHasAdvancedBuilding(
-  board: Board,
-  candidate: Building,
-  associatedCityIndex: number
-): boolean {
-  for (let j = 0; j < board.tiles.length; j++) {
-    const t = board.tiles[j];
-    if (getAssociatedCityIndex(t, board) === associatedCityIndex && t.building === candidate) {
-      return true;
-    }
-  }
-  return false;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Keyboard mappings
 ////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +197,8 @@ const terrainKeyMap: Record<string, Terrain> = {
   f: Terrain.Forest,
   h: Terrain.Mountain,
   c: Terrain.City,
+  // Optionally, you can add a key for water (e.g., "a" for aqua)
+  a: Terrain.Water,
 };
 
 const buildingKeyMap: Record<string, Building> = {
@@ -267,6 +249,8 @@ function getTerrainColor(terrain: Terrain): string {
       return "#c2c2c2";
     case Terrain.City:
       return "#ffd700";
+    case Terrain.Water:
+      return "#00bfff"; // Water color
     default:
       return "#ffffff";
   }
@@ -307,10 +291,42 @@ const gridSizes = [
 ];
 
 ////////////////////////////////////////////////////////////////////////////////
-// Optimization logic
+// Advanced Building Placement (Simple Version)
+// Place Sawmill, Windmill, or Forge on every empty tile (terrain=NONE)
+// if at least one adjacent tile has the corresponding basic building.
 ////////////////////////////////////////////////////////////////////////////////
 
-// 1) Place basic resource buildings on Field/Forest/Mountain
+function placeAdvancedBuildingsSimple(board: Board): Board {
+  const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
+  newBoard.tiles.forEach((tile, i) => {
+    if (tile.terrain === Terrain.None && tile.building === Building.None) {
+      const neighbors = getNeighbors(tile, newBoard);
+      const bonusSawmill = neighbors.filter((t) => t.building === Building.LumberHut).length;
+      const bonusWindmill = neighbors.filter((t) => t.building === Building.Farm).length;
+      const bonusForge = neighbors.filter((t) => t.building === Building.Mine).length;
+      let candidate: Building = Building.None;
+      if (bonusSawmill > 0 || bonusWindmill > 0 || bonusForge > 0) {
+        if (bonusSawmill >= bonusWindmill && bonusSawmill >= bonusForge) {
+          candidate = Building.Sawmill;
+        } else if (bonusWindmill >= bonusForge) {
+          candidate = Building.Windmill;
+        } else {
+          candidate = Building.Forge;
+        }
+      }
+      if (candidate !== Building.None) {
+        newBoard.tiles[i].building = candidate;
+      }
+    }
+  });
+  return newBoard;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Basic Resource Placement
+// Place Farm on Field, LumberHut on Forest, and Mine on Mountain.
+////////////////////////////////////////////////////////////////////////////////
+
 function placeBasicResourceBuildings(board: Board): Board {
   const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
   newBoard.tiles.forEach((tile, i) => {
@@ -324,98 +340,6 @@ function placeBasicResourceBuildings(board: Board): Board {
     }
   });
   return newBoard;
-}
-
-// Test total Market bonus if we place candidate advanced building on tile tileIndex.
-function testAdvancedBuilding(
-  board: Board,
-  tileIndex: number,
-  candidate: Building
-): number {
-  const testBoard: Board = {
-    ...board,
-    tiles: board.tiles.map((t, i) =>
-      i === tileIndex ? { ...t, building: candidate } : { ...t }
-    ),
-  };
-  return calculateTotalMarketBonus(testBoard);
-}
-
-// 2) Place advanced buildings (Sawmill, Windmill, Forge, Market) on empty terrain=NONE,
-// ensuring that each tile is associated with a unique city and that city gets at most one of each type.
-function placeAdvancedBuildingsWithCityLimits(board: Board): Board {
-  let newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
-  const baselineBonus = calculateTotalMarketBonus(newBoard);
-
-  for (let i = 0; i < newBoard.tiles.length; i++) {
-    const tile = newBoard.tiles[i];
-    if (tile.terrain !== Terrain.None || tile.building !== Building.None) continue;
-    // Determine the tile's associated city, if any.
-    const associatedCityIndex = getAssociatedCityIndex(tile, newBoard);
-
-    let bestBuilding = Building.None;
-    let bestScore = baselineBonus;
-
-    const advancedCandidates = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
-
-    for (const candidate of advancedCandidates) {
-      if (!canPlaceBuildingOnTerrain(candidate, tile.terrain)) continue;
-      // If the tile is associated with a city, check if that city already has this candidate.
-      if (associatedCityIndex !== null && associatedCityHasAdvancedBuilding(newBoard, candidate, associatedCityIndex)) {
-        continue;
-      }
-      const score = testAdvancedBuilding(newBoard, i, candidate);
-      if (score > bestScore) {
-        bestScore = score;
-        bestBuilding = candidate;
-      }
-    }
-    if (bestBuilding !== Building.None) {
-      newBoard.tiles[i].building = bestBuilding;
-    }
-  }
-  return newBoard;
-}
-
-// 3) Remove advanced buildings that, if removed, do not reduce the total Market bonus.
-function removeUselessAdvancedBuildings(board: Board): Board {
-  let changed = true;
-  let currentBoard: Board = board;
-  while (changed) {
-    changed = false;
-    const baselineBonus = calculateTotalMarketBonus(currentBoard);
-    const newTiles = currentBoard.tiles.map((tile, i) => {
-      if (
-        tile.building === Building.Sawmill ||
-        tile.building === Building.Windmill ||
-        tile.building === Building.Forge ||
-        tile.building === Building.Market
-      ) {
-        const testBoard: Board = {
-          ...currentBoard,
-          tiles: currentBoard.tiles.map((t, j) =>
-            j === i ? { ...t, building: Building.None } : { ...t }
-          ),
-        };
-        const newBonus = calculateTotalMarketBonus(testBoard);
-        if (newBonus >= baselineBonus) {
-          changed = true;
-          return { ...tile, building: Building.None };
-        }
-      }
-      return tile;
-    });
-    currentBoard = { ...currentBoard, tiles: newTiles };
-  }
-  return currentBoard;
-}
-
-// Main optimization pipeline.
-function optimizeBoard(board: Board): Board {
-  let optimized = placeBasicResourceBuildings(board);
-  optimized = placeAdvancedBuildingsWithCityLimits(optimized);
-  optimized = removeUselessAdvancedBuildings(optimized);
-  return optimized;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -543,8 +467,15 @@ export default function PolytopiaMarketPlanner() {
     }
   }
 
-  function handleOptimizeClick() {
-    const newBoard = optimizeBoard(board);
+  // "Place Basic Buildings" button handler.
+  function handlePlaceBasicBuildingsClick() {
+    const newBoard = placeBasicResourceBuildings(board);
+    setBoard(newBoard);
+  }
+
+  // "Place Buildings" button handler for advanced buildings.
+  function handlePlaceBuildingsClick() {
+    const newBoard = placeAdvancedBuildingsSimple(board);
     setBoard(newBoard);
   }
 
@@ -559,6 +490,7 @@ export default function PolytopiaMarketPlanner() {
     [Terrain.Forest]: "Forest",
     [Terrain.Mountain]: "Mountain",
     [Terrain.City]: "City",
+    [Terrain.Water]: "Water",
   };
 
   const buildingLabels: Record<Building, string> = {
@@ -609,21 +541,38 @@ export default function PolytopiaMarketPlanner() {
               </li>
             ))}
           </ul>
-          <p>
-            Simply hover over a tile with the mouse and press the corresponding key. Enjoy planning!
-          </p>
+          <p>Simply hover over a tile with the mouse and press the corresponding key. Enjoy planning!</p>
         </div>
       </div>
       <p>Market bonus: {totalMarketBonus}</p>
       <button onClick={handleExportClick}>Export</button>
-      <button onClick={handleApplyClick} style={{ marginLeft: 8 }}>Apply</button>
-      {/*<button onClick={handleOptimizeClick} style={{ marginLeft: 8 }}>Optimize</button>*/}
+      <button onClick={handleApplyClick} style={{ marginLeft: 8 }}>
+        Apply
+      </button>
+      <button onClick={handlePlaceBasicBuildingsClick} style={{ marginLeft: 8 }}>
+        Place Basic Buildings
+      </button>
+      <button onClick={handlePlaceBuildingsClick} style={{ marginLeft: 8 }}>
+        Place Buildings
+      </button>
       <p style={{ marginTop: 8, marginBottom: 4 }}>Board JSON:</p>
       <textarea style={{ width: "100%", height: "150px" }} value={configText} onChange={handleConfigChange} />
       <div style={{ marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)` }}>
         {board.tiles.map((tile) => {
           const baseColor = getTerrainColor(tile.terrain);
           const bldgColor = getBuildingColor(tile.building);
+          // For advanced buildings, display a level.
+          // For Market, display the sum of adjacent levels; for others, display getBuildingLevel.
+          let displayText = "";
+          if (tile.building !== Building.None) {
+            if (tile.building === Building.Market) {
+              displayText = getMarketLevel(tile, board).toString();
+            } else if ([Building.Sawmill, Building.Windmill, Building.Forge].includes(tile.building)) {
+              displayText = getBuildingLevel(tile, board).toString();
+            } else {
+              displayText = tile.building;
+            }
+          }
           return (
             <div
               key={`${tile.x}-${tile.y}`}
@@ -641,7 +590,7 @@ export default function PolytopiaMarketPlanner() {
                   border: bldgColor === "transparent" ? "none" : "1px solid #999",
                 }}
               >
-                {tile.building !== Building.None ? tile.building : ""}
+                {displayText}
               </div>
             </div>
           );
