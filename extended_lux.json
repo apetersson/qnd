@@ -45,51 +45,6 @@
       "cityId": "4-2"
     },
     {
-      "x": 7,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 8,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 9,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 0,
-      "terrain": "WATER"
-    },
-    {
       "x": 0,
       "y": 1,
       "terrain": "WATER"
@@ -131,51 +86,6 @@
       "cityId": "4-2"
     },
     {
-      "x": 7,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 8,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 9,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 1,
-      "terrain": "WATER"
-    },
-    {
       "x": 0,
       "y": 2,
       "terrain": "FIELD",
@@ -219,51 +129,6 @@
       "cityId": "4-2"
     },
     {
-      "x": 7,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 8,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 9,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 2,
-      "terrain": "WATER"
-    },
-    {
       "x": 0,
       "y": 3,
       "terrain": "FOREST",
@@ -308,51 +173,6 @@
       "x": 6,
       "y": 3,
       "cityId": "4-2"
-    },
-    {
-      "x": 7,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 8,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 9,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 3,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 3,
-      "terrain": "WATER"
     },
     {
       "x": 0,
@@ -399,51 +219,6 @@
       "cityId": "4-2"
     },
     {
-      "x": 7,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 8,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 9,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 4,
-      "terrain": "WATER"
-    },
-    {
       "x": 0,
       "y": 5,
       "cityId": "2-7"
@@ -531,41 +306,6 @@
       "cityId": "6-7"
     },
     {
-      "x": 9,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 6,
-      "terrain": "WATER"
-    },
-    {
       "x": 0,
       "y": 7,
       "cityId": "2-7"
@@ -617,41 +357,6 @@
       "y": 7,
       "terrain": "WATER",
       "cityId": "6-7"
-    },
-    {
-      "x": 9,
-      "y": 7,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 7,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 7,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 7,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 7,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 7,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 7,
-      "terrain": "WATER"
     },
     {
       "x": 0,
@@ -707,41 +412,6 @@
       "y": 8,
       "terrain": "WATER",
       "cityId": "6-7"
-    },
-    {
-      "x": 9,
-      "y": 8,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 8,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 8,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 8,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 8,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 8,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 8,
-      "terrain": "WATER"
     },
     {
       "x": 0,
@@ -800,41 +470,6 @@
       "y": 9,
       "terrain": "WATER",
       "cityId": "6-7"
-    },
-    {
-      "x": 9,
-      "y": 9,
-      "terrain": "WATER"
-    },
-    {
-      "x": 10,
-      "y": 9,
-      "terrain": "WATER"
-    },
-    {
-      "x": 11,
-      "y": 9,
-      "terrain": "WATER"
-    },
-    {
-      "x": 12,
-      "y": 9,
-      "terrain": "WATER"
-    },
-    {
-      "x": 13,
-      "y": 9,
-      "terrain": "WATER"
-    },
-    {
-      "x": 14,
-      "y": 9,
-      "terrain": "WATER"
-    },
-    {
-      "x": 15,
-      "y": 9,
-      "terrain": "WATER"
     },
     {
       "x": 0,
