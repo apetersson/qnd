@@ -401,9 +401,9 @@ export default function PolytopiaMarketPlanner() {
         </p>
       </div>
       <p>Market bonus: {calculateMarketBonus(board)}</p>
-      <button onClick={handleExportClick}>Export</button>
+      <button onClick={handleExportClick}>Export Data</button>
       <button onClick={handleApplyClick} style={{marginLeft: 8}}>
-        Apply
+        Load Data
       </button>
       <button onClick={handlePlaceBasicBuildingsClick} style={{marginLeft: 8}}>
         Place Basic Buildings
