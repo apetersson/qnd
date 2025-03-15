@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import RiotProbabilityCalculator from './RiotProbabilityCalculator';
-import { Home } from "./Home";
 import PolytopiaMarketPlanner from "./components/PolytopiaMarketPlanner";
 
 export const LINKS = [
@@ -13,9 +11,12 @@ export const LINKS = [
 const rootElement = document.getElementById('root') as HTMLElement;
 const root = ReactDOM.createRoot(rootElement);
 
+const base = import.meta.env.MODE === "production" ? "/qnd/pmp" : "/";
+
+
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={base}>
       <Routes>
         <Route path="/" element={<PolytopiaMarketPlanner/>}/>
         {/*<Route path="/riotCalc" element={<RiotProbabilityCalculator/>}/>*/}
