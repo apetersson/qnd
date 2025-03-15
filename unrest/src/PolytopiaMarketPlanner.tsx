@@ -21,10 +21,8 @@ enum Building {
   Windmill = "WINDMILL",
   Forge = "FORGE",
   Market = "MARKET",
-  // City removed; now handled as Terrain.City
 }
 
-// For Market adjacency bonus
 const MARKET_ADJ_BUILDINGS = [Building.Sawmill, Building.Windmill, Building.Forge];
 
 interface TileData {
@@ -37,8 +35,6 @@ interface TileData {
 interface Board {
   width: number;
   height: number;
-  // Skip all-NONE tiles when exporting/importing.
-  // They remain in memory but are excluded from the exported JSON.
   tiles: TileData[];
 }
 
@@ -96,27 +92,23 @@ function createInitialBoard(width: number, height: number): Board {
   return { width, height, tiles };
 }
 
-// 8-direction adjacency
 function getNeighbors(tile: TileData, board: Board): TileData[] {
   const { x, y } = tile;
   const offsets = [
-    [0, -1],  // up
-    [0, 1],   // down
-    [-1, 0],  // left
-    [1, 0],   // right
-    [-1, -1], // diag up-left
-    [1, -1],  // diag up-right
-    [-1, 1],  // diag down-left
-    [1, 1],   // diag down-right
+    [0, -1],
+    [0, 1],
+    [-1, 0],
+    [1, 0],
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
   ];
   return offsets
     .map(([dx, dy]) => board.tiles.find((t) => t.x === x + dx && t.y === y + dy))
     .filter((t): t is TileData => Boolean(t));
 }
 
-// Sawmill level = number of adjacent LumberHut
-// Windmill level = number of adjacent Farm
-// Forge level = number of adjacent Mine
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
     case Building.Sawmill:
@@ -126,11 +118,10 @@ function getBuildingLevel(tile: TileData, board: Board): number {
     case Building.Forge:
       return getNeighbors(tile, board).filter((n) => n.building === Building.Mine).length;
     default:
-      return 1; // For Market, Farm, etc.
+      return 1;
   }
 }
 
-// Market adjacency: +1 bonus per building level of each adjacent sawmill/windmill/forge (max 8 each)
 function calculateMarketBonus(tile: TileData, board: Board): number {
   if (tile.building !== Building.Market) return 0;
   let bonus = 0;
@@ -179,10 +170,47 @@ function canPlaceBuildingOnTerrain(building: Building, terrain: Terrain): boolea
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Unique City Association
+////////////////////////////////////////////////////////////////////////////////
+
+// For a given tile, return the index of the associated city (if any) – the closest city within Chebyshev distance 2.
+// If tied, the first city in the board order is used.
+function getAssociatedCityIndex(tile: TileData, board: Board): number | null {
+  let bestCityIndex: number | null = null;
+  let bestDistance = Infinity;
+  board.tiles.forEach((candidate, idx) => {
+    if (candidate.terrain === Terrain.City) {
+      const dx = Math.abs(candidate.x - tile.x);
+      const dy = Math.abs(candidate.y - tile.y);
+      const distance = Math.max(dx, dy);
+      if (distance <= 2 && distance < bestDistance) {
+        bestDistance = distance;
+        bestCityIndex = idx;
+      }
+    }
+  });
+  return bestCityIndex;
+}
+
+// Check if the associated city already has the candidate advanced building in its domain.
+function associatedCityHasAdvancedBuilding(
+  board: Board,
+  candidate: Building,
+  associatedCityIndex: number
+): boolean {
+  for (let j = 0; j < board.tiles.length; j++) {
+    const t = board.tiles[j];
+    if (getAssociatedCityIndex(t, board) === associatedCityIndex && t.building === candidate) {
+      return true;
+    }
+  }
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Keyboard mappings
 ////////////////////////////////////////////////////////////////////////////////
 
-// Note: City is now a terrain, so we add it to terrainKeyMap.
 const terrainKeyMap: Record<string, Terrain> = {
   n: Terrain.None,
   d: Terrain.Field,
@@ -200,7 +228,6 @@ const buildingKeyMap: Record<string, Building> = {
   r: Building.Farm,
   l: Building.LumberHut,
   i: Building.Mine,
-  // Removed city mapping from buildings
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -239,7 +266,7 @@ function getTerrainColor(terrain: Terrain): string {
     case Terrain.Mountain:
       return "#c2c2c2";
     case Terrain.City:
-      return "#ffd700"; // Gold color for City
+      return "#ffd700";
     default:
       return "#ffffff";
   }
@@ -267,7 +294,7 @@ function getBuildingColor(building: Building): string {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Additional: grid size selection
+// Grid size selection
 ////////////////////////////////////////////////////////////////////////////////
 
 const gridSizes = [
@@ -280,16 +307,126 @@ const gridSizes = [
 ];
 
 ////////////////////////////////////////////////////////////////////////////////
+// Optimization logic
+////////////////////////////////////////////////////////////////////////////////
+
+// 1) Place basic resource buildings on Field/Forest/Mountain
+function placeBasicResourceBuildings(board: Board): Board {
+  const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
+  newBoard.tiles.forEach((tile, i) => {
+    if (tile.building !== Building.None) return;
+    if (tile.terrain === Terrain.Field) {
+      newBoard.tiles[i].building = Building.Farm;
+    } else if (tile.terrain === Terrain.Forest) {
+      newBoard.tiles[i].building = Building.LumberHut;
+    } else if (tile.terrain === Terrain.Mountain) {
+      newBoard.tiles[i].building = Building.Mine;
+    }
+  });
+  return newBoard;
+}
+
+// Test total Market bonus if we place candidate advanced building on tile tileIndex.
+function testAdvancedBuilding(
+  board: Board,
+  tileIndex: number,
+  candidate: Building
+): number {
+  const testBoard: Board = {
+    ...board,
+    tiles: board.tiles.map((t, i) =>
+      i === tileIndex ? { ...t, building: candidate } : { ...t }
+    ),
+  };
+  return calculateTotalMarketBonus(testBoard);
+}
+
+// 2) Place advanced buildings (Sawmill, Windmill, Forge, Market) on empty terrain=NONE,
+// ensuring that each tile is associated with a unique city and that city gets at most one of each type.
+function placeAdvancedBuildingsWithCityLimits(board: Board): Board {
+  let newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
+  const baselineBonus = calculateTotalMarketBonus(newBoard);
+
+  for (let i = 0; i < newBoard.tiles.length; i++) {
+    const tile = newBoard.tiles[i];
+    if (tile.terrain !== Terrain.None || tile.building !== Building.None) continue;
+    // Determine the tile's associated city, if any.
+    const associatedCityIndex = getAssociatedCityIndex(tile, newBoard);
+
+    let bestBuilding = Building.None;
+    let bestScore = baselineBonus;
+
+    const advancedCandidates = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
+
+    for (const candidate of advancedCandidates) {
+      if (!canPlaceBuildingOnTerrain(candidate, tile.terrain)) continue;
+      // If the tile is associated with a city, check if that city already has this candidate.
+      if (associatedCityIndex !== null && associatedCityHasAdvancedBuilding(newBoard, candidate, associatedCityIndex)) {
+        continue;
+      }
+      const score = testAdvancedBuilding(newBoard, i, candidate);
+      if (score > bestScore) {
+        bestScore = score;
+        bestBuilding = candidate;
+      }
+    }
+    if (bestBuilding !== Building.None) {
+      newBoard.tiles[i].building = bestBuilding;
+    }
+  }
+  return newBoard;
+}
+
+// 3) Remove advanced buildings that, if removed, do not reduce the total Market bonus.
+function removeUselessAdvancedBuildings(board: Board): Board {
+  let changed = true;
+  let currentBoard: Board = board;
+  while (changed) {
+    changed = false;
+    const baselineBonus = calculateTotalMarketBonus(currentBoard);
+    const newTiles = currentBoard.tiles.map((tile, i) => {
+      if (
+        tile.building === Building.Sawmill ||
+        tile.building === Building.Windmill ||
+        tile.building === Building.Forge ||
+        tile.building === Building.Market
+      ) {
+        const testBoard: Board = {
+          ...currentBoard,
+          tiles: currentBoard.tiles.map((t, j) =>
+            j === i ? { ...t, building: Building.None } : { ...t }
+          ),
+        };
+        const newBonus = calculateTotalMarketBonus(testBoard);
+        if (newBonus >= baselineBonus) {
+          changed = true;
+          return { ...tile, building: Building.None };
+        }
+      }
+      return tile;
+    });
+    currentBoard = { ...currentBoard, tiles: newTiles };
+  }
+  return currentBoard;
+}
+
+// Main optimization pipeline.
+function optimizeBoard(board: Board): Board {
+  let optimized = placeBasicResourceBuildings(board);
+  optimized = placeAdvancedBuildingsWithCityLimits(optimized);
+  optimized = removeUselessAdvancedBuildings(optimized);
+  return optimized;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Main component
 ////////////////////////////////////////////////////////////////////////////////
 
 export default function PolytopiaMarketPlanner() {
-  // Default to Tiny (11x11)
   const [sizeIndex, setSizeIndex] = useState<number>(0);
   const initialWidth = gridSizes[0].width;
   const initialHeight = gridSizes[0].height;
 
-  // Create board at 11x11
   const [board, setBoard] = useState<Board>(() => createInitialBoard(initialWidth, initialHeight));
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
@@ -297,17 +434,14 @@ export default function PolytopiaMarketPlanner() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!hoveredTile) return;
-
       const key = e.key.toLowerCase();
       const terrainCandidate = terrainKeyMap[key];
       const buildingCandidate = buildingKeyMap[key];
-
       if (terrainCandidate !== undefined) {
         setBoard((prev) => ({
           ...prev,
           tiles: prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
-              // When switching terrain, keep building only if it's valid on the new terrain.
               let newBuilding = t.building;
               if (!canPlaceBuildingOnTerrain(newBuilding, terrainCandidate)) {
                 newBuilding = Building.None;
@@ -319,7 +453,6 @@ export default function PolytopiaMarketPlanner() {
         }));
       } else if (buildingCandidate !== undefined) {
         const forcedTerrain = requiredTerrainForBuilding(buildingCandidate);
-
         setBoard((prev) => ({
           ...prev,
           tiles: prev.tiles.map((t) => {
@@ -338,14 +471,12 @@ export default function PolytopiaMarketPlanner() {
         }));
       }
     }
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hoveredTile]);
 
   const totalMarketBonus = calculateTotalMarketBonus(board);
 
-  // Export only tiles with non-default values.
   function handleExportClick() {
     const meaningfulTiles = board.tiles.filter(
       (t) => t.terrain !== Terrain.None || t.building !== Building.None
@@ -355,16 +486,11 @@ export default function PolytopiaMarketPlanner() {
       height: board.height,
       tiles: meaningfulTiles.map((t) => {
         const obj: any = { x: t.x, y: t.y };
-        if (t.terrain !== Terrain.None) {
-          obj.terrain = t.terrain;
-        }
-        if (t.building !== Building.None) {
-          obj.building = t.building;
-        }
+        if (t.terrain !== Terrain.None) obj.terrain = t.terrain;
+        if (t.building !== Building.None) obj.building = t.building;
         return obj;
       }),
     };
-
     const json = JSON.stringify(exportBoard, null, 2);
     setConfigText(json);
   }
@@ -391,16 +517,11 @@ export default function PolytopiaMarketPlanner() {
             };
           }
         }
-
         setBoard(newBoard);
         const foundIndex = gridSizes.findIndex(
           (sz) => sz.width === newBoard.width && sz.height === newBoard.height
         );
-        if (foundIndex >= 0) {
-          setSizeIndex(foundIndex);
-        } else {
-          setSizeIndex(-1);
-        }
+        setSizeIndex(foundIndex >= 0 ? foundIndex : -1);
       } else {
         alert("Invalid board JSON format.");
       }
@@ -420,6 +541,11 @@ export default function PolytopiaMarketPlanner() {
       const { width, height } = gridSizes[idx];
       setBoard(createInitialBoard(width, height));
     }
+  }
+
+  function handleOptimizeClick() {
+    const newBoard = optimizeBoard(board);
+    setBoard(newBoard);
   }
 
   const gridSizeLabel =
@@ -449,7 +575,6 @@ export default function PolytopiaMarketPlanner() {
   return (
     <div style={containerStyle}>
       <h1>Polytopia Market Planner</h1>
-
       <div style={{ marginBottom: 12 }}>
         <strong>Grid Size:</strong>
         <select onChange={handleSizeChange} value={sizeIndex} style={{ marginLeft: 8 }}>
@@ -462,7 +587,6 @@ export default function PolytopiaMarketPlanner() {
         <p>
           Current Board: {gridSizeLabel} with {board.width * board.height} tiles
         </p>
-
         <strong>Keyboard Shortcuts</strong>
         <div style={{ marginTop: 8 }}>
           <p>
@@ -490,28 +614,13 @@ export default function PolytopiaMarketPlanner() {
           </p>
         </div>
       </div>
-
       <p>Market bonus: {totalMarketBonus}</p>
-
       <button onClick={handleExportClick}>Export</button>
-      <button onClick={handleApplyClick} style={{ marginLeft: 8 }}>
-        Apply
-      </button>
-
+      <button onClick={handleApplyClick} style={{ marginLeft: 8 }}>Apply</button>
+      {/*<button onClick={handleOptimizeClick} style={{ marginLeft: 8 }}>Optimize</button>*/}
       <p style={{ marginTop: 8, marginBottom: 4 }}>Board JSON:</p>
-      <textarea
-        style={{ width: "100%", height: "150px" }}
-        value={configText}
-        onChange={handleConfigChange}
-      />
-
-      <div
-        style={{
-          marginTop: 20,
-          ...boardStyle,
-          gridTemplateColumns: `repeat(${board.width}, 40px)`,
-        }}
-      >
+      <textarea style={{ width: "100%", height: "150px" }} value={configText} onChange={handleConfigChange} />
+      <div style={{ marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)` }}>
         {board.tiles.map((tile) => {
           const baseColor = getTerrainColor(tile.terrain);
           const bldgColor = getBuildingColor(tile.building);

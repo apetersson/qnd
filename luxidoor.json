@@ -13,11 +13,6 @@
       "terrain": "FOREST"
     },
     {
-      "x": 6,
-      "y": 0,
-      "terrain": "CITY"
-    },
-    {
       "x": 3,
       "y": 1,
       "terrain": "MOUNTAIN"
@@ -153,12 +148,7 @@
       "terrain": "FOREST"
     },
     {
-      "x": 7,
-      "y": 7,
-      "terrain": "FOREST"
-    },
-    {
-      "x": 8,
+      "x": 6,
       "y": 7,
       "terrain": "CITY"
     },
@@ -178,12 +168,7 @@
       "terrain": "FOREST"
     },
     {
-      "x": 6,
-      "y": 8,
-      "terrain": "FOREST"
-    },
-    {
-      "x": 7,
+      "x": 5,
       "y": 8,
       "terrain": "FOREST"
     },
