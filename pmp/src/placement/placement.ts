@@ -15,6 +15,8 @@ export function getBuildingLevel(tile: TileData, board: Board): number {
   }
 }
 
+export const MAX_MARKET_LEVEL = 8;
+
 export function getMarketLevel(tile: TileData, board: Board): number {
   const MARKET_ADJ_BUILDINGS = [Building.Sawmill, Building.Windmill, Building.Forge];
   let sum = 0;
@@ -24,7 +26,7 @@ export function getMarketLevel(tile: TileData, board: Board): number {
       sum += getBuildingLevel(nbr, board);
     }
   }
-  return sum;
+  return Math.min(sum, MAX_MARKET_LEVEL);
 }
 
 export function placeBasicResourceBuildings(board: Board): Board {

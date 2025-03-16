@@ -1,6 +1,7 @@
 // src/optimization/optimizeAdvancedBuildings.ts
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
 import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
+import { MAX_MARKET_LEVEL } from "../placement/placement";
 
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
@@ -28,14 +29,14 @@ function calculateMarketBonusForTile(tile: TileData, board: Board): number {
       bonus += Math.min(getBuildingLevel(nbr, board), 8);
     }
   }
-  return bonus;
+  return Math.min(bonus, MAX_MARKET_LEVEL);
 }
 
 function copyBoard(board: Board): Board {
   return {
     width: board.width,
     height: board.height,
-    tiles: board.tiles.map((t) => ({ ...t })),
+    tiles: board.tiles.map((t) => ({...t})),
   };
 }
 
@@ -51,7 +52,7 @@ function immediateBenefit(tile: TileData, board: Board, advBuilding: Building): 
     case Building.Forge:
       return getNeighbors(tile, board).filter(n => n.building === Building.Mine).length;
     case Building.Market:
-      return calculateMarketBonusForTile({ ...tile, building: Building.Market }, board);
+      return calculateMarketBonusForTile({...tile, building: Building.Market}, board);
     default:
       return 0;
   }
@@ -110,7 +111,7 @@ export async function optimizeAdvancedBuildingsAsync(
       if (advancedOptions.includeForge) opts.push(Building.Forge);
       opts.push(Building.Market);
       const maxBenefit = Math.max(...opts.map(option => immediateBenefit(tile, initialBoard, option)));
-      return { index, maxBenefit };
+      return {index, maxBenefit};
     }
     return null;
   }).filter((x): x is { index: number; maxBenefit: number } => x !== null);
