@@ -19,7 +19,7 @@ const terrainKeyMap: Record<string, Terrain> = {
   f: Terrain.Forest,
   h: Terrain.Mountain,
   c: Terrain.City,
-  a: Terrain.Water,
+  w: Terrain.Water,
 };
 
 const buildingKeys: Record<Building, string> = {
@@ -28,7 +28,7 @@ const buildingKeys: Record<Building, string> = {
   [Building.LumberHut]: "l",
   [Building.Mine]: "i",
   [Building.Sawmill]: "s",
-  [Building.Windmill]: "w",
+  [Building.Windmill]: "p",
   [Building.Forge]: "o",
   [Building.Market]: "m",
 };
@@ -318,7 +318,23 @@ export default function PolytopiaMarketPlanner() {
     setBoard(removeNonContributingBasicBuildings(board));
   }
 
-  // Popup-Menü-Aktion: Auswahl treffen und die Aktion anwenden
+  // Dynamische Erstellung der Popup-Aktionen
+  const dynamicPopupActions = [
+    ...Object.entries(terrainKeyMap).map(([key, terrain]) => ({
+      key,
+      label: `Set Terrain: ${terrain}`,
+    })),
+    ...Object.entries(buildingKeyMap).map(([key, building]) => ({
+      key,
+      label: `Set Building: ${building}`,
+    })),
+  ];
+
+  // Extend City nur hinzufügen, wenn der ausgewählte Tile eine City mit gültiger cityId ist
+  if (selectedTile && selectedTile.terrain === Terrain.City && selectedTile.cityId) {
+    dynamicPopupActions.push({ key: "e", label: "Extend City" });
+  }
+
   const handleMenuItemClick = (key: string) => {
     if (selectedTile) {
       handleTileAction(key, selectedTile);
@@ -326,28 +342,6 @@ export default function PolytopiaMarketPlanner() {
     setMenuAnchor(null);
     setSelectedTile(null);
   };
-
-  const popupActions = [
-    {key: "n", label: "Set Terrain: None"},
-    {key: "d", label: "Set Terrain: Field"},
-    {key: "f", label: "Set Terrain: Forest"},
-    {key: "h", label: "Set Terrain: Mountain"},
-    {key: "c", label: "Set Terrain: City"},
-    {key: "e", label: "Extend existing City"},
-    {key: "a", label: "Set Terrain: Water"},
-    {key: "r", label: "Set Building: Farm"},
-    {key: "l", label: "Set Building: LumberHut"},
-    {key: "i", label: "Set Building: Mine"},
-    {key: "s", label: "Set Building: Sawmill"},
-    {key: "w", label: "Set Building: Windmill"},
-    {key: "o", label: "Set Building: Forge"},
-    {key: "m", label: "Set Building: Market"},
-  ];
-
-  if (selectedTile && selectedTile.terrain === Terrain.City && selectedTile.cityId) {
-    popupActions.push({key: "e", label: "Extend City"});
-  }
-
 
   return (
     <div style={containerStyle}>
@@ -512,7 +506,7 @@ export default function PolytopiaMarketPlanner() {
         setMenuAnchor(null);
         setSelectedTile(null);
       }}>
-        {popupActions.map((action) => (
+        {dynamicPopupActions.map((action) => (
           <MenuItem
             key={action.key} onClick={() => handleMenuItemClick(action.key)}>
             {action.label}
