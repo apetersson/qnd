@@ -66,6 +66,30 @@ function copyBoard(board: Board): Board {
 }
 
 /**
+ * Quickly checks if the given advanced building can produce *some* market or adjacency bonus
+ * if placed on this tile right now. If not, there's no point in even trying.
+ */
+function canProvideBonus(tile: TileData, board: Board, advBuilding: Building): boolean {
+  // return true;
+  switch (advBuilding) {
+    case Building.Sawmill:
+      // Sawmill is valuable only if it has at least 1 adjacent LumberHut
+      return getNeighbors(tile, board).some(n => n.building === Building.LumberHut);
+    case Building.Windmill:
+      // Must have at least 1 adjacent Farm
+      return getNeighbors(tile, board).some(n => n.building === Building.Farm);
+    case Building.Forge:
+      // Must have at least 1 adjacent Mine
+      return getNeighbors(tile, board).some(n => n.building === Building.Mine);
+    case Building.Market:
+      return true;
+    default:
+      return true;
+  }
+}
+
+
+/**
  * Asynchrone Optimierung mit Cancellation-Token.
  * @param board Das zu optimierende Board
  * @param cancelToken Token zum Abbruch
@@ -129,6 +153,14 @@ export async function optimizeAdvancedBuildingsAsync(
       if (cancelToken.canceled) return;
       const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
       if (usedSet.has(option)) continue;
+
+    // check if placing `option` on this tile *can* yield any benefit ---
+    if (!canProvideBonus(tile, currentBoard, option)) {
+      // If it's guaranteed to produce no new bonus, skip it:
+      continue;
+    }
+
+    // Place the building, continue recursion
       currentBoard.tiles[idx].building = option;
       usedSet.add(option);
       usedCityBuildings.set(cityKey, usedSet);
