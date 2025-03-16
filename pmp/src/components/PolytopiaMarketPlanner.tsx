@@ -333,6 +333,7 @@ export default function PolytopiaMarketPlanner() {
     {key: "f", label: "Set Terrain: Forest"},
     {key: "h", label: "Set Terrain: Mountain"},
     {key: "c", label: "Set Terrain: City"},
+    {key: "e", label: "Extend existing City"},
     {key: "a", label: "Set Terrain: Water"},
     {key: "r", label: "Set Building: Farm"},
     {key: "l", label: "Set Building: LumberHut"},
