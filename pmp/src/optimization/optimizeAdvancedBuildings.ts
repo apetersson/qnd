@@ -11,7 +11,7 @@ function getBuildingLevel(tile: TileData, board: Board): number {
     case Building.Forge:
       return getNeighbors(tile, board).filter((n) => n.building === Building.Mine).length;
     default:
-      return 1;
+      return 0;
   }
 }
 
