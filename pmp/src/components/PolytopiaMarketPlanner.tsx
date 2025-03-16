@@ -216,10 +216,12 @@ export default function PolytopiaMarketPlanner() {
           ...prev,
           tiles: prev.tiles.map((t) => {
             if (t.x === hoveredTile.x && t.y === hoveredTile.y) {
+              // Always allow removal (i.e. setting building to None)
               if (buildingCandidate === Building.None) {
                 return {...t, building: Building.None};
               }
-              if (t.cityId) {
+              // Only restrict for advanced buildings
+              if (t.cityId && [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(buildingCandidate)) {
                 const alreadyExists = prev.tiles.some(
                   (tile) => tile.cityId === t.cityId && tile.building === buildingCandidate
                 );

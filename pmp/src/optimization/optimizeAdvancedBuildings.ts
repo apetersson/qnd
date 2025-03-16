@@ -1,5 +1,6 @@
 // src/optimization/optimizeAdvancedBuildings.ts
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
+import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 
 function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
@@ -23,7 +24,7 @@ function calculateMarketBonusForTile(tile: TileData, board: Board): number {
   let bonus = 0;
   const neighbors = getNeighbors(tile, board);
   for (const nbr of neighbors) {
-    if ([Building.Sawmill, Building.Windmill, Building.Forge].includes(nbr.building)) {
+    if (ADVANCED_BUILDINGS.includes(nbr.building)) {
       bonus += Math.min(getBuildingLevel(nbr, board), 8);
     }
   }
@@ -34,7 +35,7 @@ export function removeAdvancedBuildings(board: Board): Board {
   return {
     ...board,
     tiles: board.tiles.map((t) =>
-      [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(t.building)
+      ADVANCED_BUILDINGS.includes(t.building)
         ? {...t, building: Building.None}
         : {...t}
     ),
@@ -93,8 +94,8 @@ export async function optimizeAdvancedBuildingsAsync(
     if (cancelToken.canceled) return;
     iterationCount++;
     if (iterationCount % 10000 === 0) {
-      console.log(`Iteration ${iterationCount}, Kandidatenindex ${i}, aktueller Bestbonus: ${bestBonus}`);
-      await new Promise((resolve) => setTimeout(resolve, 0)); // yield control
+      console.log(`Iteration ${iterationCount}, candidate index ${i}, current best bonus: ${bestBonus}`);
+      await new Promise((resolve) => setTimeout(resolve, 0));
       if (cancelToken.canceled) return;
     }
     if (i === candidateIndices.length) {
@@ -102,7 +103,7 @@ export async function optimizeAdvancedBuildingsAsync(
       if (bonus > bestBonus) {
         bestBonus = bonus;
         bestBoard = copyBoard(currentBoard);
-        console.log(`Neuer Bestbonus: ${bestBonus} nach ${iterationCount} Iterationen.`);
+        console.log(`New best bonus: ${bestBonus} after ${iterationCount} iterations.`);
       }
       return;
     }
@@ -138,6 +139,6 @@ export async function optimizeAdvancedBuildingsAsync(
   }
 
   await rec(0, initialBoard, new Map<string, Set<Building>>());
-  console.log(`Optimierung abgeschlossen. Gesamtiterationen: ${iterationCount}. Bester Bonus: ${bestBonus}`);
+  console.log(`Optimization finished. Total iterations: ${iterationCount}. Best bonus: ${bestBonus}`);
   return bestBoard;
 }

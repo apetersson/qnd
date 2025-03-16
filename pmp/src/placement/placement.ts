@@ -1,6 +1,6 @@
 // src/placement/placement.ts
-import { Board, TileData, Building, Terrain } from "../models/Board";
-import { getNeighbors } from "../models/Board";
+import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
+import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 
 export function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
@@ -28,7 +28,7 @@ export function getMarketLevel(tile: TileData, board: Board): number {
 }
 
 export function placeBasicResourceBuildings(board: Board): Board {
-  const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
+  const newBoard: Board = {...board, tiles: board.tiles.map((t) => ({...t}))};
   newBoard.tiles.forEach((tile, i) => {
     // Only place basic buildings in tiles assigned to a city
     if (tile.cityId === null) return;
@@ -50,20 +50,16 @@ export function placeBasicResourceBuildings(board: Board): Board {
  * selects the optimal, empty tile (terrain === NONE, building === NONE) with maximum potential.
  */
 export function placeAdvancedBuildingsSimple(board: Board): Board {
-  const newBoard: Board = { ...board, tiles: board.tiles.map(t => ({ ...t })) };
+  const newBoard: Board = {...board, tiles: board.tiles.map(t => ({...t}))};
 
   // Get all existing city IDs
   const cityIds = Array.from(
     new Set(newBoard.tiles.filter(t => t.cityId !== null).map(t => t.cityId))
   ) as string[];
 
-  // Define advanced building types
-  const advancedTypes: Building[] = [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market];
-
-  // For each city and each advanced type
+  // Use the imported ADVANCED_BUILDINGS constant
   for (const cityId of cityIds) {
-    for (const advType of advancedTypes) {
-      // Skip if this type is already placed in the city
+    for (const advType of ADVANCED_BUILDINGS) {
       const alreadyPlaced = newBoard.tiles.some(
         t => t.cityId === cityId && t.building === advType
       );
@@ -81,7 +77,7 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
           potential = getMarketLevel(candidate, newBoard);
         } else {
           // Simulate setting the advanced building; use getBuildingLevel as an indicator
-          const simulatedTile: TileData = { ...candidate, building: advType };
+          const simulatedTile: TileData = {...candidate, building: advType};
           potential = getBuildingLevel(simulatedTile, newBoard);
         }
         if (potential > bestPotential) {
@@ -104,7 +100,7 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
 }
 
 export function removeNonContributingBasicBuildings(board: Board): Board {
-  const newBoard: Board = { ...board, tiles: board.tiles.map((t) => ({ ...t })) };
+  const newBoard: Board = {...board, tiles: board.tiles.map((t) => ({...t}))};
   newBoard.tiles.forEach((tile, i) => {
     if (tile.building === Building.Farm) {
       const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Windmill);
