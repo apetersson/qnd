@@ -9,9 +9,29 @@ import {
   placeBasicResourceBuildings,
   removeNonContributingBasicBuildings,
 } from "../placement/placement";
-import { calculateMarketBonus, optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
+import { calculateMarketBonus, optimizeAdvancedBuildingsAsync, sumAdvancedBuildingLevels } from "../optimization/optimizeAdvancedBuildings";
 import { claimCityArea, extendCity, removeCityAssociation } from "../placement/city";
 import { Menu, MenuItem } from "@mui/material";
+import * as pako from "pako";
+
+// Hilfsfunktionen zur Kodierung und Dekodierung
+function encodeState(state: any): string {
+  const json = JSON.stringify(state);
+  const compressed = pako.deflate(json);
+  // Konvertiere Uint8Array in einen String und base64-kodiere
+  const binaryString = String.fromCharCode(...Array.from(compressed));
+  return btoa(binaryString);
+}
+
+function decodeState(encoded: string): any {
+  const binaryString = atob(encoded);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  const decompressed = pako.inflate(bytes, { to: "string" });
+  return JSON.parse(decompressed);
+}
 
 const terrainKeyMap: Record<string, Terrain> = {
   n: Terrain.None,
@@ -118,7 +138,23 @@ export default function PolytopiaMarketPlanner() {
   const [sizeIndex, setSizeIndex] = useState<number>(0);
   const initialWidth = gridSizes[0].width;
   const initialHeight = gridSizes[0].height;
-  const [board, setBoard] = useState<Board>(() => createInitialBoard(initialWidth, initialHeight));
+  const [board, setBoard] = useState<Board>(() => {
+    // Beim Initialisieren versuchen wir, einen komprimierten Zustand aus dem URL-Hash zu laden.
+    if (window.location.hash.length > 1) {
+      try {
+        const encoded = window.location.hash.substring(1);
+        const loadedBoard = decodeState(encoded);
+        const foundIndex = gridSizes.findIndex(
+          (sz) => sz.width === loadedBoard.width && sz.height === loadedBoard.height
+        );
+        setSizeIndex(foundIndex >= 0 ? foundIndex : -1);
+        return loadedBoard;
+      } catch (err) {
+        console.error("Error decoding board state from URL:", err);
+      }
+    }
+    return createInitialBoard(initialWidth, initialHeight);
+  });
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
 
@@ -164,7 +200,7 @@ export default function PolytopiaMarketPlanner() {
   function handleTileAction(key: string, tile: TileData) {
     if (key.toLowerCase() === "e") {
       if (tile.terrain === Terrain.City && tile.cityId) {
-        setBoard(prev => extendCity(prev, tile.cityId));
+        setBoard(prev => extendCity(prev, tile.cityId!));
       }
       return;
     }
@@ -243,6 +279,7 @@ export default function PolytopiaMarketPlanner() {
   }, [hoveredTile, board]);
 
   const totalMarketBonus = calculateMarketBonus(board);
+  const totalAdvancedLevels = sumAdvancedBuildingLevels(board);
 
   function handleExportClick() {
     const meaningfulTiles = board.tiles.filter(
@@ -317,6 +354,16 @@ export default function PolytopiaMarketPlanner() {
   function handleRemoveNonContributingClick() {
     setBoard(removeNonContributingBasicBuildings(board));
   }
+
+  // Aktualisiere den URL-Hash, wenn sich der Board-Zustand ändert
+  useEffect(() => {
+    try {
+      const encodedState = encodeState(board);
+      window.history.replaceState(null, "", `#${encodedState}`);
+    } catch (err) {
+      console.error("Error encoding board state:", err);
+    }
+  }, [board]);
 
   // Dynamische Erstellung der Popup-Aktionen
   const dynamicPopupActions = [
@@ -421,6 +468,7 @@ export default function PolytopiaMarketPlanner() {
         </p>
       </div>
       <p>Market bonus: {calculateMarketBonus(board)}</p>
+      <p>Advanced building levels sum: {sumAdvancedBuildingLevels(board)}</p>
       <button onClick={handleExportClick}>Export Data</button>
       <button onClick={handleApplyClick} style={{marginLeft: 8}}>
         Load Data

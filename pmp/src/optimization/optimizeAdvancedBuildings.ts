@@ -119,6 +119,8 @@ export async function optimizeAdvancedBuildingsAsync(
   const candidateIndices = candidateObjs.map(obj => obj.index);
 
   let bestBonus = calculateMarketBonus(initialBoard);
+  let bestSecondary = sumAdvancedBuildingLevels(initialBoard);
+
   let bestBoard = copyBoard(initialBoard);
   let iterationCount = 0;
 
@@ -133,10 +135,12 @@ export async function optimizeAdvancedBuildingsAsync(
     }
     if (i === candidateIndices.length) {
       const bonus = calculateMarketBonus(currentBoard);
-      if (bonus > bestBonus) {
+      const secondary = sumAdvancedBuildingLevels(currentBoard);
+      if (bonus > bestBonus || (bonus === bestBonus && secondary > bestSecondary)) {
         bestBonus = bonus;
+        bestSecondary = secondary;
         bestBoard = copyBoard(currentBoard);
-        console.log(`New best bonus: ${bestBonus} after ${iterationCount} iterations.`);
+        console.log(`New best bonus: ${bestBonus} (Advanced levels: ${secondary}) after ${iterationCount} iterations.`);
       }
       return;
     }
@@ -182,3 +186,19 @@ export async function optimizeAdvancedBuildingsAsync(
   console.log(`Optimization finished. Total iterations: ${iterationCount}. Best bonus: ${bestBonus}`);
   return bestBoard;
 }
+
+function sumAdvancedBuildingLevels(board: Board): number {
+  let sum = 0;
+  for (const tile of board.tiles) {
+    if (ADVANCED_BUILDINGS.includes(tile.building)) {
+      if (tile.building === Building.Market) {
+        sum += calculateMarketBonusForTile(tile, board);
+      } else {
+        sum += getBuildingLevel(tile, board);
+      }
+    }
+  }
+  return sum;
+}
+
+export { sumAdvancedBuildingLevels };
