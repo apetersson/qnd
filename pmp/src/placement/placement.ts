@@ -18,11 +18,10 @@ export function getBuildingLevel(tile: TileData, board: Board): number {
 export const MAX_MARKET_LEVEL = 8;
 
 export function getMarketLevel(tile: TileData, board: Board): number {
-  const MARKET_ADJ_BUILDINGS = [Building.Sawmill, Building.Windmill, Building.Forge];
   let sum = 0;
   const neighbors = getNeighbors(tile, board);
   for (const nbr of neighbors) {
-    if (MARKET_ADJ_BUILDINGS.includes(nbr.building)) {
+    if (ADVANCED_BUILDINGS.includes(nbr.building)) {
       sum += getBuildingLevel(nbr, board);
     }
   }
