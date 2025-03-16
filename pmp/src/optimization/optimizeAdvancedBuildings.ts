@@ -31,55 +31,42 @@ function calculateMarketBonusForTile(tile: TileData, board: Board): number {
   return bonus;
 }
 
-export function removeAdvancedBuildings(board: Board): Board {
-  return {
-    ...board,
-    tiles: board.tiles.map((t) =>
-      ADVANCED_BUILDINGS.includes(t.building)
-        ? {...t, building: Building.None}
-        : {...t}
-    ),
-  };
-}
-
-function getNearestCity(tile: TileData, board: Board): TileData | null {
-  let minDist = Infinity;
-  let nearest: TileData | null = null;
-  board.tiles.forEach((t) => {
-    if (t.terrain === Terrain.City) {
-      const dist = Math.abs(t.x - tile.x) + Math.abs(t.y - tile.y);
-      if (dist < minDist) {
-        minDist = dist;
-        nearest = t;
-      }
-    }
-  });
-  return nearest;
-}
-
 function copyBoard(board: Board): Board {
   return {
     width: board.width,
     height: board.height,
-    tiles: board.tiles.map((t) => ({...t})),
+    tiles: board.tiles.map((t) => ({ ...t })),
   };
 }
 
 /**
- * Quickly checks if the given advanced building can produce *some* market or adjacency bonus
- * if placed on this tile right now. If not, there's no point in even trying.
+ * Computes the immediate benefit if the advanced building is placed on this tile.
  */
-function canProvideBonus(tile: TileData, board: Board, advBuilding: Building): boolean {
-  // return true;
+function immediateBenefit(tile: TileData, board: Board, advBuilding: Building): number {
   switch (advBuilding) {
     case Building.Sawmill:
-      // Sawmill is valuable only if it has at least 1 adjacent LumberHut
+      return getNeighbors(tile, board).filter(n => n.building === Building.LumberHut).length;
+    case Building.Windmill:
+      return getNeighbors(tile, board).filter(n => n.building === Building.Farm).length;
+    case Building.Forge:
+      return getNeighbors(tile, board).filter(n => n.building === Building.Mine).length;
+    case Building.Market:
+      return calculateMarketBonusForTile({ ...tile, building: Building.Market }, board);
+    default:
+      return 0;
+  }
+}
+
+/**
+ * Checks whether placing the given advanced building on this tile can produce any bonus.
+ */
+function canProvideBonus(tile: TileData, board: Board, advBuilding: Building): boolean {
+  switch (advBuilding) {
+    case Building.Sawmill:
       return getNeighbors(tile, board).some(n => n.building === Building.LumberHut);
     case Building.Windmill:
-      // Must have at least 1 adjacent Farm
       return getNeighbors(tile, board).some(n => n.building === Building.Farm);
     case Building.Forge:
-      // Must have at least 1 adjacent Mine
       return getNeighbors(tile, board).some(n => n.building === Building.Mine);
     case Building.Market:
       return true;
@@ -88,32 +75,53 @@ function canProvideBonus(tile: TileData, board: Board, advBuilding: Building): b
   }
 }
 
-
 /**
- * Asynchrone Optimierung mit Cancellation-Token.
- * @param board Das zu optimierende Board
- * @param cancelToken Token zum Abbruch
- * @param advancedOptions Auswahl der fortgeschrittenen Gebäudetypen:
- *        includeSawmill, includeWindmill, includeForge (Market wird immer berücksichtigt)
+ * Asynchronous optimization with cancellation token.
+ * @param board The board to optimize.
+ * @param cancelToken Token to cancel the process.
+ * @param advancedOptions Options for advanced buildings:
+ *        includeSawmill, includeWindmill, includeForge (Market is always considered)
  */
 export async function optimizeAdvancedBuildingsAsync(
   board: Board,
   cancelToken: { canceled: boolean },
   advancedOptions: { includeSawmill: boolean; includeWindmill: boolean; includeForge: boolean }
 ): Promise<Board> {
-  const initialBoard = removeAdvancedBuildings(board);
-  const candidateIndices = initialBoard.tiles
-    .map((tile, index) =>
-      // Nur Kandidaten, die bereits einer Stadt zugeordnet sind und leer sind:
-      tile.terrain === Terrain.None && tile.building === Building.None && tile.cityId !== null ? index : -1
-    )
-    .filter((index) => index !== -1);
+  // Copy the board while preserving existing advanced buildings.
+  const initialBoard = copyBoard(board);
+
+  // Pre-populate the map with advanced buildings already present.
+  const initialUsedCityBuildings = new Map<string, Set<Building>>();
+  for (const tile of initialBoard.tiles) {
+    if (tile.cityId && ADVANCED_BUILDINGS.includes(tile.building)) {
+      if (!initialUsedCityBuildings.has(tile.cityId)) {
+        initialUsedCityBuildings.set(tile.cityId, new Set<Building>());
+      }
+      initialUsedCityBuildings.get(tile.cityId)!.add(tile.building);
+    }
+  }
+
+  // Build candidate indices for empty tiles assigned to a city.
+  const candidateObjs = initialBoard.tiles.map((tile, index) => {
+    if (tile.terrain === Terrain.None && tile.building === Building.None && tile.cityId !== null) {
+      const opts: Building[] = [];
+      if (advancedOptions.includeSawmill) opts.push(Building.Sawmill);
+      if (advancedOptions.includeWindmill) opts.push(Building.Windmill);
+      if (advancedOptions.includeForge) opts.push(Building.Forge);
+      opts.push(Building.Market);
+      const maxBenefit = Math.max(...opts.map(option => immediateBenefit(tile, initialBoard, option)));
+      return { index, maxBenefit };
+    }
+    return null;
+  }).filter((x): x is { index: number; maxBenefit: number } => x !== null);
+  candidateObjs.sort((a, b) => b.maxBenefit - a.maxBenefit);
+  const candidateIndices = candidateObjs.map(obj => obj.index);
 
   let bestBonus = calculateMarketBonus(initialBoard);
   let bestBoard = copyBoard(initialBoard);
   let iterationCount = 0;
 
-  // Map: cityKey -> Set von bereits platzierten fortgeschrittenen Gebäuden
+  // Recursive function with used advanced buildings tracked per city.
   async function rec(i: number, currentBoard: Board, usedCityBuildings: Map<string, Set<Building>>): Promise<void> {
     if (cancelToken.canceled) return;
     iterationCount++;
@@ -133,44 +141,43 @@ export async function optimizeAdvancedBuildingsAsync(
     }
     const idx = candidateIndices[i];
     const tile = currentBoard.tiles[idx];
-    // Sicherstellen, dass das Tile in einer Stadt liegt
     if (!tile.cityId) {
       await rec(i + 1, currentBoard, usedCityBuildings);
       return;
     }
-    // Option: keine Zuweisung
+    // Option: do not place an advanced building on this tile.
     await rec(i + 1, currentBoard, usedCityBuildings);
     if (cancelToken.canceled) return;
     const cityKey = tile.cityId;
-    // Erstelle Optionsliste basierend auf den Checkbox-Optionen
     const options: Building[] = [];
     if (advancedOptions.includeSawmill) options.push(Building.Sawmill);
     if (advancedOptions.includeWindmill) options.push(Building.Windmill);
     if (advancedOptions.includeForge) options.push(Building.Forge);
-    // Market wird immer berücksichtigt
     options.push(Building.Market);
-    for (const option of options) {
+
+    // Sort the options based on immediate benefit (highest first).
+    const sortedOptions = options.slice().sort(
+      (a, b) => immediateBenefit(tile, currentBoard, b) - immediateBenefit(tile, currentBoard, a)
+    );
+
+    for (const option of sortedOptions) {
       if (cancelToken.canceled) return;
       const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
       if (usedSet.has(option)) continue;
+      if (!canProvideBonus(tile, currentBoard, option)) continue;
 
-    // check if placing `option` on this tile *can* yield any benefit ---
-    if (!canProvideBonus(tile, currentBoard, option)) {
-      // If it's guaranteed to produce no new bonus, skip it:
-      continue;
-    }
-
-    // Place the building, continue recursion
+      // Place the building and continue recursion.
       currentBoard.tiles[idx].building = option;
       usedSet.add(option);
       usedCityBuildings.set(cityKey, usedSet);
       await rec(i + 1, currentBoard, usedCityBuildings);
+      // Backtrack.
       currentBoard.tiles[idx].building = Building.None;
       usedSet.delete(option);
     }
   }
 
-  await rec(0, initialBoard, new Map<string, Set<Building>>());
+  await rec(0, initialBoard, new Map(initialUsedCityBuildings));
   console.log(`Optimization finished. Total iterations: ${iterationCount}. Best bonus: ${bestBonus}`);
   return bestBoard;
 }
