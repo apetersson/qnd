@@ -12,11 +12,12 @@ import {
 import {
   calculateMarketBonus,
   optimizeAdvancedBuildingsAsync,
-  sumAdvancedBuildingLevels
+  sumLevelsForFood
 } from "../optimization/optimizeAdvancedBuildings";
 import { claimCityArea, extendCity, removeCityAssociation } from "../placement/city";
 import { Menu, MenuItem } from "@mui/material";
 import * as pako from "pako";
+import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 
 // Hilfsfunktionen zur Kodierung und Dekodierung
 function encodeState(state: any): string {
@@ -245,8 +246,7 @@ export default function PolytopiaMarketPlanner() {
               return {...t, building: Building.None};
             }
             if (
-              t.cityId &&
-              [Building.Sawmill, Building.Windmill, Building.Forge, Building.Market].includes(buildingCandidate)
+              t.cityId && ADVANCED_BUILDINGS.includes(buildingCandidate)
             ) {
               const alreadyExists = prev.tiles.some(
                 tile2 => tile2.cityId === t.cityId && tile2.building === buildingCandidate
@@ -283,9 +283,6 @@ export default function PolytopiaMarketPlanner() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hoveredTile, board]);
-
-  const totalMarketBonus = calculateMarketBonus(board);
-  const totalAdvancedLevels = sumAdvancedBuildingLevels(board);
 
   function handleExportClick() {
     const meaningfulTiles = board.tiles.filter(
@@ -474,7 +471,7 @@ export default function PolytopiaMarketPlanner() {
         </p>
       </div>
       <p>Market bonus: {calculateMarketBonus(board)}</p>
-      <p>Advanced building levels sum: {sumAdvancedBuildingLevels(board)}</p>
+      <p>Advanced building levels sum: {sumLevelsForFood(board)}</p>
       <button onClick={handleExportClick}>Export Data</button>
       <button onClick={handleApplyClick} style={{marginLeft: 8}}>
         Load Data

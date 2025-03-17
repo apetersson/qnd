@@ -58,7 +58,6 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
     new Set(newBoard.tiles.filter(t => t.cityId !== null).map(t => t.cityId))
   ) as string[];
 
-  // Use the imported ADVANCED_BUILDINGS constant
   for (const cityId of cityIds) {
     for (const advType of ADVANCED_BUILDINGS) {
       const alreadyPlaced = newBoard.tiles.some(

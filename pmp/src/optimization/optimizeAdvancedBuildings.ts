@@ -1,6 +1,6 @@
 // src/optimization/optimizeAdvancedBuildings.ts
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
-import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
+import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
 import { MAX_MARKET_LEVEL } from "../placement/placement";
 
 function getBuildingLevel(tile: TileData, board: Board): number {
@@ -25,7 +25,7 @@ function calculateMarketBonusForTile(tile: TileData, board: Board): number {
   let bonus = 0;
   const neighbors = getNeighbors(tile, board);
   for (const nbr of neighbors) {
-    if (ADVANCED_BUILDINGS.includes(nbr.building)) {
+    if (MARKET_CONTRIBUTIONG_BUILDINGS.includes(nbr.building)) {
       bonus += Math.min(getBuildingLevel(nbr, board), 8);
     }
   }
@@ -121,7 +121,7 @@ export async function optimizeAdvancedBuildingsAsync(
   const candidateIndices = candidateObjs.map(obj => obj.index);
 
   let bestBonus = calculateMarketBonus(initialBoard);
-  let bestSecondary = sumAdvancedBuildingLevels(initialBoard);
+  let bestSecondary = sumLevelsForFood(initialBoard);
 
   let bestBoard = copyBoard(initialBoard);
   let iterationCount = 0;
@@ -152,7 +152,7 @@ export async function optimizeAdvancedBuildingsAsync(
     }
     if (i === candidateIndices.length) {
       const bonus = calculateMarketBonus(currentBoard);
-      const secondary = sumAdvancedBuildingLevels(currentBoard);
+      const secondary = sumLevelsForFood(currentBoard);
       if (bonus > bestBonus || (bonus === bestBonus && secondary > bestSecondary)) {
         bestBonus = bonus;
         bestSecondary = secondary;
@@ -177,8 +177,8 @@ export async function optimizeAdvancedBuildingsAsync(
     if (advancedOptions.includeWindmill) options.push(Building.Windmill);
     if (advancedOptions.includeForge) options.push(Building.Forge);
     options.push(Building.Market);
-    const sortedOptions = options.slice().sort(
-      (a, b) => immediateBenefit(tile, currentBoard, b) - immediateBenefit(tile, currentBoard, a)
+    const sortedOptions = options.slice();
+    sortedOptions.sort((a, b) => immediateBenefit(tile, currentBoard, b) - immediateBenefit(tile, currentBoard, a)
     );
     for (const option of sortedOptions) {
       if (cancelToken.canceled) return;
@@ -199,10 +199,10 @@ export async function optimizeAdvancedBuildingsAsync(
   return bestBoard;
 }
 
-function sumAdvancedBuildingLevels(board: Board): number {
+function sumLevelsForFood(board: Board): number {
   let sum = 0;
   for (const tile of board.tiles) {
-    if (ADVANCED_BUILDINGS.includes(tile.building)) {
+    if (MARKET_CONTRIBUTIONG_BUILDINGS.includes(tile.building)) {
       if (tile.building === Building.Market) {
         sum += calculateMarketBonusForTile(tile, board);
       } else {
@@ -213,4 +213,4 @@ function sumAdvancedBuildingLevels(board: Board): number {
   return sum;
 }
 
-export { sumAdvancedBuildingLevels };
+export { sumLevelsForFood };
