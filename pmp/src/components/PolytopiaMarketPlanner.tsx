@@ -9,7 +9,11 @@ import {
   placeBasicResourceBuildings,
   removeNonContributingBasicBuildings,
 } from "../placement/placement";
-import { calculateMarketBonus, optimizeAdvancedBuildingsAsync, sumAdvancedBuildingLevels } from "../optimization/optimizeAdvancedBuildings";
+import {
+  calculateMarketBonus,
+  optimizeAdvancedBuildingsAsync,
+  sumAdvancedBuildingLevels
+} from "../optimization/optimizeAdvancedBuildings";
 import { claimCityArea, extendCity, removeCityAssociation } from "../placement/city";
 import { Menu, MenuItem } from "@mui/material";
 import * as pako from "pako";
@@ -29,7 +33,7 @@ function decodeState(encoded: string): any {
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
-  const decompressed = pako.inflate(bytes, { to: "string" });
+  const decompressed = pako.inflate(bytes, {to: "string"});
   return JSON.parse(decompressed);
 }
 
@@ -174,7 +178,7 @@ export default function PolytopiaMarketPlanner() {
 
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
   const [isOptimizing, setIsOptimizing] = useState(false);
-
+  console.log("isOptimizing", isOptimizing)
   // Zustände für Popup-Editing
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -186,6 +190,8 @@ export default function PolytopiaMarketPlanner() {
       includeSawmill,
       includeWindmill,
       includeForge,
+    }, (progress) => {
+      console.log("progress", progress);
     });
     setBoard(result);
     setIsOptimizing(false);
@@ -379,7 +385,7 @@ export default function PolytopiaMarketPlanner() {
 
   // Extend City nur hinzufügen, wenn der ausgewählte Tile eine City mit gültiger cityId ist
   if (selectedTile && selectedTile.terrain === Terrain.City && selectedTile.cityId) {
-    dynamicPopupActions.push({ key: "e", label: "Extend City" });
+    dynamicPopupActions.push({key: "e", label: "Extend City"});
   }
 
   const handleMenuItemClick = (key: string) => {
@@ -480,9 +486,9 @@ export default function PolytopiaMarketPlanner() {
         Place Advanced Buildings
       </button>
       <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
-        <button onClick={startOptimization} disabled={isOptimizing}>
+        {!isOptimizing && <button onClick={startOptimization} disabled={isOptimizing}>
           {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
-        </button>
+        </button>}
         {isOptimizing && (
           <button onClick={stopOptimization} style={{marginLeft: "8px"}}>
             Stop Optimize
