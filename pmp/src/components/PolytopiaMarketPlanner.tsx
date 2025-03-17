@@ -1,8 +1,10 @@
-// ./components/PolytopiaMarketPlanner.tsx
+// touch ./components/PolytopiaMarketPlanner.tsx
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Board, Building, createInitialBoard, Terrain, TileData } from "../models/Board";
 import { estimateCompletionTime, parseBuildingValue, parseTerrainValue } from "../utils/helpers";
 import {
+  getBuildingLevel,
+  getMarketLevel,
   placeAdvancedBuildingsSimple,
   placeBasicResourceBuildings,
   removeNonContributingBasicBuildings,
@@ -10,17 +12,18 @@ import {
 import {
   calculateMarketBonus,
   optimizeAdvancedBuildingsAsync,
-  sumLevelsForFood,
+  sumLevelsForFood
 } from "../optimization/optimizeAdvancedBuildings";
 import { claimCityArea, extendCity, removeCityAssociation } from "../placement/city";
 import { Menu, MenuItem } from "@mui/material";
-import BoardVisuals from "./BoardVisuals";
 import * as pako from "pako";
+import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 
-// Funktionen zur Kodierung/Dekodierung des Zustands
+// Hilfsfunktionen zur Kodierung und Dekodierung
 function encodeState(state: any): string {
   const json = JSON.stringify(state);
   const compressed = pako.deflate(json);
+  // Konvertiere Uint8Array in einen String und base64-kodiere
   const binaryString = String.fromCharCode(...Array.from(compressed));
   return btoa(binaryString);
 }
@@ -55,7 +58,77 @@ const buildingKeys: Record<Building, string> = {
   [Building.Market]: "m",
 };
 
+const buildingKeyMap: Record<string, Building> = Object.keys(buildingKeys).reduce((acc, b) => {
+  const bType = b as Building;
+  const key = buildingKeys[bType];
+  acc[key] = bType;
+  return acc;
+}, {} as Record<string, Building>);
+
 const containerStyle: React.CSSProperties = {margin: "20px"};
+const boardStyle: React.CSSProperties = {display: "grid", gap: "2px"};
+const tileStyle: React.CSSProperties = {
+  width: "40px",
+  height: "40px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  cursor: "pointer",
+  userSelect: "none",
+  fontSize: "0.7rem",
+  textAlign: "center",
+};
+
+function getTerrainColor(terrain: Terrain): string {
+  switch (terrain) {
+    case Terrain.Field:
+      return "#fff9e6";
+    case Terrain.Forest:
+      return "#e8f5e9";
+    case Terrain.Mountain:
+      return "#f5f5f5";
+    case Terrain.City:
+      return "#8c63b3";
+    case Terrain.Water:
+      return "#00bfff";
+    default:
+      return "#ffffff";
+  }
+}
+
+function getBuildingColor(building: Building): string {
+  switch (building) {
+    case Building.Farm:
+      return "#fff176";
+    case Building.Windmill:
+      return "#fdd835";
+    case Building.LumberHut:
+      return "#81c784";
+    case Building.Sawmill:
+      return "#388e3c";
+    case Building.Mine:
+      return "#b0bec5";
+    case Building.Forge:
+      return "#78909c";
+    case Building.Market:
+      return "#ff8a65";
+    default:
+      return "transparent";
+  }
+}
+
+function computeTileBorderStyle(tile: TileData, board: Board): React.CSSProperties {
+  const topTile = board.tiles.find(t => t.x === tile.x && t.y === tile.y - 1);
+  const rightTile = board.tiles.find(t => t.x === tile.x + 1 && t.y === tile.y);
+  const bottomTile = board.tiles.find(t => t.x === tile.x && t.y === tile.y + 1);
+  const leftTile = board.tiles.find(t => t.x === tile.x - 1 && t.y === tile.y);
+  const borderTop = topTile && topTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  const borderRight = rightTile && rightTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  const borderBottom = bottomTile && bottomTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  const borderLeft = leftTile && leftTile.cityId !== tile.cityId ? "1px solid red" : "1px solid #666";
+  return {borderTop, borderRight, borderBottom, borderLeft};
+}
 
 const gridSizes = [
   {label: "Tiny (11x11)", width: 11, height: 11},
@@ -71,6 +144,7 @@ export default function PolytopiaMarketPlanner() {
   const initialWidth = gridSizes[0].width;
   const initialHeight = gridSizes[0].height;
   const [board, setBoard] = useState<Board>(() => {
+    // Beim Initialisieren versuchen wir, einen komprimierten Zustand aus dem URL-Hash zu laden.
     if (window.location.hash.length > 1) {
       try {
         const encoded = window.location.hash.substring(1);
@@ -99,16 +173,14 @@ export default function PolytopiaMarketPlanner() {
       tile.building === Building.None &&
       tile.cityId !== null
   ).length;
-  const activeOptions =
-    (includeSawmill ? 1 : 0) +
-    (includeWindmill ? 1 : 0) +
-    (includeForge ? 1 : 0) +
-    2;
+  const activeOptions = (includeSawmill ? 1 : 0) + (includeWindmill ? 1 : 0) + (includeForge ? 1 : 0) + 2;
   const estimatedStepsExponent = emptyEligibleCount * Math.log10(activeOptions);
   const estimatedTime = estimateCompletionTime(emptyEligibleCount, activeOptions);
 
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
   const [isOptimizing, setIsOptimizing] = useState(false);
+  console.log("isOptimizing", isOptimizing)
+  // Zustände für Popup-Editing
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
 
@@ -131,19 +203,20 @@ export default function PolytopiaMarketPlanner() {
     setIsOptimizing(false);
   };
 
+  // Gemeinsame Logik für Tastatur und Popup-Aktion
   function handleTileAction(key: string, tile: TileData) {
     if (key.toLowerCase() === "e") {
       if (tile.terrain === Terrain.City && tile.cityId) {
-        setBoard((prev) => extendCity(prev, tile.cityId!));
+        setBoard(prev => extendCity(prev, tile.cityId!));
       }
       return;
     }
     const lowerKey = key.toLowerCase();
     const terrainCandidate = terrainKeyMap[lowerKey];
-    const buildingCandidate = buildingKeys[lowerKey as keyof typeof buildingKeys];
+    const buildingCandidate = buildingKeyMap[lowerKey];
     if (terrainCandidate !== undefined) {
-      setBoard((prev) => {
-        const updated = prev.tiles.map((t) => {
+      setBoard(prev => {
+        const updated = prev.tiles.map(t => {
           if (t.x === tile.x && t.y === tile.y) {
             if (terrainCandidate === Terrain.City) {
               return {...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}`};
@@ -153,7 +226,7 @@ export default function PolytopiaMarketPlanner() {
           return t;
         });
         if (terrainCandidate === Terrain.City) {
-          const cityTile = prev.tiles.find((t) => t.x === tile.x && t.y === tile.y);
+          const cityTile = prev.tiles.find(t => t.x === tile.x && t.y === tile.y);
           if (cityTile) {
             return claimCityArea({...prev, tiles: updated}, cityTile);
           }
@@ -164,9 +237,43 @@ export default function PolytopiaMarketPlanner() {
         }
         return {...prev, tiles: updated};
       });
+    } else if (buildingCandidate !== undefined) {
+      setBoard(prev => ({
+        ...prev,
+        tiles: prev.tiles.map(t => {
+          if (t.x === tile.x && t.y === tile.y) {
+            if (buildingCandidate === Building.None) {
+              return {...t, building: Building.None};
+            }
+            if (
+              t.cityId && ADVANCED_BUILDINGS.includes(buildingCandidate)
+            ) {
+              const alreadyExists = prev.tiles.some(
+                tile2 => tile2.cityId === t.cityId && tile2.building === buildingCandidate
+              );
+              if (alreadyExists) return t;
+            }
+            const forcedTerrain =
+              buildingCandidate === Building.Farm
+                ? Terrain.Field
+                : buildingCandidate === Building.LumberHut
+                  ? Terrain.Forest
+                  : buildingCandidate === Building.Mine
+                    ? Terrain.Mountain
+                    : Terrain.None;
+            return {
+              ...t,
+              terrain: forcedTerrain !== Terrain.None ? forcedTerrain : t.terrain,
+              building: buildingCandidate,
+            };
+          }
+          return t;
+        }),
+      }));
     }
   }
 
+  // Tastatursteuerung (bestehende Logik)
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!hoveredTile) return;
@@ -198,11 +305,7 @@ export default function PolytopiaMarketPlanner() {
   function handleApplyClick() {
     try {
       const parsed = JSON.parse(configText);
-      if (
-        typeof parsed.width === "number" &&
-        typeof parsed.height === "number" &&
-        Array.isArray(parsed.tiles)
-      ) {
+      if (typeof parsed.width === "number" && typeof parsed.height === "number" && Array.isArray(parsed.tiles)) {
         const newBoard = createInitialBoard(parsed.width, parsed.height);
         for (const tileObj of parsed.tiles) {
           const x = tileObj.x;
@@ -255,17 +358,29 @@ export default function PolytopiaMarketPlanner() {
     setBoard(removeNonContributingBasicBuildings(board));
   }
 
-  // Popup-Aktionen
+  // Aktualisiere den URL-Hash, wenn sich der Board-Zustand ändert
+  useEffect(() => {
+    try {
+      const encodedState = encodeState(board);
+      window.history.replaceState(null, "", `#${encodedState}`);
+    } catch (err) {
+      console.error("Error encoding board state:", err);
+    }
+  }, [board]);
+
+  // Dynamische Erstellung der Popup-Aktionen
   const dynamicPopupActions = [
     ...Object.entries(terrainKeyMap).map(([key, terrain]) => ({
       key,
       label: `Set Terrain: ${terrain}`,
     })),
-    ...Object.entries(buildingKeys).map(([key, building]) => ({
+    ...Object.entries(buildingKeyMap).map(([key, building]) => ({
       key,
       label: `Set Building: ${building}`,
     })),
   ];
+
+  // Extend City nur hinzufügen, wenn der ausgewählte Tile eine City mit gültiger cityId ist
   if (selectedTile && selectedTile.terrain === Terrain.City && selectedTile.cityId) {
     dynamicPopupActions.push({key: "e", label: "Extend City"});
   }
@@ -277,16 +392,6 @@ export default function PolytopiaMarketPlanner() {
     setMenuAnchor(null);
     setSelectedTile(null);
   };
-
-  // Aktualisiere den URL-Hash bei Änderungen
-  useEffect(() => {
-    try {
-      const encodedState = encodeState(board);
-      window.history.replaceState(null, "", `#${encodedState}`);
-    } catch (err) {
-      console.error("Error encoding board state:", err);
-    }
-  }, [board]);
 
   return (
     <div style={containerStyle}>
@@ -320,15 +425,14 @@ export default function PolytopiaMarketPlanner() {
             <strong>Buildings</strong>
           </p>
           <ul>
-            {Object.entries(buildingKeys).map(([key, building]) => (
+            {Object.entries(buildingKeyMap).map(([key, building]) => (
               <li key={`building-${key}`}>
                 <strong>{key}</strong> – {building}
               </li>
             ))}
           </ul>
           <p>
-            Tipp: Drücke "c", um ein Feld als City zu markieren (adjazente Felder werden automatisch
-            zugeordnet) und "e", um die ausgewählte Stadt zu erweitern.
+            Tip: Press "c" to set a tile as City (automatically claim adjacent tiles), "e" to extend the hovered city.
           </p>
         </div>
       </div>
@@ -379,11 +483,9 @@ export default function PolytopiaMarketPlanner() {
         Place Advanced Buildings
       </button>
       <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
-        {!isOptimizing && (
-          <button onClick={startOptimization} disabled={isOptimizing}>
-            {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
-          </button>
-        )}
+        {!isOptimizing && <button onClick={startOptimization} disabled={isOptimizing}>
+          {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
+        </button>}
         {isOptimizing && (
           <button onClick={stopOptimization} style={{marginLeft: "8px"}}>
             Stop Optimize
@@ -404,26 +506,60 @@ export default function PolytopiaMarketPlanner() {
         value={configText}
         onChange={handleConfigChange}
       />
-      {/* BoardVisuals übernimmt hier das Rendern des Boards */}
-      <BoardVisuals
-        board={board}
-        onTileHover={(tile) => setHoveredTile(tile)}
-        onTileClick={(tile, e) => {
-          setSelectedTile(tile);
-          setMenuAnchor(e.currentTarget);
-        }}
+      <div
+        style={{marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)`}}
         onMouseLeave={() => setHoveredTile(null)}
-      />
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={() => {
-          setMenuAnchor(null);
-          setSelectedTile(null);
-        }}
       >
+        {board.tiles.map((tile) => {
+          const baseColor = getTerrainColor(tile.terrain);
+          const bldgColor = getBuildingColor(tile.building);
+          const borderStyle = computeTileBorderStyle(tile, board);
+          let displayText = "";
+          if (tile.building !== Building.None) {
+            if (tile.building === Building.Market) {
+              displayText = getMarketLevel(tile, board).toString();
+            } else if ([Building.Sawmill, Building.Windmill, Building.Forge].includes(tile.building)) {
+              displayText = `${buildingKeys[tile.building].toUpperCase()}${getBuildingLevel(tile, board)}`;
+            } else {
+              displayText = buildingKeys[tile.building].toUpperCase();
+            }
+          }
+          return (
+            <div
+              key={`${tile.x}-${tile.y}`}
+              style={{...tileStyle, ...borderStyle, backgroundColor: baseColor}}
+              onMouseEnter={() => setHoveredTile(tile)}
+              onClick={(e) => {
+                setSelectedTile(tile);
+                setMenuAnchor(e.currentTarget);
+              }}
+            >
+              <div
+                style={{
+                  width: "90%",
+                  height: "60%",
+                  backgroundColor: bldgColor,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: bldgColor === "transparent" ? "none" : "1px solid #999",
+                }}
+              >
+                {displayText}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <Menu
+
+        anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => {
+        setMenuAnchor(null);
+        setSelectedTile(null);
+      }}>
         {dynamicPopupActions.map((action) => (
-          <MenuItem key={action.key} onClick={() => handleMenuItemClick(action.key)}>
+          <MenuItem
+            key={action.key} onClick={() => handleMenuItemClick(action.key)}>
             {action.label}
           </MenuItem>
         ))}
