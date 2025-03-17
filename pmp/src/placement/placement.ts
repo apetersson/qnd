@@ -1,6 +1,6 @@
 // src/placement/placement.ts
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
-import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
+import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
 
 export function getBuildingLevel(tile: TileData, board: Board): number {
   switch (tile.building) {
@@ -21,7 +21,7 @@ export function getMarketLevel(tile: TileData, board: Board): number {
   let sum = 0;
   const neighbors = getNeighbors(tile, board);
   for (const nbr of neighbors) {
-    if (ADVANCED_BUILDINGS.includes(nbr.building)) {
+    if (MARKET_CONTRIBUTIONG_BUILDINGS.includes(nbr.building)) {
       sum += getBuildingLevel(nbr, board);
     }
   }
