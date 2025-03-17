@@ -81,17 +81,19 @@ function canProvideBonus(tile: TileData, board: Board, advBuilding: Building): b
  *
  * @param board The board to optimize.
  * @param cancelToken Token to cancel the process.
- * @param advancedOptions Options for advanced buildings: includeSawmill, includeWindmill, includeForge (Market is always considered)
- * @param onProgress Optional callback reporting overall progress as a number between 0 and 1.
+ * @param advancedOptions Options for advanced buildings.
+ * @param progressCallback Callback to report progress (0-1).
  */
 export async function optimizeAdvancedBuildingsAsync(
   board: Board,
   cancelToken: { canceled: boolean },
   advancedOptions: { includeSawmill: boolean; includeWindmill: boolean; includeForge: boolean },
-  onProgress?: (progress: number) => void
+  progressCallback?: (progress: number) => void
 ): Promise<Board> {
   // Kopiere das Board und behalte bereits vorhandene fortgeschrittene Gebäude.
   const initialBoard = copyBoard(board);
+
+  // Pre-populate the map with advanced buildings already present.
   const initialUsedCityBuildings = new Map<string, Set<Building>>();
   for (const tile of initialBoard.tiles) {
     if (tile.cityId && ADVANCED_BUILDINGS.includes(tile.building)) {
@@ -102,7 +104,7 @@ export async function optimizeAdvancedBuildingsAsync(
     }
   }
 
-  // Baue Kandidaten-Indizes für leere, einer Stadt zugeordnete Tiles.
+  // Build candidate indices for empty tiles assigned to a city.
   const candidateObjs = initialBoard.tiles.map((tile, index) => {
     if (tile.terrain === Terrain.None && tile.building === Building.None && tile.cityId !== null) {
       const opts: Building[] = [];
@@ -125,8 +127,12 @@ export async function optimizeAdvancedBuildingsAsync(
   let iterationCount = 0;
 
   /**
-   * Recursive function that uses a progress range [progressMin, progressMax].
-   * The candidateIndices array is processed from index i to candidateIndices.length.
+   * Recursive optimization function.
+   * @param i Current candidate index.
+   * @param currentBoard Current board state.
+   * @param usedCityBuildings Map tracking used advanced buildings per city.
+   * @param progressMin Lower bound of progress for this recursion.
+   * @param progressMax Upper bound of progress for this recursion.
    */
   async function rec(
     i: number,
@@ -137,15 +143,12 @@ export async function optimizeAdvancedBuildingsAsync(
   ): Promise<void> {
     if (cancelToken.canceled) return;
     iterationCount++;
-    if (iterationCount % 10000 === 0) {
-      console.log(`Iteration ${iterationCount}, candidate index ${i}, current best bonus: ${bestBonus}`);
+    if (iterationCount % 100000 === 0) {
+      const currentProgress = progressMin + (i / candidateIndices.length) * (progressMax - progressMin);
+      console.log(`Progress: ${(currentProgress * 100).toFixed(2)}%`);
+      progressCallback?.(currentProgress);
       await new Promise((resolve) => setTimeout(resolve, 0));
       if (cancelToken.canceled) return;
-    }
-    if (iterationCount % 10000 === 0 && onProgress) {
-      // Berechne lokalen Fortschritt anhand des aktuellen Kandidatenindex.
-      const localProgress = progressMin + (i / candidateIndices.length) * (progressMax - progressMin);
-      onProgress(localProgress);
     }
     if (i === candidateIndices.length) {
       const bonus = calculateMarketBonus(currentBoard);
@@ -158,57 +161,36 @@ export async function optimizeAdvancedBuildingsAsync(
       }
       return;
     }
+    const candidateRange = (progressMax - progressMin) / candidateIndices.length;
+    // Option: do not place an advanced building on this tile.
+    await rec(i + 1, currentBoard, usedCityBuildings, progressMin + i * candidateRange, progressMin + (i + 1) * candidateRange);
+    if (cancelToken.canceled) return;
     const idx = candidateIndices[i];
     const tile = currentBoard.tiles[idx];
     if (!tile.cityId) {
-      await rec(i + 1, currentBoard, usedCityBuildings, progressMin, progressMax);
+      await rec(i + 1, currentBoard, usedCityBuildings, progressMin + i * candidateRange, progressMin + (i + 1) * candidateRange);
       return;
     }
-    // Berechne den Fortschritts-Subbereich für Kandidat i.
-    const candidateRangeMin = progressMin + (i / candidateIndices.length) * (progressMax - progressMin);
-    const candidateRangeMax = progressMin + ((i + 1) / candidateIndices.length) * (progressMax - progressMin);
-
-    await rec(i + 1, currentBoard, usedCityBuildings,candidateRangeMin, candidateRangeMax);
-    if (cancelToken.canceled) return;
     const cityKey = tile.cityId;
-
-    // Erzeuge die Optionen und sortiere sie anhand des unmittelbaren Nutzens.
     const options: Building[] = [];
     if (advancedOptions.includeSawmill) options.push(Building.Sawmill);
     if (advancedOptions.includeWindmill) options.push(Building.Windmill);
     if (advancedOptions.includeForge) options.push(Building.Forge);
     options.push(Building.Market);
-
-    // Sort the options based on immediate benefit (highest first).
     const sortedOptions = options.slice().sort(
       (a, b) => immediateBenefit(tile, currentBoard, b) - immediateBenefit(tile, currentBoard, a)
     );
-    const branchCountTotal = 1 + sortedOptions.length; // Eine "Skip"-Option plus jede Option
-
-    // "Skip"-Zweig (kein fortgeschrittenes Gebäude setzen).
-    const skipRangeMin = candidateRangeMin;
-    const skipRangeMax = candidateRangeMin + (1 / branchCountTotal) * (candidateRangeMax - candidateRangeMin);
-    await rec(i + 1, currentBoard, usedCityBuildings, skipRangeMin, skipRangeMax);
-
-    // Für jeden Optionszweig.
-    for (let j = 0; j < sortedOptions.length; j++) {
+    for (const option of sortedOptions) {
       if (cancelToken.canceled) return;
-      const branchIndex = j + 1;
-      const branchRangeMin = candidateRangeMin + (branchIndex / branchCountTotal) * (candidateRangeMax - candidateRangeMin);
-      const branchRangeMax = candidateRangeMin + ((branchIndex + 1) / branchCountTotal) * (candidateRangeMax - candidateRangeMin);
-
-      const usedSet = usedCityBuildings.get(tile.cityId) || new Set<Building>();
-      if (usedSet.has(sortedOptions[j])) continue;
-      if (!canProvideBonus(tile, currentBoard, sortedOptions[j])) continue;
-
-      // Gebäude platzieren und rekursiv weitermachen.
-      currentBoard.tiles[idx].building = sortedOptions[j];
-      usedSet.add(sortedOptions[j]);
-      usedCityBuildings.set(tile.cityId, usedSet);
-      await rec(i + 1, currentBoard, usedCityBuildings, branchRangeMin, branchRangeMax);
-      // Rückgängig machen (Backtracking)
+      const usedSet = usedCityBuildings.get(cityKey) || new Set<Building>();
+      if (usedSet.has(option)) continue;
+      if (!canProvideBonus(tile, currentBoard, option)) continue;
+      currentBoard.tiles[idx].building = option;
+      usedSet.add(option);
+      usedCityBuildings.set(cityKey, usedSet);
+      await rec(i + 1, currentBoard, usedCityBuildings, progressMin + i * candidateRange, progressMin + (i + 1) * candidateRange);
       currentBoard.tiles[idx].building = Building.None;
-      usedSet.delete(sortedOptions[j]);
+      usedSet.delete(option);
     }
   }
 
