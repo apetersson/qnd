@@ -1,7 +1,7 @@
 // src/optimization/optimizeAdvancedBuildings.ts
 
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
-import { MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
+import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
 import { MAX_MARKET_LEVEL } from "../placement/placement";
 
 /** Helper function to create a deep copy of the board */
@@ -9,7 +9,7 @@ function copyBoard(board: Board): Board {
   return {
     width: board.width,
     height: board.height,
-    tiles: board.tiles.map(t => ({ ...t })),
+    tiles: board.tiles.map(t => ({...t})),
   };
 }
 
@@ -48,12 +48,29 @@ export function calculateMarketBonus(board: Board): number {
 /** A secondary metric (e.g., sum of building levels) used to break ties */
 export function sumLevelsForFood(board: Board): number {
   let sum = 0;
+  const buildingFactors: Record<Building, number> = {
+    [Building.LumberHut]: 1,
+    [Building.Farm]: 2,
+    [Building.Mine]: 2,
+    [Building.Sawmill]: 1,
+    [Building.Windmill]: 1,
+    [Building.Forge]: 2,
+    [Building.None]: 0,
+    [Building.Market]: 0
+  };
+
   for (const tile of board.tiles) {
-    if (MARKET_CONTRIBUTIONG_BUILDINGS.includes(tile.building)) {
-      if (tile.building === Building.Market) {
-        sum += calculateMarketBonusForTile(tile, board);
-      } else {
-        sum += getBuildingLevel(tile, board);
+    if (tile.building !== Building.None) {
+      // For advanced buildings (market contributing), multiply getBuildingLevel by factor.
+      if (ADVANCED_BUILDINGS.includes(tile.building)) {
+        sum += getBuildingLevel(tile, board) * buildingFactors[tile.building];
+      } else if (
+        tile.building === Building.LumberHut ||
+        tile.building === Building.Farm ||
+        tile.building === Building.Mine
+      ) {
+        // Basic resource buildings contribute their flat star value.
+        sum += buildingFactors[tile.building];
       }
     }
   }
@@ -317,7 +334,7 @@ export async function optimizeAdvancedBuildingsAsync(
           action.perform(tempBoard.tiles[i], tempBoard);
           const primary = calculateMarketBonus(tempBoard);
           const secondary = sumLevelsForFood(tempBoard);
-          candidateActions.push({ index: i, action, score: { primary, secondary } });
+          candidateActions.push({index: i, action, score: {primary, secondary}});
         }
       }
     }
@@ -353,7 +370,7 @@ export async function optimizeAdvancedBuildingsAsync(
       const idx = candidate.index;
       const tile = currentBoard.tiles[idx];
       // Save original tile for backtracking.
-      const originalTile: TileData = { ...tile };
+      const originalTile: TileData = {...tile};
 
       // Log the action.
       currentHistory.push(
@@ -369,7 +386,7 @@ export async function optimizeAdvancedBuildingsAsync(
       await rec(currentBoard, currentHistory, currentBudget + candidate.action.cost);
 
       // Backtrack: restore original tile state and remove logged action.
-      currentBoard.tiles[idx] = { ...originalTile };
+      currentBoard.tiles[idx] = {...originalTile};
       currentHistory.pop();
     }
   }
