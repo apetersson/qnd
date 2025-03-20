@@ -449,7 +449,7 @@ export default function PolytopiaMarketPlanner() {
         </p>
       </div>
       <p>Market bonus: {calculateMarketBonus(board)}</p>
-      <p>Advanced building levels sum: {sumLevelsForFood(board)}</p>
+      <p>Total Food Bonus: {sumLevelsForFood(board)}</p>
       <button onClick={handleExportClick}>Export Data</button>
       <button onClick={handleApplyClick} style={{marginLeft: 8}}>
         Load Data
