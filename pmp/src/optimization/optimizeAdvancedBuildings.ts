@@ -9,7 +9,7 @@ function copyBoard(board: Board): Board {
   return {
     width: board.width,
     height: board.height,
-    tiles: board.tiles.map(t => ({...t})),
+    tiles: board.tiles.map(t => ({ ...t })),
   };
 }
 
@@ -71,7 +71,9 @@ interface Action {
   canApply: (tile: TileData, board: Board) => boolean;
 }
 
+/** List of terrains where advanced building actions are allowed */
 const ADV_BUILDINGS_TERRAIN = [Terrain.None, Terrain.Field];
+
 /** Dynamic list of actions. You can extend this list with other actions later. */
 const dynamicActions: Action[] = [
   {
@@ -159,6 +161,13 @@ const dynamicActions: Action[] = [
  * Asynchronous optimization function with dynamic actions, history logging,
  * stars budget tracking, and support for activeOptions.
  *
+ * Instead of using a fixed candidate list, at each recursion step we build an
+ * upfront list of candidate actions. For every tile that is part of a city,
+ * we check each available action (filtered by advancedOptions) to see if it can apply.
+ * We simulate each candidate action by temporarily applying it on a copy of the board,
+ * then compute a score based on calculateMarketBonus (primary) and sumLevelsForFood (secondary).
+ * The candidates are sorted in descending order so that the most promising actions are tried first.
+ *
  * @param board The board to optimize.
  * @param cancelToken Token to cancel the process.
  * @param advancedOptions Options to enable or disable certain building actions.
@@ -173,10 +182,8 @@ export async function optimizeAdvancedBuildingsAsync(
 ): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);
-  // Build candidate indices for all tiles.
-  const candidateIndices = initialBoard.tiles.map((_, index) => index);
 
-  // Filter dynamic actions based on the advancedOptions.
+  // Filter dynamic actions based on advancedOptions.
   const availableActions = dynamicActions.filter(action => {
     if (action.id === 'place-sawmill' && !advancedOptions.includeSawmill) return false;
     if (action.id === 'place-forge' && !advancedOptions.includeForge) return false;
@@ -193,27 +200,45 @@ export async function optimizeAdvancedBuildingsAsync(
   let bestBudget = 0;
 
   /**
-   * Recursive function that iterates through candidate tiles.
-   * For each tile, it either applies no action or tries each applicable dynamic action.
+   * Recursive function that, at each call, builds an upfront list of candidate actions
+   * for the current board state. Each candidate is simulated to compute a score,
+   * then the candidates are sorted and applied in order.
    *
-   * @param i Current candidate index.
    * @param currentBoard Current board state.
    * @param currentHistory Array recording the history of actions taken.
    * @param currentBudget The accumulated stars budget.
    */
   async function rec(
-    i: number,
     currentBoard: Board,
     currentHistory: string[],
     currentBudget: number
   ): Promise<void> {
     if (cancelToken.canceled) return;
     iterationCount++;
-    if (iterationCount % 100000 === 0) {
+    if (iterationCount % 1000 === 0) {
       await new Promise(resolve => setTimeout(resolve, 0));
       if (cancelToken.canceled) return;
+      // progressCallback?.(iterationCount / 100000); // Example progress update.
     }
-    if (i === candidateIndices.length) {
+    // Build the list of candidate actions for the current board.
+    const candidateActions: { index: number; action: Action; score: { primary: number; secondary: number } }[] = [];
+    for (let i = 0; i < currentBoard.tiles.length; i++) {
+      const tile = currentBoard.tiles[i];
+      if (!tile.cityId) continue;
+      for (const action of availableActions) {
+        if (action.canApply(tile, currentBoard)) {
+          const tempBoard = copyBoard(currentBoard);
+          // Apply the action on the candidate tile in the temporary board.
+          action.perform(tempBoard.tiles[i], tempBoard);
+          const primary = calculateMarketBonus(tempBoard);
+          const secondary = sumLevelsForFood(tempBoard);
+          candidateActions.push({ index: i, action, score: { primary, secondary } });
+        }
+      }
+    }
+
+    // If no candidate actions, then we've reached a leaf.
+    if (candidateActions.length === 0) {
       const bonus = calculateMarketBonus(currentBoard);
       const secondary = sumLevelsForFood(currentBoard);
       if (bonus > bestBonus || (bonus === bestBonus && secondary > bestSecondary)) {
@@ -227,43 +252,43 @@ export async function optimizeAdvancedBuildingsAsync(
       return;
     }
 
-    // "Do nothing" branch: skip this tile.
-    await rec(i + 1, currentBoard, currentHistory, currentBudget);
-    if (cancelToken.canceled) return;
+    // Sort candidates descending by primary score, then by secondary.
+    candidateActions.sort((a, b) => {
+      if (b.score.secondary !== a.score.secondary) return b.score.secondary - a.score.secondary;
+      return b.score.primary - a.score.primary;
+      // if (b.score.primary !== a.score.primary) return b.score.primary - a.score.primary;
+      // return b.score.secondary - a.score.secondary;
+    });
 
-    // Get the current candidate tile.
-    const idx = candidateIndices[i];
-    const tile = currentBoard.tiles[idx];
-
-    // For each available dynamic action that can be applied to this tile…
-    for (const action of availableActions) {
+    // Iterate over candidate actions.
+    for (const candidate of candidateActions) {
       if (cancelToken.canceled) return;
-      if (!action.canApply(tile, currentBoard)) continue;
-
-      // Save the original state of the tile for backtracking.
-      const originalTile: TileData = {...tile};
+      const idx = candidate.index;
+      const tile = currentBoard.tiles[idx];
+      // Save original tile for backtracking.
+      const originalTile: TileData = { ...tile };
 
       // Log the action.
       currentHistory.push(
-        `${action.description} at (${tile.x},${tile.y})` +
+        `${candidate.action.description} at (${tile.x},${tile.y})` +
         (tile.cityId ? ` in city ${tile.cityId}` : "") +
-        ` (cost: ${action.cost})`
+        ` (cost: ${candidate.action.cost})`
       );
 
-      // Apply the action.
-      action.perform(tile, currentBoard);
+      // Apply the candidate action.
+      candidate.action.perform(tile, currentBoard);
 
-      // Recurse to the next tile with the updated board, history, and budget.
-      await rec(i + 1, currentBoard, currentHistory, currentBudget + action.cost);
+      // Recurse with the updated board, history, and budget.
+      await rec(currentBoard, currentHistory, currentBudget + candidate.action.cost);
 
-      // Backtrack: restore the tile's original state and remove the action from history.
-      currentBoard.tiles[idx] = {...originalTile};
+      // Backtrack: restore original tile state and remove logged action.
+      currentBoard.tiles[idx] = { ...originalTile };
       currentHistory.pop();
     }
   }
 
   // Start the recursion.
-  await rec(0, initialBoard, [], 0);
+  await rec(initialBoard, [], 0);
 
   // Output the results.
   console.log(`Optimization finished. Total iterations: ${iterationCount}. Best bonus: ${bestBonus}`);
