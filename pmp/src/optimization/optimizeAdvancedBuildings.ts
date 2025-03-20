@@ -61,7 +61,7 @@ export function sumLevelsForFood(board: Board): number {
 }
 
 /** Interface for a dynamic action that can be applied on a tile */
-interface Action {
+export interface Action {
   id: string;
   description: string;
   cost: number; // Positive cost for placements, negative for removals
@@ -75,7 +75,7 @@ interface Action {
 const ADV_BUILDINGS_TERRAIN = [Terrain.None, Terrain.Field];
 
 /** Dynamic list of actions. You can extend this list with other actions later. */
-const dynamicActions: Action[] = [
+export const dynamicActions: Action[] = [
   {
     id: 'place-sawmill',
     description: 'Place Sawmill',
@@ -155,11 +155,88 @@ const dynamicActions: Action[] = [
       return tile.terrain === Terrain.Forest;
     },
   },
+  // New actions:
+  {
+    id: 'burn-forest',
+    description: 'Burn Forest',
+    cost: 5,
+    perform: (tile, board) => {
+      if (tile.terrain === Terrain.Forest) {
+        tile.terrain = Terrain.Field;
+      }
+    },
+    canApply: (tile, board) => {
+      // Only allow burning if the tile is a forest and has no building.
+      return tile.terrain === Terrain.Forest && tile.building === Building.None;
+    },
+  },
+  {
+    id: 'destroy-building',
+    description: 'Destroy Building',
+    cost: 5,
+    perform: (tile, board) => {
+      // Remove any building on the tile.
+      tile.building = Building.None;
+    },
+    canApply: (tile, board) => {
+      // Can only destroy if there's a building present.
+      return tile.building !== Building.None;
+    },
+  },
+  {
+    id: 'grow-forest',
+    description: 'Grow Forest',
+    cost: 5,
+    perform: (tile, board) => {
+      // Transform an empty tile into a forest.
+      tile.terrain = Terrain.Forest;
+    },
+    canApply: (tile, board) => {
+      // Allow growth only if the tile is completely empty.
+      return tile.terrain === Terrain.None && tile.building === Building.None;
+    },
+  },
+  {
+    id: 'add-lumber-hut',
+    description: 'Add Lumber Hut',
+    cost: 3,
+    perform: (tile, board) => {
+      tile.building = Building.LumberHut;
+    },
+    canApply: (tile, board) => {
+      // Only allowed on forest tiles with no building.
+      return tile.terrain === Terrain.Forest && tile.building === Building.None;
+    },
+  },
+  {
+    id: 'add-farm',
+    description: 'Add Farm',
+    cost: 5,
+    perform: (tile, board) => {
+      tile.building = Building.Farm;
+    },
+    canApply: (tile, board) => {
+      // Only allowed on field tiles with no building.
+      return tile.terrain === Terrain.Field && tile.building === Building.None;
+    },
+  },
+  {
+    id: 'add-mine',
+    description: 'Add Mine',
+    cost: 5,
+    perform: (tile, board) => {
+      tile.building = Building.Mine;
+    },
+    canApply: (tile, board) => {
+      // Only allowed on mountain tiles with no building.
+      return tile.terrain === Terrain.Mountain && tile.building === Building.None;
+    },
+  },
 ];
 
 /**
  * Asynchronous optimization function with dynamic actions, history logging,
- * stars budget tracking, and support for activeOptions.
+ * stars budget tracking, and support for an overall budget limit.
  *
  * Instead of using a fixed candidate list, at each recursion step we build an
  * upfront list of candidate actions. For every tile that is part of a city,
@@ -170,27 +247,28 @@ const dynamicActions: Action[] = [
  *
  * @param board The board to optimize.
  * @param cancelToken Token to cancel the process.
- * @param advancedOptions Options to enable or disable certain building actions.
+ * @param advancedOptions An object mapping dynamic action IDs to booleans.
+ * @param overallBudget The maximum stars that can be spent.
  * @param progressCallback Callback to report progress (0-1).
  * @returns A Promise that resolves to the optimized board.
  */
 export async function optimizeAdvancedBuildingsAsync(
   board: Board,
   cancelToken: { canceled: boolean },
-  advancedOptions: { includeSawmill: boolean; includeWindmill: boolean; includeForge: boolean },
+  advancedOptions: Record<string, boolean>,
+  overallBudget: number,
   progressCallback?: (progress: number) => void
 ): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);
 
-  // Filter dynamic actions based on advancedOptions.
   const availableActions = dynamicActions.filter(action => {
-    if (action.id === 'place-sawmill' && !advancedOptions.includeSawmill) return false;
-    if (action.id === 'place-forge' && !advancedOptions.includeForge) return false;
-    if (action.id === 'place-windmill' && !advancedOptions.includeWindmill) return false;
+    if (advancedOptions.hasOwnProperty(action.id)) {
+      return advancedOptions[action.id];
+    }
     return true;
   });
-  // (Actions like place-market or remove-forest are always allowed.)
+  // (Actions like place-market, remove-forest, burn-forest, destroy-building, and grow-forest are always allowed.)
 
   let bestBonus = calculateMarketBonus(initialBoard);
   let bestSecondary = sumLevelsForFood(initialBoard);
@@ -204,6 +282,9 @@ export async function optimizeAdvancedBuildingsAsync(
    * for the current board state. Each candidate is simulated to compute a score,
    * then the candidates are sorted and applied in order.
    *
+   * The function enforces the overall budget by skipping any candidate that would exceed it,
+   * and aborting the branch if the current cost already exceeds the budget.
+   *
    * @param currentBoard Current board state.
    * @param currentHistory Array recording the history of actions taken.
    * @param currentBudget The accumulated stars budget.
@@ -214,6 +295,8 @@ export async function optimizeAdvancedBuildingsAsync(
     currentBudget: number
   ): Promise<void> {
     if (cancelToken.canceled) return;
+    // Enforce overall budget limit.
+    if (currentBudget > overallBudget) return;
     iterationCount++;
     if (iterationCount % 1000 === 0) {
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -227,6 +310,8 @@ export async function optimizeAdvancedBuildingsAsync(
       if (!tile.cityId) continue;
       for (const action of availableActions) {
         if (action.canApply(tile, currentBoard)) {
+          // Check if applying this action would exceed the overall budget.
+          if (currentBudget + action.cost > overallBudget) continue;
           const tempBoard = copyBoard(currentBoard);
           // Apply the action on the candidate tile in the temporary board.
           action.perform(tempBoard.tiles[i], tempBoard);
@@ -252,7 +337,7 @@ export async function optimizeAdvancedBuildingsAsync(
       return;
     }
 
-    // Sort candidates descending by primary score, then by secondary.
+    // Sort candidates descending by secondary score, then primary.
     candidateActions.sort((a, b) => {
       if (b.score.secondary !== a.score.secondary) return b.score.secondary - a.score.secondary;
       return b.score.primary - a.score.primary;
@@ -263,6 +348,8 @@ export async function optimizeAdvancedBuildingsAsync(
     // Iterate over candidate actions.
     for (const candidate of candidateActions) {
       if (cancelToken.canceled) return;
+      // Skip candidate if adding its cost would exceed the overall budget.
+      if (currentBudget + candidate.action.cost > overallBudget) continue;
       const idx = candidate.index;
       const tile = currentBoard.tiles[idx];
       // Save original tile for backtracking.

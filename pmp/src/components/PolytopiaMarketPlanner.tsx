@@ -11,6 +11,7 @@ import {
 } from "../placement/placement";
 import {
   calculateMarketBonus,
+  dynamicActions,
   optimizeAdvancedBuildingsAsync,
   sumLevelsForFood
 } from "../optimization/optimizeAdvancedBuildings";
@@ -163,9 +164,16 @@ export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
 
-  const [includeSawmill, setIncludeSawmill] = useState(true);
-  const [includeWindmill, setIncludeWindmill] = useState(true);
-  const [includeForge, setIncludeForge] = useState(true);
+  // Advanced building options (now using dynamicOptions from dynamicActions)
+  const [dynamicOptions, setDynamicOptions] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    dynamicActions.forEach(action => {
+      initial[action.id] = true;
+    });
+    return initial;
+  });
+  // Overall budget state (default 30 stars)
+  const [overallBudget, setOverallBudget] = useState<number>(30);
 
   const emptyEligibleCount = board.tiles.filter(
     (tile) =>
@@ -173,24 +181,25 @@ export default function PolytopiaMarketPlanner() {
       tile.building === Building.None &&
       tile.cityId !== null
   ).length;
-  const activeOptions = (includeSawmill ? 1 : 0) + (includeWindmill ? 1 : 0) + (includeForge ? 1 : 0) + 2;
+  const activeOptions = Object.keys(dynamicOptions).filter(key => dynamicOptions[key]).length + 2;
   const estimatedStepsExponent = emptyEligibleCount * Math.log10(activeOptions);
   const estimatedTime = estimateCompletionTime(emptyEligibleCount, activeOptions);
 
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
   const [isOptimizing, setIsOptimizing] = useState(false);
-  // Zustände für Popup-Editing
+  // States for popup editing
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
 
   const startOptimization = async () => {
     cancelTokenRef.current = {canceled: false};
     setIsOptimizing(true);
-    const result = await optimizeAdvancedBuildingsAsync(board, cancelTokenRef.current, {
-      includeSawmill,
-      includeWindmill,
-      includeForge,
-    }, (progress) => {
+    const result = await optimizeAdvancedBuildingsAsync(
+      board,
+      cancelTokenRef.current,
+      dynamicOptions,
+      overallBudget,
+      (progress) => {
       console.log("progress", progress);
     });
     setBoard(result);
@@ -202,7 +211,7 @@ export default function PolytopiaMarketPlanner() {
     setIsOptimizing(false);
   };
 
-  // Gemeinsame Logik für Tastatur und Popup-Aktion
+  // Keyboard and popup action handling remains unchanged.
   function handleTileAction(key: string, tile: TileData) {
     if (key.toLowerCase() === "e") {
       if (tile.terrain === Terrain.City && tile.cityId) {
@@ -272,7 +281,7 @@ export default function PolytopiaMarketPlanner() {
     }
   }
 
-  // Tastatursteuerung (bestehende Logik)
+  // Keyboard handling.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!hoveredTile) return;
@@ -357,7 +366,7 @@ export default function PolytopiaMarketPlanner() {
     setBoard(removeNonContributingBasicBuildings(board));
   }
 
-  // Aktualisiere den URL-Hash, wenn sich der Board-Zustand ändert
+  // Update URL hash when board changes.
   useEffect(() => {
     try {
       const encodedState = encodeState(board);
@@ -367,7 +376,7 @@ export default function PolytopiaMarketPlanner() {
     }
   }, [board]);
 
-  // Dynamische Erstellung der Popup-Aktionen
+  // Dynamic popup actions.
   const dynamicPopupActions = [
     ...Object.entries(terrainKeyMap).map(([key, terrain]) => ({
       key,
@@ -378,8 +387,6 @@ export default function PolytopiaMarketPlanner() {
       label: `Set Building: ${building}`,
     })),
   ];
-
-  // Extend City nur hinzufügen, wenn der ausgewählte Tile eine City mit gültiger cityId ist
   if (selectedTile && selectedTile.terrain === Terrain.City && selectedTile.cityId) {
     dynamicPopupActions.push({key: "e", label: "Extend City"});
   }
@@ -405,62 +412,34 @@ export default function PolytopiaMarketPlanner() {
           ))}
         </select>
         <p>
-          Current Board: {`${gridSizes[sizeIndex].width}x${gridSizes[sizeIndex].height}`} with{" "}
-          {board.width * board.height} tiles
+          Current Board: {`${gridSizes[sizeIndex].width}x${gridSizes[sizeIndex].height}`} with {board.width * board.height} tiles
         </p>
-        <strong>Keyboard Shortcuts</strong>
+        <strong>Advanced Building Options</strong>
         <div style={{marginTop: 8}}>
-          <p>
-            <strong>Terrain</strong>
-          </p>
-          <ul>
-            {Object.entries(terrainKeyMap).map(([key, terrain]) => (
-              <li key={`terrain-${key}`}>
-                <strong>{key}</strong> – {terrain}
-              </li>
-            ))}
-          </ul>
-          <p>
-            <strong>Buildings</strong>
-          </p>
-          <ul>
-            {Object.entries(buildingKeyMap).map(([key, building]) => (
-              <li key={`building-${key}`}>
-                <strong>{key}</strong> – {building}
-              </li>
-            ))}
-          </ul>
-          <p>
-            Tip: Press "c" to set a tile as City (automatically claim adjacent tiles), "e" to extend the hovered city.
-          </p>
-        </div>
-      </div>
-      <div>
-        <strong>Advanced Building Options for Optimization:</strong>
-        <div>
-          <label>
+          {/* Render checkboxes for each dynamic action */}
+          {dynamicActions.map(action => (
+            <label key={action.id} style={{ marginRight: "12px" }}>
             <input
               type="checkbox"
-              checked={includeSawmill}
-              onChange={(e) => setIncludeSawmill(e.target.checked)}
+                checked={dynamicOptions[action.id]}
+                onChange={(e) =>
+                  setDynamicOptions(prev => ({
+                    ...prev,
+                    [action.id]: e.target.checked,
+                  }))
+                }
             />{" "}
-            Sawmill
+              {action.description}
           </label>
-          <label style={{marginLeft: "12px"}}>
+          ))}
+          <label style={{ marginLeft: "12px" }}>
+            <span>Overall Budget (stars): </span>
             <input
-              type="checkbox"
-              checked={includeWindmill}
-              onChange={(e) => setIncludeWindmill(e.target.checked)}
-            />{" "}
-            Windmill
-          </label>
-          <label style={{marginLeft: "12px"}}>
-            <input
-              type="checkbox"
-              checked={includeForge}
-              onChange={(e) => setIncludeForge(e.target.checked)}
-            />{" "}
-            Forge
+              type="number"
+              value={overallBudget}
+              onChange={(e) => setOverallBudget(Number(e.target.value))}
+              style={{ width: "60px" }}
+            />
           </label>
         </div>
         <p style={{fontSize: "0.9rem", marginTop: "4px"}}>
@@ -482,9 +461,11 @@ export default function PolytopiaMarketPlanner() {
         Place Advanced Buildings
       </button>
       <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
-        {!isOptimizing && <button onClick={startOptimization} disabled={isOptimizing}>
+        {!isOptimizing && (
+          <button onClick={startOptimization} disabled={isOptimizing}>
           {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
-        </button>}
+          </button>
+        )}
         {isOptimizing && (
           <button onClick={stopOptimization} style={{marginLeft: "8px"}}>
             Stop Optimize
