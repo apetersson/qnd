@@ -179,7 +179,6 @@ export default function PolytopiaMarketPlanner() {
 
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
   const [isOptimizing, setIsOptimizing] = useState(false);
-  console.log("isOptimizing", isOptimizing)
   // Zustände für Popup-Editing
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
