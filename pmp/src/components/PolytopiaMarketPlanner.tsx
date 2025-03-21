@@ -47,19 +47,6 @@ export default function PolytopiaMarketPlanner() {
 
       {/* The grid itself */}
       <BoardGrid
-        boardStyle={{display: "grid", gap: 2, marginTop: 20}}
-        tileStyle={{
-          width: 40,
-          height: 40,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          userSelect: "none",
-          fontSize: "0.7rem",
-          textAlign: "center",
-        }}
         {...{
           setHoveredTile,
           setSelectedTile,
