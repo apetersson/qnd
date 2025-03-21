@@ -49,7 +49,7 @@ const BoardActionsContext = createContext<BoardActionsContextType | undefined>(
 export const BoardActionsProvider: React.FC<{ children: ReactNode }> = ({
                                                                           children,
                                                                         }) => {
-  const { board, setBoard } = useBoardState();
+  const {setBoard} = useBoardState();
 
   /**
    * The same logic previously in `useBoardControls` for setting terrain, building,
@@ -80,23 +80,23 @@ export const BoardActionsProvider: React.FC<{ children: ReactNode }> = ({
                 cityId: `${t.x}-${t.y}`,
               };
             }
-            return { ...t, terrain: terrainCandidate };
+            return {...t, terrain: terrainCandidate};
           }
           return t;
         });
 
         // If creating a city, claim its adjacent area
         if (terrainCandidate === Terrain.City) {
-          const newBoard = { ...prevBoard, tiles: updated };
+          const newBoard = {...prevBoard, tiles: updated};
           return claimCityArea(newBoard, tile);
         } else {
           // If we removed a city tile, remove that city association
           if (tile.terrain === Terrain.City && tile.cityId) {
-            const newBoard = { ...prevBoard, tiles: updated };
+            const newBoard = {...prevBoard, tiles: updated};
             return removeCityAssociation(newBoard, tile.cityId);
           }
         }
-        return { ...prevBoard, tiles: updated };
+        return {...prevBoard, tiles: updated};
       });
     } else if (buildingCandidate !== undefined) {
       // Setting a building by key
@@ -106,7 +106,7 @@ export const BoardActionsProvider: React.FC<{ children: ReactNode }> = ({
           if (t.x === tile.x && t.y === tile.y) {
             // "0" building means "None"
             if (buildingCandidate === Building.None) {
-              return { ...t, building: Building.None };
+              return {...t, building: Building.None};
             }
             // For advanced buildings, only allow one per city
             if (t.cityId && ADVANCED_BUILDINGS.includes(buildingCandidate)) {
@@ -137,7 +137,7 @@ export const BoardActionsProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   return (
-    <BoardActionsContext.Provider value={{ handleTileAction }}>
+    <BoardActionsContext.Provider value={{handleTileAction}}>
       {children}
     </BoardActionsContext.Provider>
   );

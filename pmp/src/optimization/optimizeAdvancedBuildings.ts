@@ -2,7 +2,7 @@
 
 import { Board, Building, getNeighbors, TileData } from "../models/Board";
 import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
-import { MAX_MARKET_LEVEL } from "../placement/placement";
+import { getBuildingLevel, MAX_MARKET_LEVEL } from "../placement/placement";
 import { Action, dynamicActions } from "./action";
 
 /** Helper function to create a deep copy of the board */
@@ -12,20 +12,6 @@ function copyBoard(board: Board): Board {
     height: board.height,
     tiles: board.tiles.map(t => ({...t})),
   };
-}
-
-/** Returns the building level based on neighboring supporting buildings */
-function getBuildingLevel(tile: TileData, board: Board): number {
-  switch (tile.building) {
-    case Building.Sawmill:
-      return getNeighbors(tile, board).filter(n => n.building === Building.LumberHut).length;
-    case Building.Windmill:
-      return getNeighbors(tile, board).filter(n => n.building === Building.Farm).length;
-    case Building.Forge:
-      return getNeighbors(tile, board).filter(n => n.building === Building.Mine).length;
-    default:
-      return 0;
-  }
 }
 
 /** Calculates the market bonus for a tile if it holds a Market building */

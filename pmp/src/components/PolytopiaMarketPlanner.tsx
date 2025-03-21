@@ -5,11 +5,12 @@ import { MenuItem } from "@mui/material";
 import BoardGrid from "./BoardGrid";
 import { MouseOptions } from "./MouseOptions";
 import { TileData } from "../models/Board";
-import { useBoardActions } from "../contexts/BoardActionsContext";
+import { useBoardActions, } from "../contexts/BoardActionsContext";
 import BoardExporter from "./BoardExporter";
 import CityManagementPanel from "./CityManagementPanel";
 import BoardSizeSelector from "./BoardSizeSelector";
 import OptimizationControls from "./OptimizationControls";
+import ShortcutsInfo from "./ShortcutsInfo"; // <-- Import the new component
 
 export default function PolytopiaMarketPlanner() {
   // Hover and selection for the “right-click” or menu usage
@@ -36,10 +37,13 @@ export default function PolytopiaMarketPlanner() {
     <div style={{margin: 20}}>
       <h1>Polytopia Market Planner</h1>
 
-      {/* Smaller sub-components that were previously all in BoardControls */}
       <BoardSizeSelector/>
       <BoardExporter/>
       <CityManagementPanel/>
+
+      {/* Now we just render our new dedicated shortcut info component */}
+      <ShortcutsInfo/>
+
       <OptimizationControls/>
 
       {/* The grid itself */}
