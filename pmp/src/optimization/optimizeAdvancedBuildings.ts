@@ -141,6 +141,7 @@ function createCompositeAction(
  * @param dynamicOptions An object mapping dynamic action IDs to booleans.
  * @param overallBudget The maximum stars that can be spent.
  * @param progressCallback Callback to report progress (0-1).
+ * @param newSolutionCallback
  * @returns A Promise that resolves to the optimized board.
  */
 export async function optimizeAdvancedBuildingsAsync(
@@ -148,7 +149,8 @@ export async function optimizeAdvancedBuildingsAsync(
   cancelToken: { canceled: boolean },
   dynamicOptions: Record<string, boolean>,
   overallBudget: number,
-  progressCallback?: (progress: number) => void
+  progressCallback?: (progress: number) => void,
+  newSolutionCallback?: (marketBonus: number, foodBonus: number, iterationCount: number) => void
 ): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);
@@ -207,7 +209,7 @@ export async function optimizeAdvancedBuildingsAsync(
     memo.set(key, currentBudget);
 
     iterationCount++;
-    if (iterationCount % 10000 === 0) {
+    if (iterationCount % 1000 === 0) {
       await new Promise(resolve => setTimeout(resolve, 0));
       if (cancelToken.canceled) return;
       // e.g., call callback with the midpoint of [startProgress..endProgress]
@@ -323,6 +325,9 @@ export async function optimizeAdvancedBuildingsAsync(
         bestHistory = [...currentHistory];
         bestBudget = currentBudget;
         console.log(`New best bonus: ${bestBonus} (Secondary: ${secondary}) after ${iterationCount} iterations.`);
+        console.log("Optimization history (actions):", bestHistory);
+        newSolutionCallback?.(bestBonus, bestSecondary, iterationCount);
+        await new Promise(resolve => setTimeout(resolve, 0));
       }
       return;
     }

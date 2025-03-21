@@ -6,6 +6,12 @@ import { dynamicActions } from "../optimization/action";
 import { useBoardState } from "./BoardStateContext";
 import { defaultTechEnabled } from "../models/Technology";
 
+interface Solution {
+  marketBonus: number;
+  foodBonus: number;
+  iteration: number;
+}
+
 interface OptimizationContextType {
   dynamicOptions: Record<string, boolean>;
   setDynamicOptions: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
@@ -15,6 +21,7 @@ interface OptimizationContextType {
   startOptimization: () => Promise<void>;
   stopOptimization: () => void;
   progress: number;
+  solutionList: Solution[];
 }
 
 const OptimizationContext = createContext<OptimizationContextType | undefined>(
@@ -40,10 +47,12 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
   );
   const [overallBudget, setOverallBudget] = useState<number>(30);
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0); // <--- PROGRESS state
+  const [progress, setProgress] = useState<number>(0);
+  const [solutionList, setSolutionList] = useState<Solution[]>([]);
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
 
   const startOptimization = async () => {
+    setSolutionList([]); // Reset solution list
     cancelTokenRef.current = {canceled: false};
     setIsOptimizing(true);
     // Reset progress bar to 0
@@ -59,6 +68,10 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
         // This callback is invoked occasionally from the recursion
         // fraction is in [0..1]
         setProgress(fraction);
+      },
+      (marketBonus, foodBonus, iteration) => {
+        // Append new best solution to the solutionList
+        setSolutionList(prev => [...prev, {marketBonus, foodBonus, iteration}]);
       }
     );
     setBoard(result);
@@ -83,6 +96,7 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
         startOptimization,
         stopOptimization,
         progress,
+        solutionList,
       }}
     >
       {children}
