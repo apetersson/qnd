@@ -27,7 +27,6 @@ export const dynamicActions: Action[] = [
     },
     canApply: (tile, board) => {
       if (!ADV_BUILDINGS_TERRAIN.includes(tile.terrain)) return false;
-      if (tile.terrain !== Terrain.None) return false;
       if (tile.building !== Building.None) return false;
       if (!tile.cityId) return false;
       // Ensure the city does not already have a sawmill.
