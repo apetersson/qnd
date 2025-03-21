@@ -64,6 +64,45 @@ export function sumLevelsForFood(board: Board): number {
   return sum;
 }
 
+/** "Prep" actions whose only purpose is to change terrain or building so that we can build something else. */
+const PREP_ACTION_IDS = new Set([
+  "remove-forest",
+  "burn-forest",
+  "destroy-building",
+  "grow-forest",
+]);
+
+/** Returns true if this action is one that places a building (used to find follow-up). */
+function isBuildingPlacementAction(action: Action): boolean {
+  // Example: match "place-" or "add-" IDs, or check if perform(...) sets tile.building != NONE
+  return (
+    action.id.startsWith("place-") ||
+    action.id.startsWith("add-")
+  );
+}
+
+/** Create a one-off "composite" Action object that will do the prep and follow-up in one go. */
+function createCompositeAction(
+  prepAction: Action,
+  buildingAction: Action
+): Action {
+  return {
+    id: `${prepAction.id}+${buildingAction.id}`, // Something unique
+    description: `${prepAction.description} -> ${buildingAction.description}`,
+    cost: prepAction.cost + buildingAction.cost,
+    requiredTech: prepAction.requiredTech,
+    // or up to you how you merge requiredTech
+
+    perform: (tile, board) => {
+      prepAction.perform(tile, board);      // do the prep
+      buildingAction.perform(tile, board);  // do the follow-up
+    },
+
+    canApply: () => true, // We won't use canApply() on the composite; we do it ourselves below
+  };
+}
+
+
 /**
  * Asynchronous optimization function with dynamic actions, history logging,
  * stars budget tracking, and support for an overall budget limit.
@@ -77,15 +116,15 @@ export function sumLevelsForFood(board: Board): number {
  *
  * @param board The board to optimize.
  * @param cancelToken Token to cancel the process.
- * @param advancedOptions An object mapping dynamic action IDs to booleans.
+ * @param dynamicOptions An object mapping dynamic action IDs to booleans.
  * @param overallBudget The maximum stars that can be spent.
- * @param progressCallback Callback to report progress (0-1).
+ * @param _progressCallback Callback to report progress (0-1).
  * @returns A Promise that resolves to the optimized board.
  */
 export async function optimizeAdvancedBuildingsAsync(
   board: Board,
   cancelToken: { canceled: boolean },
-  advancedOptions: Record<string, boolean>,
+  dynamicOptions: Record<string, boolean>,
   overallBudget: number,
   _progressCallback?: (progress: number) => void
 ): Promise<Board> {
@@ -93,13 +132,13 @@ export async function optimizeAdvancedBuildingsAsync(
   const initialBoard = copyBoard(board);
 
   const availableActions = dynamicActions.filter(action => {
-    if (advancedOptions.hasOwnProperty(action.id)) {
-      return advancedOptions[action.id];
+    if (dynamicOptions.hasOwnProperty(action.id)) {
+      return dynamicOptions[action.id];
     }
     return true;
   });
-  // (Actions like place-market, remove-forest, burn-forest, destroy-building, and grow-forest are always allowed.)
 
+  console.log(availableActions, "availableActions")
   let bestBonus = calculateMarketBonus(initialBoard);
   let bestSecondary = sumLevelsForFood(initialBoard);
   let bestBoard = copyBoard(initialBoard);
@@ -119,6 +158,7 @@ export async function optimizeAdvancedBuildingsAsync(
    * @param currentHistory Array recording the history of actions taken.
    * @param currentBudget The accumulated stars budget.
    */
+  // Then, inside the function’s candidate generation loop:
   async function rec(
     currentBoard: Board,
     currentHistory: string[],
@@ -134,20 +174,97 @@ export async function optimizeAdvancedBuildingsAsync(
       // progressCallback?.(iterationCount / 100000); // Example progress update.
     }
     // Build the list of candidate actions for the current board.
-    const candidateActions: { index: number; action: Action; score: { primary: number; secondary: number } }[] = [];
+    const candidateActions: {
+      index: number;
+      action: Action;
+      score: { primary: number; secondary: number };
+    }[] = [];
+
     for (let i = 0; i < currentBoard.tiles.length; i++) {
       const tile = currentBoard.tiles[i];
       if (!tile.cityId) continue;
+
+      // Go through every toggled-on action:
       for (const action of availableActions) {
-        if (action.canApply(tile, currentBoard)) {
-          // Check if applying this action would exceed the overall budget.
-          if (currentBudget + action.cost > overallBudget) continue;
+        if (!dynamicOptions[action.id]) continue;
+        if (!action.canApply(tile, currentBoard)) continue;
+
+        // Case 1: Normal (non-prep) action => single-step as usual
+        if (!PREP_ACTION_IDS.has(action.id)) {
+          // If we can't afford it, skip
+          if (currentBudget + action.cost > overallBudget) {
+            continue;
+          }
+
           const tempBoard = copyBoard(currentBoard);
-          // Apply the action on the candidate tile in the temporary board.
           action.perform(tempBoard.tiles[i], tempBoard);
           const primary = calculateMarketBonus(tempBoard);
           const secondary = sumLevelsForFood(tempBoard);
-          candidateActions.push({index: i, action, score: {primary, secondary}});
+          candidateActions.push({
+            index: i,
+            action,
+            score: {primary, secondary},
+          });
+        }
+        // Case 2: Prep action => see what building placements become possible
+        else {
+          // Case 2: Prep action => see what building placements become possible
+
+          //  if we're destroying a tile that currently has an advanced building,
+          //    skip making a composite. Just add the single "destroy" step, since it might be beneficial to move a building
+          if (action.id === "destroy-building" && ADVANCED_BUILDINGS.includes(tile.building)) {
+            // If we can't afford it, skip
+            if (currentBudget + action.cost > overallBudget) {
+              continue;
+            }
+            // We handle it like a single-step action, ignoring the normal "composite" logic.
+            const tempBoard = copyBoard(currentBoard);
+            action.perform(tempBoard.tiles[i], tempBoard);
+            const primary = calculateMarketBonus(tempBoard);
+            const secondary = sumLevelsForFood(tempBoard);
+
+            candidateActions.push({
+              index: i,
+              action,
+              score: {primary, secondary},
+            });
+
+            // Don't try to do a composite, so 'continue' here
+            continue;
+          }
+
+          // Step A: Apply the prep action to a temp board
+          const tempBoardPrep = copyBoard(currentBoard);
+          action.perform(tempBoardPrep.tiles[i], tempBoardPrep);
+
+          // Step B: Check for all building-laying actions that are toggled on
+          for (const buildingAction of availableActions) {
+            if (!dynamicOptions[buildingAction.id]) continue;
+            if (!isBuildingPlacementAction(buildingAction)) continue;
+
+            const tileAfterPrep = tempBoardPrep.tiles[i];
+            if (!buildingAction.canApply(tileAfterPrep, tempBoardPrep)) {
+              continue;
+            }
+
+            // Step C: We can do "prepAction + buildingAction" as a composite
+            const composite = createCompositeAction(action, buildingAction);
+            // If we can't afford it, skip
+            if (currentBudget + composite.cost > overallBudget) {
+              continue;
+            }
+            // Step D: Apply the composite to measure final score
+            const tempBoardFinal = copyBoard(currentBoard);
+            composite.perform(tempBoardFinal.tiles[i], tempBoardFinal);
+            const primary = calculateMarketBonus(tempBoardFinal);
+            const secondary = sumLevelsForFood(tempBoardFinal);
+
+            candidateActions.push({
+              index: i,
+              action: composite, // store the composite
+              score: {primary, secondary},
+            });
+          }
         }
       }
     }
@@ -169,10 +286,16 @@ export async function optimizeAdvancedBuildingsAsync(
 
     // Sort candidates descending by secondary score, then primary.
     candidateActions.sort((a, b) => {
-      if (b.score.secondary !== a.score.secondary) return b.score.secondary - a.score.secondary;
+// 1. Sort by cost ascending
+      if (a.action.cost !== b.action.cost) {
+        return a.action.cost - b.action.cost;
+      }
+      // 2. Then by secondary descending
+      if (b.score.secondary !== a.score.secondary) {
+        return b.score.secondary - a.score.secondary;
+      }
+      // 3. Then by primary descending
       return b.score.primary - a.score.primary;
-      // if (b.score.primary !== a.score.primary) return b.score.primary - a.score.primary;
-      // return b.score.secondary - a.score.secondary;
     });
 
     // Iterate over candidate actions.

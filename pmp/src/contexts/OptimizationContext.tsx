@@ -1,15 +1,10 @@
 // Filename: ./contexts/OptimizationContext.tsx
 
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useContext, useRef, useState, } from "react";
 import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
 import { dynamicActions } from "../optimization/action";
 import { useBoardState } from "./BoardStateContext";
+import { defaultTechEnabled } from "../models/Technology";
 
 interface OptimizationContextType {
   dynamicOptions: Record<string, boolean>;
@@ -25,19 +20,29 @@ const OptimizationContext = createContext<OptimizationContextType | undefined>(
   undefined
 );
 
+function buildDefaultDynamicOptions() {
+  const result: Record<string, boolean> = {};
+  for (const action of dynamicActions) {
+    // Enable only if its required tech is default-enabled
+    result[action.id] = defaultTechEnabled[action.requiredTech];
+  }
+  return result;
+}
+
 export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
                                                                           children,
                                                                         }) => {
-  const { board, setBoard } = useBoardState();
+  const {board, setBoard} = useBoardState();
+
   const [dynamicOptions, setDynamicOptions] = useState<Record<string, boolean>>(
-    Object.fromEntries(dynamicActions.map((a) => [a.id, true]))
+    buildDefaultDynamicOptions
   );
   const [overallBudget, setOverallBudget] = useState<number>(30);
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
-  const cancelTokenRef = useRef<{ canceled: boolean }>({ canceled: false });
+  const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
 
   const startOptimization = async () => {
-    cancelTokenRef.current = { canceled: false };
+    cancelTokenRef.current = {canceled: false};
     setIsOptimizing(true);
 
     const result = await optimizeAdvancedBuildingsAsync(

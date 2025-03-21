@@ -1,6 +1,4 @@
-// Filename: ./components/AdvancedOptions.tsx
-
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Action, dynamicActions } from "../optimization/action";
 import { defaultTechEnabled, Technology, techOrder } from "../models/Technology";
 
@@ -20,32 +18,52 @@ export const AdvancedOptions: React.FC<AdvancedOptionsProps> = ({
   // Track which tech categories are enabled.
   const [techEnabled, setTechEnabled] = useState<Record<Technology, boolean>>(defaultTechEnabled);
 
-  // Group the dynamic actions by their required technology.
-  const actionsByTech: Record<Technology, Action[]> = dynamicActions.reduce((acc, action: Action) => {
-    const tech = action.requiredTech;
-    if (!acc[tech]) {
-      acc[tech] = [];
-    }
-    acc[tech].push(action);
-    return acc;
-  }, {} as Record<Technology, Action[]>);
-
-  // Whenever a tech category is disabled, force-disable all its actions.
-  useEffect(() => {
-    setDynamicOptions((prevOptions) => {
-      const newOptions = {...prevOptions};
-      for (const tech in techEnabled) {
-        // TypeScript sees tech as string; we know it's a Technology key.
-        const techKey = tech as Technology;
-        if (!techEnabled[techKey] && actionsByTech[techKey]) {
-          actionsByTech[techKey].forEach((action) => {
-            newOptions[action.id] = false;
-          });
-        }
+  // Group the dynamic actions by their required technology. We use useMemo
+  // so that actionsByTech is recomputed only if dynamicActions changes.
+  const actionsByTech = useMemo(() => {
+    return dynamicActions.reduce((acc, action: Action) => {
+      const tech = action.requiredTech;
+      if (!acc[tech]) {
+        acc[tech] = [];
       }
-      return newOptions;
-    });
-  }, [techEnabled, actionsByTech, setDynamicOptions]);
+      acc[tech].push(action);
+      return acc;
+    }, {} as Record<Technology, Action[]>);
+  }, []);
+
+  /**
+   * Toggles a tech on/off. If turning a tech off, we also disable all relevant actions.
+   */
+  function handleToggleTech(tech: Technology, checked: boolean) {
+    setTechEnabled((prev) => ({
+      ...prev,
+      [tech]: checked,
+    }));
+
+    // If we are disabling this tech, also turn off relevant actions
+    if (!checked && actionsByTech[tech]) {
+      setDynamicOptions((prev) => {
+        const newOptions = {...prev};
+        for (const action of actionsByTech[tech]) {
+          newOptions[action.id] = false;
+        }
+        return newOptions;
+      });
+    }
+  }
+
+  /**
+   * Toggles a single action on/off, assuming its tech is enabled.
+   */
+  function handleToggleAction(action: Action, checked: boolean, techIsEnabled: boolean) {
+    // If the tech isn't enabled, do nothing (should be disabled in UI anyway).
+    if (!techIsEnabled) return;
+
+    setDynamicOptions((prev) => ({
+      ...prev,
+      [action.id]: checked,
+    }));
+  }
 
   return (
     <div style={{marginBottom: 12}}>
@@ -57,34 +75,24 @@ export const AdvancedOptions: React.FC<AdvancedOptionsProps> = ({
               <input
                 type="checkbox"
                 checked={techEnabled[tech]}
-                onChange={(e) =>
-                  setTechEnabled((prev) => ({
-                    ...prev,
-                    [tech]: e.target.checked,
-                  }))
-                }
+                onChange={(e) => handleToggleTech(tech, e.target.checked)}
               />
               {tech}
             </label>
             <div style={{paddingLeft: "16px"}}>
-              {actionsByTech[tech]
-                ? actionsByTech[tech].map((action) => (
-                  <label key={action.id} style={{marginRight: "12px"}}>
-                    <input
-                      type="checkbox"
-                      checked={dynamicOptions[action.id] || false}
-                      disabled={!techEnabled[tech]}
-                      onChange={(e) =>
-                        setDynamicOptions((prev) => ({
-                          ...prev,
-                          [action.id]: e.target.checked,
-                        }))
-                      }
-                    />{" "}
-                    {action.description}
-                  </label>
-                ))
-                : null}
+              {actionsByTech[tech]?.map((action) => (
+                <label key={action.id} style={{marginRight: "12px"}}>
+                  <input
+                    type="checkbox"
+                    checked={dynamicOptions[action.id] || false}
+                    disabled={!techEnabled[tech]}
+                    onChange={(e) =>
+                      handleToggleAction(action, e.target.checked, techEnabled[tech])
+                    }
+                  />{" "}
+                  {action.description}
+                </label>
+              ))}
             </div>
           </div>
         ))}
