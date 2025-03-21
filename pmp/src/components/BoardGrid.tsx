@@ -1,6 +1,7 @@
 import React from "react";
 import { Board, Building, Terrain, TileData } from "../models/Board";
 import { getBuildingLevel, getMarketLevel } from "../placement/placement";
+import { buildingKeys } from "../hooks/useBoardControls";
 
 interface BoardGridProps {
   board: Board;
@@ -9,7 +10,6 @@ interface BoardGridProps {
   setHoveredTile: (tile: TileData | null) => void;
   setSelectedTile: (tile: TileData | null) => void;
   setMenuAnchor: (anchor: HTMLElement | null) => void;
-  buildingKeys: Record<Building, string>;
 }
 
 
@@ -70,7 +70,6 @@ const BoardGrid: React.FC<BoardGridProps> = ({
                                                setHoveredTile,
                                                setSelectedTile,
                                                setMenuAnchor,
-                                               buildingKeys,
                                              }) => {
   return (
     <div

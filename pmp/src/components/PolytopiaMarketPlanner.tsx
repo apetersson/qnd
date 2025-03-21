@@ -6,7 +6,7 @@ import { estimateCompletionTime } from "../utils/helpers";
 import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
 import BoardGrid from "./BoardGrid";
 import BoardControls from "./BoardControls";
-import { buildingKeyMap, buildingKeys, terrainKeyMap, useBoardControls } from "../hooks/useBoardControls";
+import { buildingKeyMap, terrainKeyMap, useBoardControls } from "../hooks/useBoardControls";
 import { Building, createInitialBoard, Terrain, TileData } from "../models/Board";
 import { dynamicActions } from "../optimization/action";
 import {
@@ -14,6 +14,7 @@ import {
   placeBasicResourceBuildings,
   removeNonContributingBasicBuildings
 } from "../placement/placement";
+import { gridSizes } from "../models/sizes";
 
 const containerStyle: React.CSSProperties = {margin: "20px"};
 const boardStyle: React.CSSProperties = {display: "grid", gap: "2px"};
@@ -29,15 +30,6 @@ const tileStyle: React.CSSProperties = {
   fontSize: "0.7rem",
   textAlign: "center",
 };
-
-const gridSizes = [
-  {label: "Tiny (11x11)", width: 11, height: 11},
-  {label: "Small (14x14)", width: 14, height: 14},
-  {label: "Normal (16x16)", width: 16, height: 16},
-  {label: "Large (18x18)", width: 18, height: 18},
-  {label: "Huge (20x20)", width: 20, height: 20},
-  {label: "Massive (30x30)", width: 30, height: 30},
-];
 
 export default function PolytopiaMarketPlanner() {
   const {board, setBoard} = useBoardState();
@@ -116,48 +108,62 @@ export default function PolytopiaMarketPlanner() {
       alert("Invalid board configuration");
     }
   };
+  const handleSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const idx = Number(e.target.value);
+    setSizeIndex(idx);
+    setBoard(createInitialBoard(gridSizes[idx].width, gridSizes[idx].height));
+  };
+
+  const handlePlaceBasicBuildingsClick = () => {
+    setBoard(placeBasicResourceBuildings(board));
+  };
+
+  const handlePlaceBuildingsClick = () => {
+    setBoard(placeAdvancedBuildingsSimple(board));
+  };
+
+  const handleRemoveNonContributingClick = () => {
+    setBoard(removeNonContributingBasicBuildings(board));
+  };
+
+  const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setConfigText(e.target.value);
+  };
 
   return (
     <div style={containerStyle}>
       <h1>Polytopia Market Planner</h1>
       <BoardControls
-        {...{
-          sizeIndex,
-          gridSizes,
-          board,
-          dynamicOptions,
-          setDynamicOptions,
-          overallBudget,
-          setOverallBudget,
-          activeOptions,
-          emptyEligibleCount,
-          estimatedStepsExponent,
-          estimatedTime,
-          configText,
-          handleSizeChange: (e) => {
-            const idx = Number(e.target.value);
-            setSizeIndex(idx);
-            setBoard(createInitialBoard(gridSizes[idx].width, gridSizes[idx].height));
-          },
-          handleExportClick,
-          handleApplyClick,
-          handlePlaceBasicBuildingsClick: () => setBoard(placeBasicResourceBuildings(board)),
-          handlePlaceBuildingsClick: () => setBoard(placeAdvancedBuildingsSimple(board)),
-          handleRemoveNonContributingClick: () => setBoard(removeNonContributingBasicBuildings(board)),
-          handleConfigChange: (e) => setConfigText(e.target.value),
-          startOptimization,
-          stopOptimization,
-          isOptimizing,
-        }}
+        sizeIndex={sizeIndex}
+        gridSizes={gridSizes}
+        dynamicOptions={dynamicOptions}
+        setDynamicOptions={setDynamicOptions}
+        overallBudget={overallBudget}
+        setOverallBudget={setOverallBudget}
+        activeOptions={activeOptions}
+        emptyEligibleCount={emptyEligibleCount}
+        estimatedStepsExponent={estimatedStepsExponent}
+        estimatedTime={estimatedTime}
+        configText={configText}
+        handleSizeChange={handleSizeChange}
+        handleExportClick={handleExportClick}
+        handleApplyClick={handleApplyClick}
+        handlePlaceBasicBuildingsClick={handlePlaceBasicBuildingsClick}
+        handlePlaceBuildingsClick={handlePlaceBuildingsClick}
+        handleRemoveNonContributingClick={handleRemoveNonContributingClick}
+        handleConfigChange={handleConfigChange}
+        startOptimization={startOptimization}
+        stopOptimization={stopOptimization}
+        isOptimizing={isOptimizing}
       />
       <BoardGrid
         {...{
           board,
           boardStyle,
-          tileStyle, setHoveredTile,
+          tileStyle,
+          setHoveredTile,
           setSelectedTile,
           setMenuAnchor,
-          buildingKeys,
         }}
       />
       <Menu
