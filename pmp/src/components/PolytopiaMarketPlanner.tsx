@@ -6,7 +6,7 @@ import { estimateCompletionTime } from "../utils/helpers";
 import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
 import BoardGrid from "./BoardGrid";
 import BoardControls from "./BoardControls";
-import { buildingKeyMap, terrainKeyMap, useBoardControls } from "../hooks/useBoardControls";
+import { useBoardControls } from "../hooks/useBoardControls";
 import { Building, Terrain, TileData } from "../models/Board";
 import { dynamicActions } from "../optimization/action";
 import { MouseOptions } from "./MouseOptions";

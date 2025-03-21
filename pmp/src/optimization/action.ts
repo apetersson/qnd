@@ -19,7 +19,7 @@ export const dynamicActions: Action[] = [
     id: 'place-sawmill',
     description: 'Place Sawmill',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.Sawmill;
     },
     canApply: (tile, board) => {
@@ -37,7 +37,7 @@ export const dynamicActions: Action[] = [
     id: 'place-forge',
     description: 'Place Forge',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.Forge;
     },
     canApply: (tile, board) => {
@@ -53,7 +53,7 @@ export const dynamicActions: Action[] = [
     id: 'place-windmill',
     description: 'Place Windmill',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.Windmill;
     },
     canApply: (tile, board) => {
@@ -69,7 +69,7 @@ export const dynamicActions: Action[] = [
     id: 'place-market',
     description: 'Place Market',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.Market;
     },
     canApply: (tile, board) => {
@@ -84,12 +84,12 @@ export const dynamicActions: Action[] = [
     id: 'remove-forest',
     description: 'Remove Forest',
     cost: -1,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       if (tile.terrain === Terrain.Forest) {
         tile.terrain = Terrain.None;
       }
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       if (tile.building !== Building.None) return false;
       return tile.terrain === Terrain.Forest;
     },
@@ -99,12 +99,12 @@ export const dynamicActions: Action[] = [
     id: 'burn-forest',
     description: 'Burn Forest',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       if (tile.terrain === Terrain.Forest) {
         tile.terrain = Terrain.Field;
       }
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       // Only allow burning if the tile is a forest and has no building.
       return tile.terrain === Terrain.Forest && tile.building === Building.None;
     },
@@ -113,11 +113,11 @@ export const dynamicActions: Action[] = [
     id: 'destroy-building',
     description: 'Destroy Building',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       // Remove any building on the tile.
       tile.building = Building.None;
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       // Can only destroy if there's a building present.
       return tile.building !== Building.None;
     },
@@ -126,11 +126,11 @@ export const dynamicActions: Action[] = [
     id: 'grow-forest',
     description: 'Grow Forest',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       // Transform an empty tile into a forest.
       tile.terrain = Terrain.Forest;
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       // Allow growth only if the tile is completely empty.
       return tile.terrain === Terrain.None && tile.building === Building.None;
     },
@@ -139,10 +139,10 @@ export const dynamicActions: Action[] = [
     id: 'add-lumber-hut',
     description: 'Add Lumber Hut',
     cost: 3,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.LumberHut;
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       // Only allowed on forest tiles with no building.
       return tile.terrain === Terrain.Forest && tile.building === Building.None;
     },
@@ -151,10 +151,10 @@ export const dynamicActions: Action[] = [
     id: 'add-farm',
     description: 'Add Farm',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.Farm;
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       // Only allowed on field tiles with no building.
       return tile.terrain === Terrain.Field && tile.building === Building.None;
     },
@@ -163,10 +163,10 @@ export const dynamicActions: Action[] = [
     id: 'add-mine',
     description: 'Add Mine',
     cost: 5,
-    perform: (tile, board) => {
+    perform: (tile, _board) => {
       tile.building = Building.Mine;
     },
-    canApply: (tile, board) => {
+    canApply: (tile, _board) => {
       // Only allowed on mountain tiles with no building.
       return tile.terrain === Terrain.Mountain && tile.building === Building.None;
     },

@@ -101,7 +101,7 @@ export async function optimizeAdvancedBuildingsAsync(
   cancelToken: { canceled: boolean },
   advancedOptions: Record<string, boolean>,
   overallBudget: number,
-  progressCallback?: (progress: number) => void
+  _progressCallback?: (progress: number) => void
 ): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);

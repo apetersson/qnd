@@ -3,7 +3,7 @@ import AdvancedOptions from "./AdvancedOptions";
 import { useBoardState } from "../contexts/BoardContext";
 import { calculateMarketBonus, sumLevelsForFood } from "../optimization/optimizeAdvancedBuildings";
 import { gridSizes } from "../models/sizes";
-import { Building, createInitialBoard, Terrain } from "../models/Board";
+import { Building, createInitialBoard, Terrain, TileData } from "../models/Board";
 import {
   placeAdvancedBuildingsSimple,
   placeBasicResourceBuildings,
@@ -62,7 +62,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
       const parsed = JSON.parse(configText);
       if (parsed?.width && parsed?.height && Array.isArray(parsed.tiles)) {
         const newBoard = createInitialBoard(parsed.width, parsed.height);
-        parsed.tiles.forEach((t: any) => {
+        parsed.tiles.forEach((t: TileData) => {
           const idx = newBoard.tiles.findIndex((bt) => bt.x === t.x && bt.y === t.y);
           if (idx > -1) newBoard.tiles[idx] = {...newBoard.tiles[idx], ...t};
         });
@@ -70,6 +70,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
       }
     } catch (err) {
       alert("Invalid board configuration");
+      console.log(err)
     }
   };
 

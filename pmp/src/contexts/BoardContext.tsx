@@ -8,7 +8,7 @@ import * as pako from "pako";
  * Helper function to encode board state as a compressed, base64 string.
  * This allows us to persist board state in the URL hash.
  */
-function encodeState(state: any): string {
+function encodeState(state: Board): string {
   const json = JSON.stringify(state);
   const compressed = pako.deflate(json);
   // Convert the Uint8Array into a string, then base64-encode it.
@@ -19,7 +19,7 @@ function encodeState(state: any): string {
 /**
  * Helper function to decode board state from a compressed, base64 string.
  */
-function decodeState(encoded: string): any {
+function decodeState(encoded: string): Board {
   const binaryString = atob(encoded);
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
