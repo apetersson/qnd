@@ -118,7 +118,7 @@ function createCompositeAction(
  * @param cancelToken Token to cancel the process.
  * @param dynamicOptions An object mapping dynamic action IDs to booleans.
  * @param overallBudget The maximum stars that can be spent.
- * @param _progressCallback Callback to report progress (0-1).
+ * @param progressCallback Callback to report progress (0-1).
  * @returns A Promise that resolves to the optimized board.
  */
 export async function optimizeAdvancedBuildingsAsync(
@@ -126,7 +126,7 @@ export async function optimizeAdvancedBuildingsAsync(
   cancelToken: { canceled: boolean },
   dynamicOptions: Record<string, boolean>,
   overallBudget: number,
-  _progressCallback?: (progress: number) => void
+  progressCallback?: (progress: number) => void
 ): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);
@@ -157,21 +157,25 @@ export async function optimizeAdvancedBuildingsAsync(
    * @param currentBoard Current board state.
    * @param currentHistory Array recording the history of actions taken.
    * @param currentBudget The accumulated stars budget.
+   * @param startProgress between 0-1
+   * @param endProgress between 0-1
    */
   // Then, inside the function’s candidate generation loop:
   async function rec(
     currentBoard: Board,
     currentHistory: string[],
-    currentBudget: number
+    currentBudget: number,
+    startProgress: number,
+    endProgress: number
   ): Promise<void> {
     if (cancelToken.canceled) return;
     // Enforce overall budget limit.
     if (currentBudget > overallBudget) return;
     iterationCount++;
     if (iterationCount % 1000 === 0) {
-      await new Promise(resolve => setTimeout(resolve, 0));
-      if (cancelToken.canceled) return;
-      // progressCallback?.(iterationCount / 100000); // Example progress update.
+      // e.g., call callback with the midpoint of [startProgress..endProgress]
+      progressCallback?.(startProgress);
+      // Alternatively: progressCallback?.(startProgress);
     }
     // Build the list of candidate actions for the current board.
     const candidateActions: {
@@ -298,9 +302,15 @@ export async function optimizeAdvancedBuildingsAsync(
       return b.score.primary - a.score.primary;
     });
 
-    // Iterate over candidate actions.
-    for (const candidate of candidateActions) {
+    // Each candidate gets a sub-slice of [startProgress..endProgress]
+    const N = candidateActions.length;
+    for (let i = 0; i < N; i++) {
       if (cancelToken.canceled) return;
+      const candidate = candidateActions[i];
+      // The subrange for the i-th child
+      const childStart = startProgress + (endProgress - startProgress) * (i / N);
+      const childEnd = startProgress + (endProgress - startProgress) * ((i + 1) / N);
+
       // Skip candidate if adding its cost would exceed the overall budget.
       if (currentBudget + candidate.action.cost > overallBudget) continue;
       const idx = candidate.index;
@@ -319,7 +329,8 @@ export async function optimizeAdvancedBuildingsAsync(
       candidate.action.perform(tile, currentBoard);
 
       // Recurse with the updated board, history, and budget.
-      await rec(currentBoard, currentHistory, currentBudget + candidate.action.cost);
+      await rec(currentBoard, currentHistory, currentBudget + candidate.action.cost, childStart,
+        childEnd);
 
       // Backtrack: restore original tile state and remove logged action.
       currentBoard.tiles[idx] = {...originalTile};
@@ -327,9 +338,9 @@ export async function optimizeAdvancedBuildingsAsync(
     }
   }
 
-  // Start the recursion.
-  await rec(initialBoard, [], 0);
-
+  // Call rec with the entire 0..1 progress range
+  await rec(initialBoard, [], 0, 0, 1);
+  progressCallback?.(1);
   // Output the results.
   console.log(`Optimization finished. Total iterations: ${iterationCount}. Best bonus: ${bestBonus}`);
   console.log("Optimization history (actions):", bestHistory);

@@ -49,7 +49,10 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
       board,
       cancelTokenRef.current,
       dynamicOptions,
-      overallBudget
+      overallBudget,
+      progress => {
+        console.log("progress", progress);
+      }
     );
     setBoard(result);
 
