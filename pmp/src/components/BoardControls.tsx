@@ -1,12 +1,17 @@
-import React, { ChangeEvent } from "react";
+import React, { useState } from "react";
 import AdvancedOptions from "./AdvancedOptions";
 import { useBoardState } from "../contexts/BoardContext";
 import { calculateMarketBonus, sumLevelsForFood } from "../optimization/optimizeAdvancedBuildings";
 import { gridSizes } from "../models/sizes";
+import { Building, createInitialBoard, Terrain } from "../models/Board";
+import {
+  placeAdvancedBuildingsSimple,
+  placeBasicResourceBuildings,
+  removeNonContributingBasicBuildings
+} from "../placement/placement";
 
 interface BoardControlsProps {
   // Grid and board settings
-  sizeIndex: number;
   dynamicOptions: Record<string, boolean>;
   setDynamicOptions: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   overallBudget: number;
@@ -16,16 +21,6 @@ interface BoardControlsProps {
   emptyEligibleCount: number;
   estimatedStepsExponent: number;
   estimatedTime: string;
-  // JSON config for export/load
-  configText: string;
-  // Event handlers for board controls
-  handleSizeChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-  handleExportClick: () => void;
-  handleApplyClick: () => void;
-  handlePlaceBasicBuildingsClick: () => void;
-  handlePlaceBuildingsClick: () => void;
-  handleRemoveNonContributingClick: () => void;
-  handleConfigChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   // Optimization actions
   startOptimization: () => void;
   stopOptimization: () => void;
@@ -34,28 +29,72 @@ interface BoardControlsProps {
 
 const BoardControls: React.FC<BoardControlsProps> = ({
                                                        activeOptions,
-                                                       configText,
                                                        dynamicOptions,
                                                        emptyEligibleCount,
                                                        estimatedStepsExponent,
                                                        estimatedTime,
-                                                       handleApplyClick,
-                                                       handleConfigChange,
-                                                       handleExportClick,
-                                                       handlePlaceBasicBuildingsClick,
-                                                       handlePlaceBuildingsClick,
-                                                       handleRemoveNonContributingClick,
-                                                       handleSizeChange,
                                                        isOptimizing,
                                                        overallBudget,
                                                        setDynamicOptions,
                                                        setOverallBudget,
-                                                       sizeIndex,
                                                        startOptimization,
                                                        stopOptimization
                                                      }) => {
   // Use board state directly from the context
-  const {board} = useBoardState();
+  const {board, setBoard} = useBoardState();
+  const [sizeIndex, setSizeIndex] = useState<number>(1);
+  // JSON config for export/load
+  const [configText, setConfigText] = useState("");
+
+
+  // Config and board management handlers
+  const handleExportClick = () => {
+    const exportData = {
+      width: board.width,
+      height: board.height,
+      tiles: board.tiles.filter(t => t.terrain !== Terrain.None || t.building !== Building.None || t.cityId)
+    };
+    setConfigText(JSON.stringify(exportData, null, 2));
+  };
+
+  const handleApplyClick = () => {
+    try {
+      const parsed = JSON.parse(configText);
+      if (parsed?.width && parsed?.height && Array.isArray(parsed.tiles)) {
+        const newBoard = createInitialBoard(parsed.width, parsed.height);
+        parsed.tiles.forEach((t: any) => {
+          const idx = newBoard.tiles.findIndex((bt) => bt.x === t.x && bt.y === t.y);
+          if (idx > -1) newBoard.tiles[idx] = {...newBoard.tiles[idx], ...t};
+        });
+        setBoard(newBoard);
+      }
+    } catch (err) {
+      alert("Invalid board configuration");
+    }
+  };
+
+
+  const handleSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const idx = Number(e.target.value);
+    setSizeIndex(idx);
+    setBoard(createInitialBoard(gridSizes[idx].width, gridSizes[idx].height));
+  };
+
+  const handlePlaceBasicBuildingsClick = () => {
+    setBoard(placeBasicResourceBuildings(board));
+  };
+
+  const handlePlaceBuildingsClick = () => {
+    setBoard(placeAdvancedBuildingsSimple(board));
+  };
+
+  const handleRemoveNonContributingClick = () => {
+    setBoard(removeNonContributingBasicBuildings(board));
+  };
+
+  const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setConfigText(e.target.value);
+  };
 
   return (
     <div>

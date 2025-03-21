@@ -1,7 +1,7 @@
 // Filename: ./hooks/useBoardControls.ts
 import { useEffect } from "react";
 import { useBoardState } from "../contexts/BoardContext";
-import { TileData, Terrain, Building } from "../models/Board";
+import { Building, Terrain, TileData } from "../models/Board";
 import { claimCityArea, extendCity, removeCityAssociation } from "../placement/city";
 import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 
@@ -33,7 +33,7 @@ export const buildingKeyMap: Record<string, Building> = Object.keys(buildingKeys
 }, {} as Record<string, Building>);
 
 export function useBoardControls(hoveredTile: TileData | null) {
-  const { board, setBoard } = useBoardState();
+  const {board, setBoard} = useBoardState();
 
   const handleTileAction = (key: string, tile: TileData) => {
     if (key.toLowerCase() === "e") {
@@ -52,9 +52,9 @@ export function useBoardControls(hoveredTile: TileData | null) {
         const updated = prevBoard.tiles.map((t) => {
           if (t.x === tile.x && t.y === tile.y) {
             if (terrainCandidate === Terrain.City) {
-              return { ...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}` };
+              return {...t, terrain: Terrain.City, cityId: `${t.x}-${t.y}`};
             }
-            return { ...t, terrain: terrainCandidate };
+            return {...t, terrain: terrainCandidate};
           }
           return t;
         });
@@ -62,21 +62,21 @@ export function useBoardControls(hoveredTile: TileData | null) {
         if (terrainCandidate === Terrain.City) {
           const cityTile = prevBoard.tiles.find((t) => t.x === tile.x && t.y === tile.y);
           if (cityTile) {
-            return claimCityArea({ ...prevBoard, tiles: updated }, cityTile);
+            return claimCityArea({...prevBoard, tiles: updated}, cityTile);
           }
         } else {
           if (tile.terrain === Terrain.City && tile.cityId) {
-            return removeCityAssociation({ ...prevBoard, tiles: updated }, tile.cityId);
+            return removeCityAssociation({...prevBoard, tiles: updated}, tile.cityId);
           }
         }
-        return { ...prevBoard, tiles: updated };
+        return {...prevBoard, tiles: updated};
       });
     } else if (buildingCandidate !== undefined) {
       setBoard((prevBoard) => ({
         ...prevBoard,
         tiles: prevBoard.tiles.map((t) => {
           if (t.x === tile.x && t.y === tile.y) {
-            if (buildingCandidate === Building.None) return { ...t, building: Building.None };
+            if (buildingCandidate === Building.None) return {...t, building: Building.None};
             if (t.cityId && ADVANCED_BUILDINGS.includes(buildingCandidate)) {
               const alreadyExists = prevBoard.tiles.some(
                 (tile2) => tile2.cityId === t.cityId && tile2.building === buildingCandidate
@@ -111,5 +111,5 @@ export function useBoardControls(hoveredTile: TileData | null) {
     return () => window.removeEventListener("keydown", listener);
   }, [hoveredTile, board]);
 
-  return { handleTileAction, buildingKeyMap };
+  return {handleTileAction, buildingKeyMap};
 }
