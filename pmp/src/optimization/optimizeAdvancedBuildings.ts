@@ -81,6 +81,28 @@ function isBuildingPlacementAction(action: Action): boolean {
   );
 }
 
+/**
+ * Compute a 32-bit FNV-1a hash of a string.
+ * Returns an 8-character hexadecimal string.
+ */
+function hashString(str: string): string {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  // Convert to unsigned 32-bit integer and then to hex.
+  return ("00000000" + (hash >>> 0).toString(16)).slice(-8);
+}
+
+/**
+ * Compute a hash for the board state.
+ * We assume that board.tiles is in a consistent order.
+ */
+function boardHash(board: Board): string {
+  return hashString(JSON.stringify(board.tiles));
+}
+
 /** Create a one-off "composite" Action object that will do the prep and follow-up in one go. */
 function createCompositeAction(
   prepAction: Action,
@@ -146,6 +168,9 @@ export async function optimizeAdvancedBuildingsAsync(
   let bestHistory: string[] = [];
   let bestBudget = 0;
 
+  // Memo table: key is board state, value is the minimum cost at which we reached that state.
+  const memo = new Map<string, number>();
+
   /**
    * Recursive function that, at each call, builds an upfront list of candidate actions
    * for the current board state. Each candidate is simulated to compute a score,
@@ -171,11 +196,22 @@ export async function optimizeAdvancedBuildingsAsync(
     if (cancelToken.canceled) return;
     // Enforce overall budget limit.
     if (currentBudget > overallBudget) return;
+
+    // --- Memoization: compute a key for the current board state.
+    const key = boardHash(currentBoard);
+    // If we have seen this state before with a lower (or equal) cost, prune.
+    if (memo.has(key) && memo.get(key)! <= currentBudget) {
+      return;
+    }
+    // Otherwise, store the current cost.
+    memo.set(key, currentBudget);
+
     iterationCount++;
     if (iterationCount % 10000 === 0) {
       await new Promise(resolve => setTimeout(resolve, 0));
       if (cancelToken.canceled) return;
       // e.g., call callback with the midpoint of [startProgress..endProgress]
+      console.log(memo.size, "memo.size")
       progressCallback?.(startProgress);
       await new Promise(resolve => setTimeout(resolve, 0));
       // Alternatively: progressCallback?.(startProgress);
@@ -343,11 +379,14 @@ export async function optimizeAdvancedBuildingsAsync(
 
   // Call rec with the entire 0..1 progress range
   await rec(initialBoard, [], 0, 0, 1);
-  progressCallback?.(1);
+  if (!cancelToken.canceled) {
+    progressCallback?.(1);
+  }
   // Output the results.
   console.log(`Optimization finished. Total iterations: ${iterationCount}. Best bonus: ${bestBonus}`);
   console.log("Optimization history (actions):", bestHistory);
   console.log("Total stars budget used:", bestBudget);
+  console.log("total boards checked", memo.size);
 
   return bestBoard;
 }
