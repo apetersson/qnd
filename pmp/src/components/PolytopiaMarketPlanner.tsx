@@ -3,8 +3,6 @@ import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Board, Building, createInitialBoard, Terrain, TileData } from "../models/Board";
 import { estimateCompletionTime, parseBuildingValue, parseTerrainValue } from "../utils/helpers";
 import {
-  getBuildingLevel,
-  getMarketLevel,
   placeAdvancedBuildingsSimple,
   placeBasicResourceBuildings,
   removeNonContributingBasicBuildings,
@@ -20,6 +18,7 @@ import * as pako from "pako";
 import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 import { dynamicActions } from "../optimization/action";
 import AdvancedOptions from "./AdvancedOptions";
+import BoardGrid from "./BoardGrid";
 
 // Hilfsfunktionen zur Kodierung und Dekodierung
 function encodeState(state: any): string {
@@ -466,51 +465,18 @@ export default function PolytopiaMarketPlanner() {
         value={configText}
         onChange={handleConfigChange}
       />
-      <div
-        style={{marginTop: 20, ...boardStyle, gridTemplateColumns: `repeat(${board.width}, 40px)`}}
-        onMouseLeave={() => setHoveredTile(null)}
-      >
-        {board.tiles.map((tile) => {
-          const baseColor = getTerrainColor(tile.terrain);
-          const bldgColor = getBuildingColor(tile.building);
-          const borderStyle = computeTileBorderStyle(tile, board);
-          let displayText = "";
-          if (tile.building !== Building.None) {
-            if (tile.building === Building.Market) {
-              displayText = getMarketLevel(tile, board).toString();
-            } else if ([Building.Sawmill, Building.Windmill, Building.Forge].includes(tile.building)) {
-              displayText = `${buildingKeys[tile.building].toUpperCase()}${getBuildingLevel(tile, board)}`;
-            } else {
-              displayText = buildingKeys[tile.building].toUpperCase();
-            }
-          }
-          return (
-            <div
-              key={`${tile.x}-${tile.y}`}
-              style={{...tileStyle, ...borderStyle, backgroundColor: baseColor}}
-              onMouseEnter={() => setHoveredTile(tile)}
-              onClick={(e) => {
-                setSelectedTile(tile);
-                setMenuAnchor(e.currentTarget);
-              }}
-            >
-              <div
-                style={{
-                  width: "90%",
-                  height: "60%",
-                  backgroundColor: bldgColor,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: bldgColor === "transparent" ? "none" : "1px solid #999",
-                }}
-              >
-                {displayText}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <BoardGrid
+        board={board}
+        boardStyle={boardStyle}
+        tileStyle={tileStyle}
+        getTerrainColor={getTerrainColor}
+        getBuildingColor={getBuildingColor}
+        computeTileBorderStyle={computeTileBorderStyle}
+        setHoveredTile={setHoveredTile}
+        setSelectedTile={setSelectedTile}
+        setMenuAnchor={setMenuAnchor}
+        buildingKeys={buildingKeys}
+      />
       <Menu
 
         anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => {
