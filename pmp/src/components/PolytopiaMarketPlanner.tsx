@@ -15,25 +15,8 @@ import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 import { dynamicActions } from "../optimization/action";
 import BoardGrid from "./BoardGrid";
 import BoardControls from "./BoardControls";
+import { useBoardState } from "../contexts/BoardContext";
 
-// Hilfsfunktionen zur Kodierung und Dekodierung
-function encodeState(state: any): string {
-  const json = JSON.stringify(state);
-  const compressed = pako.deflate(json);
-  // Konvertiere Uint8Array in einen String und base64-kodiere
-  const binaryString = String.fromCharCode(...Array.from(compressed));
-  return btoa(binaryString);
-}
-
-function decodeState(encoded: string): any {
-  const binaryString = atob(encoded);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  const decompressed = pako.inflate(bytes, {to: "string"});
-  return JSON.parse(decompressed);
-}
 
 const terrainKeyMap: Record<string, Terrain> = {
   n: Terrain.None,
@@ -137,30 +120,15 @@ const gridSizes = [
 ];
 
 export default function PolytopiaMarketPlanner() {
+  // Use board state from context.
+  const {board, setBoard} = useBoardState();
+
+  // Other local state remains.
   const [sizeIndex, setSizeIndex] = useState<number>(0);
-  const initialWidth = gridSizes[0].width;
-  const initialHeight = gridSizes[0].height;
-  const [board, setBoard] = useState<Board>(() => {
-    // Beim Initialisieren versuchen wir, einen komprimierten Zustand aus dem URL-Hash zu laden.
-    if (window.location.hash.length > 1) {
-      try {
-        const encoded = window.location.hash.substring(1);
-        const loadedBoard = decodeState(encoded);
-        const foundIndex = gridSizes.findIndex(
-          (sz) => sz.width === loadedBoard.width && sz.height === loadedBoard.height
-        );
-        setSizeIndex(foundIndex >= 0 ? foundIndex : -1);
-        return loadedBoard;
-      } catch (err) {
-        console.error("Error decoding board state from URL:", err);
-      }
-    }
-    return createInitialBoard(initialWidth, initialHeight);
-  });
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [configText, setConfigText] = useState("");
 
-  // Advanced building options (now using dynamicOptions from dynamicActions)
+  // Advanced building options using dynamicOptions from dynamicActions.
   const [dynamicOptions, setDynamicOptions] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     dynamicActions.forEach(action => {
@@ -183,9 +151,9 @@ export default function PolytopiaMarketPlanner() {
 
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
   const [isOptimizing, setIsOptimizing] = useState(false);
-  // States for popup editing
+  // Popup menu state.
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
   const startOptimization = async () => {
     cancelTokenRef.current = {canceled: false};
@@ -309,7 +277,12 @@ export default function PolytopiaMarketPlanner() {
   function handleApplyClick() {
     try {
       const parsed = JSON.parse(configText);
-      if (typeof parsed.width === "number" && typeof parsed.height === "number" && Array.isArray(parsed.tiles)) {
+      if (
+        typeof parsed.width === "number" &&
+        typeof parsed.height === "number" &&
+        Array.isArray(parsed.tiles)
+      ) {
+        // Create a new board from the parsed JSON.
         const newBoard = createInitialBoard(parsed.width, parsed.height);
         for (const tileObj of parsed.tiles) {
           const x = tileObj.x;
@@ -362,15 +335,6 @@ export default function PolytopiaMarketPlanner() {
     setBoard(removeNonContributingBasicBuildings(board));
   }
 
-  // Update URL hash when board changes.
-  useEffect(() => {
-    try {
-      const encodedState = encodeState(board);
-      window.history.replaceState(null, "", `#${encodedState}`);
-    } catch (err) {
-      console.error("Error encoding board state:", err);
-    }
-  }, [board]);
 
   // Dynamic popup actions.
   const dynamicPopupActions = [
