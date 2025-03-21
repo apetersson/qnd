@@ -1,7 +1,6 @@
 // Filename: ./components/PolytopiaMarketPlanner.tsx
 
 import React, { useEffect, useState } from "react";
-import { MenuItem } from "@mui/material";
 import BoardGrid from "./BoardGrid";
 import { MouseOptions } from "./MouseOptions";
 import { TileData } from "../models/Board";
@@ -72,18 +71,7 @@ export default function PolytopiaMarketPlanner() {
       <MouseOptions
         anchorEl={menuAnchor}
         onClose={() => setMenuAnchor(null)}
-        callbackfn={(action) => (
-          <MenuItem
-            key={action.key}
-            onClick={() => {
-              if (selectedTile) handleTileAction(action.key, selectedTile);
-              setMenuAnchor(null);
-            }}
-          >
-            {action.label}
-          </MenuItem>
-        )}
-      />
-    </div>
+        selectedTile={selectedTile}
+      /></div>
   );
 }

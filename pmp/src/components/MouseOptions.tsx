@@ -1,12 +1,20 @@
+// Filename: ./components/MouseOptions.tsx
 import React from "react";
-import { Menu } from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 import { buildingKeyMap, terrainKeyMap } from "../contexts/BoardActionsContext";
+import { Terrain, TileData } from "../models/Board";
+import { useBoardActions } from "../contexts/BoardActionsContext";
 
-export function MouseOptions(props: {
+interface MouseOptionsProps {
   anchorEl: HTMLElement | null;
   onClose: () => void;
-  callbackfn: (action: { key: string; label: string }) => React.JSX.Element;
-}) {
+  selectedTile: TileData | null;
+}
+
+export function MouseOptions({ anchorEl, onClose, selectedTile }: MouseOptionsProps) {
+  const { handleTileAction } = useBoardActions();
+
+  // Base actions for terrain and buildings
   const dynamicPopupActions = [
     ...Object.entries(terrainKeyMap).map(([key, terrain]) => ({
       key,
@@ -18,9 +26,27 @@ export function MouseOptions(props: {
     })),
   ];
 
+  // Add Extend City option if selected tile is a city
+  if (selectedTile?.terrain === Terrain.City && selectedTile.cityId) {
+    dynamicPopupActions.push({
+      key: "e",
+      label: "Extend City",
+    });
+  }
+
   return (
-    <Menu anchorEl={props.anchorEl} open={!!props.anchorEl} onClose={props.onClose}>
-      {dynamicPopupActions.map(props.callbackfn)}
+    <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
+      {dynamicPopupActions.map((action) => (
+        <MenuItem
+          key={action.key}
+          onClick={() => {
+            if (selectedTile) handleTileAction(action.key, selectedTile);
+            onClose();
+          }}
+        >
+          {action.label}
+        </MenuItem>
+      ))}
     </Menu>
   );
 }
