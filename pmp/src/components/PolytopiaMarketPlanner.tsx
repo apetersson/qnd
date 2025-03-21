@@ -11,7 +11,6 @@ import {
 } from "../placement/placement";
 import {
   calculateMarketBonus,
-  dynamicActions,
   optimizeAdvancedBuildingsAsync,
   sumLevelsForFood
 } from "../optimization/optimizeAdvancedBuildings";
@@ -19,6 +18,7 @@ import { claimCityArea, extendCity, removeCityAssociation } from "../placement/c
 import { Menu, MenuItem } from "@mui/material";
 import * as pako from "pako";
 import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
+import { dynamicActions } from "../optimization/action";
 
 // Hilfsfunktionen zur Kodierung und Dekodierung
 function encodeState(state: any): string {
