@@ -19,6 +19,7 @@ import { Menu, MenuItem } from "@mui/material";
 import * as pako from "pako";
 import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
 import { dynamicActions } from "../optimization/action";
+import AdvancedOptions from "./AdvancedOptions";
 
 // Hilfsfunktionen zur Kodierung und Dekodierung
 function encodeState(state: any): string {
@@ -200,8 +201,8 @@ export default function PolytopiaMarketPlanner() {
       dynamicOptions,
       overallBudget,
       (progress) => {
-      console.log("progress", progress);
-    });
+        console.log("progress", progress);
+      });
     setBoard(result);
     setIsOptimizing(false);
   };
@@ -412,36 +413,15 @@ export default function PolytopiaMarketPlanner() {
           ))}
         </select>
         <p>
-          Current Board: {`${gridSizes[sizeIndex].width}x${gridSizes[sizeIndex].height}`} with {board.width * board.height} tiles
+          Current
+          Board: {`${gridSizes[sizeIndex].width}x${gridSizes[sizeIndex].height}`} with {board.width * board.height} tiles
         </p>
-        <strong>Advanced Building Options</strong>
-        <div style={{marginTop: 8}}>
-          {/* Render checkboxes for each dynamic action */}
-          {dynamicActions.map(action => (
-            <label key={action.id} style={{ marginRight: "12px" }}>
-            <input
-              type="checkbox"
-                checked={dynamicOptions[action.id]}
-                onChange={(e) =>
-                  setDynamicOptions(prev => ({
-                    ...prev,
-                    [action.id]: e.target.checked,
-                  }))
-                }
-            />{" "}
-              {action.description}
-          </label>
-          ))}
-          <label style={{ marginLeft: "12px" }}>
-            <span>Overall Budget (stars): </span>
-            <input
-              type="number"
-              value={overallBudget}
-              onChange={(e) => setOverallBudget(Number(e.target.value))}
-              style={{ width: "60px" }}
-            />
-          </label>
-        </div>
+        <AdvancedOptions
+          dynamicOptions={dynamicOptions}
+          setDynamicOptions={setDynamicOptions}
+          overallBudget={overallBudget}
+          setOverallBudget={setOverallBudget}
+        />
         <p style={{fontSize: "0.9rem", marginTop: "4px"}}>
           {`Estimated combinations: ${activeOptions}^${emptyEligibleCount} ≈ 10^${estimatedStepsExponent.toFixed(
             2
@@ -463,7 +443,7 @@ export default function PolytopiaMarketPlanner() {
       <div style={{display: "inline-flex", alignItems: "center", marginLeft: 8}}>
         {!isOptimizing && (
           <button onClick={startOptimization} disabled={isOptimizing}>
-          {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
+            {isOptimizing ? "Optimizing..." : "Optimize Advanced Buildings (Brute Force)"}
           </button>
         )}
         {isOptimizing && (
