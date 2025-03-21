@@ -14,6 +14,7 @@ interface OptimizationContextType {
   isOptimizing: boolean;
   startOptimization: () => Promise<void>;
   stopOptimization: () => void;
+  progress: number;
 }
 
 const OptimizationContext = createContext<OptimizationContextType | undefined>(
@@ -39,19 +40,25 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
   );
   const [overallBudget, setOverallBudget] = useState<number>(30);
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0); // <--- PROGRESS state
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
 
   const startOptimization = async () => {
     cancelTokenRef.current = {canceled: false};
     setIsOptimizing(true);
+    // Reset progress bar to 0
+    setProgress(0);
 
     const result = await optimizeAdvancedBuildingsAsync(
       board,
       cancelTokenRef.current,
       dynamicOptions,
       overallBudget,
-      progress => {
-        console.log("progress", progress);
+      (fraction) => {
+        console.log("fraction", fraction);
+        // This callback is invoked occasionally from the recursion
+        // fraction is in [0..1]
+        setProgress(fraction);
       }
     );
     setBoard(result);
@@ -62,6 +69,7 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
   const stopOptimization = () => {
     cancelTokenRef.current.canceled = true;
     setIsOptimizing(false);
+    setProgress(0); // or keep the last known progress
   };
 
   return (
@@ -74,6 +82,7 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
         isOptimizing,
         startOptimization,
         stopOptimization,
+        progress,
       }}
     >
       {children}

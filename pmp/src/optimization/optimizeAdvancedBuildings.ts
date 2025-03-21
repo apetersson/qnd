@@ -172,9 +172,12 @@ export async function optimizeAdvancedBuildingsAsync(
     // Enforce overall budget limit.
     if (currentBudget > overallBudget) return;
     iterationCount++;
-    if (iterationCount % 1000 === 0) {
+    if (iterationCount % 10000 === 0) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      if (cancelToken.canceled) return;
       // e.g., call callback with the midpoint of [startProgress..endProgress]
       progressCallback?.(startProgress);
+      await new Promise(resolve => setTimeout(resolve, 0));
       // Alternatively: progressCallback?.(startProgress);
     }
     // Build the list of candidate actions for the current board.

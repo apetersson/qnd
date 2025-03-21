@@ -4,7 +4,7 @@ import { useOptimizationContext } from "../contexts/OptimizationContext";
 import { estimateCompletionTime } from "../utils/helpers";
 import { calculateMarketBonus, sumLevelsForFood } from "../optimization/optimizeAdvancedBuildings";
 import { AdvancedOptions } from "./AdvancedOptions";
-
+import ProgressBar from "./ProgressBar";
 
 const OptimizationControls: React.FC = () => {
   const {board} = useBoardState();
@@ -16,6 +16,7 @@ const OptimizationControls: React.FC = () => {
     isOptimizing,
     startOptimization,
     stopOptimization,
+    progress, // <--- from the context
   } = useOptimizationContext();
 
   // Compute some stats for estimation
@@ -52,6 +53,9 @@ const OptimizationControls: React.FC = () => {
           Stop Optimize
         </button>
       )}
+
+      {/* Show the progress bar at all times or conditionally */}
+      <ProgressBar progress={progress}/>
     </div>
   );
 };
