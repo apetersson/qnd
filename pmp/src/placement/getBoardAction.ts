@@ -13,21 +13,21 @@ export function getBoardAction(
 
   // 1) Check for "extend city"
   if (lowerKey === "e") {
-    // can apply?
-    if (tile.terrain === Terrain.City && tile.cityId) {
+    // Re-fetch the latest state for this tile
+    const updatedTile = board.tiles.find((t) => t.x === tile.x && t.y === tile.y);
+    if (updatedTile && updatedTile.terrain === Terrain.City && updatedTile.cityId) {
       return {
         key: "e",
         label: "Extend City",
         perform: (boardRef) => {
-          // find the same tile in boardRef
-          const updatedTile = boardRef.tiles.find((t) => t.x === tile.x && t.y === tile.y);
-          if (updatedTile) {
-            performExtendCity(updatedTile, boardRef);
+          // Again, re-read the tile from the updated board
+          const tileToExtend = boardRef.tiles.find((t) => t.x === tile.x && t.y === tile.y);
+          if (tileToExtend) {
+            performExtendCity(tileToExtend, boardRef);
           }
         },
       };
     }
-    // not applicable
     return null;
   }
 
