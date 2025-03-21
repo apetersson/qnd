@@ -161,3 +161,4 @@ export const dynamicActions: Action[] = [
     canApply: (tile, _board) => tile.terrain === Terrain.Mountain && tile.building === Building.None,
   },
 ];
+

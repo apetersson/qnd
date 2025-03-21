@@ -17,6 +17,7 @@ export enum Building {
   Windmill = "WINDMILL",
   Forge = "FORGE",
   Market = "MARKET",
+  Monument = "MONUMENT",
 }
 
 export interface TileData {

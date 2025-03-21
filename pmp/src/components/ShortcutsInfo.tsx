@@ -31,8 +31,8 @@ const ShortcutsInfo: React.FC = () => {
         </ul>
 
         <p>
-          Tip: Press <strong>"c"</strong> to set a tile as City (automatically
-          claim adjacent tiles), <strong>"e"</strong> to extend the hovered city.
+          Tip: Press <strong>&quot;c&quot;</strong> to set a tile as City (automatically
+          claim adjacent tiles), <strong>&quot;e&quot;</strong> to extend the hovered city.
         </p>
       </div>
     </>

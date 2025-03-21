@@ -1,9 +1,11 @@
-// Filename: ./components/MouseOptions.tsx
+// MouseOptions.tsx
 import React from "react";
 import { Menu, MenuItem } from "@mui/material";
-import { buildingKeyMap, terrainKeyMap } from "../contexts/BoardActionsContext";
-import { Terrain, TileData } from "../models/Board";
-import { useBoardActions } from "../contexts/BoardActionsContext";
+import { buildingKeyMap, terrainKeyMap, useBoardActions } from "../contexts/BoardActionsContext";
+import { TileData } from "../models/Board";
+import { useBoardState } from "../contexts/BoardStateContext";
+import { BoardAction } from "../placement/BoardAction";
+import { getBoardAction } from "../placement/getBoardAction";
 
 interface MouseOptionsProps {
   anchorEl: HTMLElement | null;
@@ -11,36 +13,46 @@ interface MouseOptionsProps {
   selectedTile: TileData | null;
 }
 
-export function MouseOptions({ anchorEl, onClose, selectedTile }: MouseOptionsProps) {
-  const { handleTileAction } = useBoardActions();
+export function MouseOptions({anchorEl, onClose, selectedTile}: MouseOptionsProps) {
+  const {handleTileAction} = useBoardActions();
+  const {board} = useBoardState();
 
-  // Base actions for terrain and buildings
-  const dynamicPopupActions = [
-    ...Object.entries(terrainKeyMap).map(([key, terrain]) => ({
-      key,
-      label: `Set Terrain: ${terrain}`,
-    })),
-    ...Object.entries(buildingKeyMap).map(([key, building]) => ({
-      key,
-      label: `Set Building: ${building}`,
-    })),
-  ];
-
-  // Add Extend City option if selected tile is a city
-  if (selectedTile?.terrain === Terrain.City && selectedTile.cityId) {
-    dynamicPopupActions.push({
-      key: "e",
-      label: "Extend City",
-    });
+  if (!selectedTile) {
+    return (
+      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
+        <MenuItem onClick={onClose}>No tile selected</MenuItem>
+      </Menu>
+    );
   }
+
+  // We’ll build a comprehensive list of all possible keys we want to show:
+  //  - all terrain keys from terrainKeyMap
+  //  - all building keys from buildingKeyMap
+  //  - plus special single-char keys if any
+  //   e.g. "e" for city extension
+  const allKeys = new Set<string>();
+
+  // from terrainKeyMap
+  Object.keys(terrainKeyMap).forEach((k) => allKeys.add(k));
+  // from buildingKeyMap
+  Object.keys(buildingKeyMap).forEach((k) => allKeys.add(k));
+  // special ones
+  allKeys.add("e");
+
+  // Now we see which ones yield a valid BoardAction for the selected tile
+  const validActions = Array.from(allKeys)
+    .map((k) => {
+      return getBoardAction(k, selectedTile, board); // either BoardAction or null
+    })
+    .filter((a) => a !== null) as BoardAction[]; // filter out null
 
   return (
     <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
-      {dynamicPopupActions.map((action) => (
+      {validActions.map((action) => (
         <MenuItem
           key={action.key}
           onClick={() => {
-            if (selectedTile) handleTileAction(action.key, selectedTile);
+            handleTileAction(action.key, selectedTile);
             onClose();
           }}
         >
