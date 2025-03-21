@@ -1,4 +1,3 @@
-// getBoardAction.ts
 import { Board, Terrain, TileData } from "../models/Board";
 import { buildingKeyMap, terrainKeyMap } from "../contexts/BoardActionsContext";
 import { performExtendCity, performSetBuilding, performSetTerrain } from "./boardActionHelpers";
@@ -33,8 +32,8 @@ export function getBoardAction(
   }
 
   // 2) Check if it’s a terrain key
-  if (terrainKeyMap[lowerKey] !== undefined) {
-    const newTerrain = terrainKeyMap[lowerKey];
+  const newTerrain = terrainKeyMap[lowerKey];
+  if (newTerrain) {
     // canApply? If you have more specific rules, do them here
     // e.g. "can't set terrain to City if there's already a building"
     // or "can't set city if tile is water" etc.
@@ -51,8 +50,8 @@ export function getBoardAction(
   }
 
   // 3) Check if it’s a building key
-  if (buildingKeyMap[lowerKey] !== undefined) {
-    const newBldg = buildingKeyMap[lowerKey];
+  const newBldg = buildingKeyMap[lowerKey];
+  if (newBldg) {
     // canApply? For example, skip if tile.terrain === City, etc.
     if (tile.terrain === Terrain.City) {
       return null;

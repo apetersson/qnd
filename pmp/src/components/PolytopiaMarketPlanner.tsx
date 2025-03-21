@@ -1,6 +1,6 @@
 // Filename: ./components/PolytopiaMarketPlanner.tsx
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BoardGrid from "./BoardGrid";
 import { MouseOptions } from "./MouseOptions";
 import { TileData } from "../models/Board";

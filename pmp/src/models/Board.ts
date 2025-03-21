@@ -47,12 +47,12 @@ export function createInitialBoard(width: number, height: number): Board {
       });
     }
   }
-  return { width, height, tiles };
+  return {width, height, tiles};
 }
 
 export function getNeighbors(tile: TileData, board: Board): TileData[] {
-  const { x, y } = tile;
-  const offsets = [
+  const {x, y} = tile;
+  const offsets: [number, number][] = [
     [0, -1],
     [0, 1],
     [-1, 0],
@@ -62,6 +62,7 @@ export function getNeighbors(tile: TileData, board: Board): TileData[] {
     [-1, 1],
     [1, 1],
   ];
+
   return offsets
     .map(([dx, dy]) => board.tiles.find((t) => t.x === x + dx && t.y === y + dy))
     .filter((t): t is TileData => Boolean(t));

@@ -1,4 +1,3 @@
-// BoardAction.ts
 import { Board } from "../models/Board";
 
 export interface BoardAction {

@@ -1,4 +1,3 @@
-// src/placement/placement.ts
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
 import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
 
@@ -34,12 +33,13 @@ export function placeBasicResourceBuildings(board: Board): Board {
     // Only place basic buildings in tiles assigned to a city
     if (tile.cityId === null) return;
     if (tile.building !== Building.None) return;
+    let newBoardTile = newBoard.tiles[i]!;
     if (tile.terrain === Terrain.Field) {
-      newBoard.tiles[i].building = Building.Farm;
+      newBoardTile.building = Building.Farm;
     } else if (tile.terrain === Terrain.Forest) {
-      newBoard.tiles[i].building = Building.LumberHut;
+      newBoardTile.building = Building.LumberHut;
     } else if (tile.terrain === Terrain.Mountain) {
-      newBoard.tiles[i].building = Building.Mine;
+      newBoardTile.building = Building.Mine;
     }
   });
   return newBoard;
@@ -91,7 +91,8 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
           t => t.x === bestCandidate!.x && t.y === bestCandidate!.y
         );
         if (idx !== -1) {
-          newBoard.tiles[idx].building = advType;
+          let newBoardTile = newBoard.tiles[idx]!;
+          newBoardTile.building = advType;
         }
       }
     }
@@ -102,20 +103,21 @@ export function placeAdvancedBuildingsSimple(board: Board): Board {
 export function removeNonContributingBasicBuildings(board: Board): Board {
   const newBoard: Board = {...board, tiles: board.tiles.map((t) => ({...t}))};
   newBoard.tiles.forEach((tile, i) => {
+    let newBoardTile = newBoard.tiles[i]!;
     if (tile.building === Building.Farm) {
       const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Windmill);
       if (!supports) {
-        newBoard.tiles[i].building = Building.None;
+        newBoardTile.building = Building.None;
       }
     } else if (tile.building === Building.LumberHut) {
       const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Sawmill);
       if (!supports) {
-        newBoard.tiles[i].building = Building.None;
+        newBoardTile.building = Building.None;
       }
     } else if (tile.building === Building.Mine) {
       const supports = getNeighbors(tile, newBoard).some((n) => n.building === Building.Forge);
       if (!supports) {
-        newBoard.tiles[i].building = Building.None;
+        newBoardTile.building = Building.None;
       }
     }
   });

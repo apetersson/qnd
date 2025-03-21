@@ -1,5 +1,3 @@
-// boardActionHelpers.ts
-
 import { Board, Building, Terrain, TileData } from "../models/Board";
 import { claimCityArea, extendCity, removeCityAssociation } from "./city";
 import { ADVANCED_BUILDINGS } from "../models/buildingTypes";

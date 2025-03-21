@@ -15,7 +15,7 @@ const BoardSizeSelector: React.FC = () => {
   const handleSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const idx = Number(e.target.value);
     setSizeIndex(idx);
-    const {width, height} = gridSizes[idx];
+    const {width, height} = gridSizes[idx]!;
     setBoard(createInitialBoard(width, height));
   };
 

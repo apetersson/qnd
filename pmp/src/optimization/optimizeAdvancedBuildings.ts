@@ -1,5 +1,3 @@
-// src/optimization/optimizeAdvancedBuildings.ts
-
 import { Board, Building, getNeighbors, TileData } from "../models/Board";
 import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
 import { getBuildingLevel, MAX_MARKET_LEVEL } from "../placement/placement";
@@ -36,6 +34,7 @@ export function calculateMarketBonus(board: Board): number {
 export function sumLevelsForFood(board: Board): number {
   let sum = 0;
   const buildingFactors: Record<Building, number> = {
+    MONUMENT: 3,
     [Building.LumberHut]: 1,
     [Building.Farm]: 2,
     [Building.Mine]: 2,
@@ -226,7 +225,7 @@ export async function optimizeAdvancedBuildingsAsync(
     }[] = [];
 
     for (let i = 0; i < currentBoard.tiles.length; i++) {
-      const tile = currentBoard.tiles[i];
+      const tile = currentBoard.tiles[i]!;
       if (!tile.cityId) continue;
 
       // Go through every toggled-on action:
@@ -242,7 +241,7 @@ export async function optimizeAdvancedBuildingsAsync(
           }
 
           const tempBoard = copyBoard(currentBoard);
-          action.perform(tempBoard.tiles[i], tempBoard);
+          action.perform(tempBoard.tiles[i]!, tempBoard);
           const primary = calculateMarketBonus(tempBoard);
           const secondary = sumLevelsForFood(tempBoard);
           candidateActions.push({
@@ -264,7 +263,7 @@ export async function optimizeAdvancedBuildingsAsync(
             }
             // We handle it like a single-step action, ignoring the normal "composite" logic.
             const tempBoard = copyBoard(currentBoard);
-            action.perform(tempBoard.tiles[i], tempBoard);
+            action.perform(tempBoard.tiles[i]!, tempBoard);
             const primary = calculateMarketBonus(tempBoard);
             const secondary = sumLevelsForFood(tempBoard);
 
@@ -280,14 +279,14 @@ export async function optimizeAdvancedBuildingsAsync(
 
           // Step A: Apply the prep action to a temp board
           const tempBoardPrep = copyBoard(currentBoard);
-          action.perform(tempBoardPrep.tiles[i], tempBoardPrep);
+          action.perform(tempBoardPrep.tiles[i]!, tempBoardPrep);
 
           // Step B: Check for all building-laying actions that are toggled on
           for (const buildingAction of availableActions) {
             if (!dynamicOptions[buildingAction.id]) continue;
             if (!isBuildingPlacementAction(buildingAction)) continue;
 
-            const tileAfterPrep = tempBoardPrep.tiles[i];
+            const tileAfterPrep = tempBoardPrep.tiles[i]!;
             if (!buildingAction.canApply(tileAfterPrep, tempBoardPrep)) {
               continue;
             }
@@ -300,7 +299,7 @@ export async function optimizeAdvancedBuildingsAsync(
             }
             // Step D: Apply the composite to measure final score
             const tempBoardFinal = copyBoard(currentBoard);
-            composite.perform(tempBoardFinal.tiles[i], tempBoardFinal);
+            composite.perform(tempBoardFinal.tiles[i]!, tempBoardFinal);
             const primary = calculateMarketBonus(tempBoardFinal);
             const secondary = sumLevelsForFood(tempBoardFinal);
 
@@ -350,7 +349,7 @@ export async function optimizeAdvancedBuildingsAsync(
     const N = candidateActions.length;
     for (let i = 0; i < N; i++) {
       if (cancelToken.canceled) return;
-      const candidate = candidateActions[i];
+      const candidate = candidateActions[i]!;
       // The subrange for the i-th child
       const childStart = startProgress + (endProgress - startProgress) * (i / N);
       const childEnd = startProgress + (endProgress - startProgress) * ((i + 1) / N);
@@ -358,7 +357,7 @@ export async function optimizeAdvancedBuildingsAsync(
       // Skip candidate if adding its cost would exceed the overall budget.
       if (currentBudget + candidate.action.cost > overallBudget) continue;
       const idx = candidate.index;
-      const tile = currentBoard.tiles[idx];
+      const tile = currentBoard.tiles[idx]!;
       // Save original tile for backtracking.
       const originalTile: TileData = {...tile};
 

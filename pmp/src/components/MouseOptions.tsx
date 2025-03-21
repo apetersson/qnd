@@ -1,5 +1,3 @@
-// MouseOptions.tsx
-import React from "react";
 import { Menu, MenuItem } from "@mui/material";
 import { buildingKeyMap, terrainKeyMap, useBoardActions } from "../contexts/BoardActionsContext";
 import { TileData } from "../models/Board";
