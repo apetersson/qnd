@@ -1,13 +1,12 @@
 import React from "react";
 import { Menu } from "@mui/material";
-import { buildingKeyMap, terrainKeyMap } from "../hooks/useBoardControls";
+import { buildingKeyMap, terrainKeyMap } from "../contexts/BoardActionsContext";
 
 export function MouseOptions(props: {
-  anchorEl: HTMLElement | null,
-  onClose: () => void,
-  callbackfn: (action: { key: string, label: string }) => React.JSX.Element
+  anchorEl: HTMLElement | null;
+  onClose: () => void;
+  callbackfn: (action: { key: string; label: string }) => React.JSX.Element;
 }) {
-
   const dynamicPopupActions = [
     ...Object.entries(terrainKeyMap).map(([key, terrain]) => ({
       key,
@@ -19,11 +18,9 @@ export function MouseOptions(props: {
     })),
   ];
 
-  return <Menu
-    anchorEl={props.anchorEl}
-    open={!!props.anchorEl}
-    onClose={props.onClose}
-  >
-    {dynamicPopupActions.map(props.callbackfn)}
-  </Menu>;
+  return (
+    <Menu anchorEl={props.anchorEl} open={!!props.anchorEl} onClose={props.onClose}>
+      {dynamicPopupActions.map(props.callbackfn)}
+    </Menu>
+  );
 }

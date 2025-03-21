@@ -1,15 +1,23 @@
+// Filename: ./main.tsx
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import PolytopiaMarketPlanner from "./components/PolytopiaMarketPlanner";
-import { BoardProvider } from "./contexts/BoardContext";
+import { BoardStateProvider } from "./contexts/BoardStateContext";
+import { BoardActionsProvider } from "./contexts/BoardActionsContext";
+import { OptimizationProvider } from "./contexts/OptimizationContext";
 
 const rootElement = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <BoardProvider initialWidth={11} initialHeight={11}>
-      <PolytopiaMarketPlanner/>
-    </BoardProvider>
+    <BoardStateProvider initialWidth={11} initialHeight={11}>
+      <BoardActionsProvider>
+        <OptimizationProvider>
+          <PolytopiaMarketPlanner />
+        </OptimizationProvider>
+      </BoardActionsProvider>
+    </BoardStateProvider>
   </React.StrictMode>
 );
