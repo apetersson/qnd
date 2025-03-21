@@ -17,6 +17,9 @@ const ShortcutsInfo: React.FC = () => {
               <strong>{key}</strong> – {terrain}
             </li>
           ))}
+          <li key={`terrain-e`}>
+            <strong>e</strong> – Extend City
+          </li>
         </ul>
 
         <p>
