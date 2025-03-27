@@ -36,8 +36,8 @@ const BoardStateContext = createContext<BoardStateContextType | undefined>(
 
 interface BoardStateProviderProps {
   children: ReactNode;
-  initialWidth?: number;
-  initialHeight?: number;
+  initialWidth: number;
+  initialHeight: number;
 }
 
 /**
@@ -45,8 +45,8 @@ interface BoardStateProviderProps {
  */
 export const BoardStateProvider: React.FC<BoardStateProviderProps> = ({
                                                                         children,
-                                                                        initialWidth = 11,
-                                                                        initialHeight = 11,
+                                                                        initialWidth,
+                                                                        initialHeight,
                                                                       }) => {
   const [board, setBoard] = useState<Board>(() => {
     // Try to load a previously saved board state from the URL hash.
@@ -65,12 +65,20 @@ export const BoardStateProvider: React.FC<BoardStateProviderProps> = ({
   // Update the URL hash whenever the board state changes.
   useEffect(() => {
     try {
-      const encodedState = encodeState(board);
-      window.history.replaceState(null, "", `#${encodedState}`);
+      const initialBoard = createInitialBoard(initialWidth, initialHeight);
+      const currentEncoded = encodeState(board);
+      const initialEncoded = encodeState(initialBoard);
+
+      if (currentEncoded !== initialEncoded) {
+        window.history.replaceState(null, "", `#${currentEncoded}`);
+      } else {
+        // Clear hash if we're back to the initial state
+        window.history.replaceState(null, "", window.location.pathname);
+      }
     } catch (err) {
       console.error("Error encoding board state:", err);
     }
-  }, [board]);
+  }, [board, initialWidth, initialHeight]);
 
   return (
     <BoardStateContext.Provider value={{board, setBoard}}>

@@ -12,7 +12,7 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <BoardStateProvider initialWidth={11} initialHeight={11}>
+    <BoardStateProvider initialWidth={16} initialHeight={16}>
       <BoardActionsProvider>
         <OptimizationProvider>
           <PolytopiaMarketPlanner />
