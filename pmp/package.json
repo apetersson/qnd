@@ -8,13 +8,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix"
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "proto": "yarn pbjs proto/board.proto --ts src/proto/wire-format.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.7",
     "pako": "^2.1.0",
+    "protobufjs": "^7.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -27,6 +29,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.22.0",
     "eslint-plugin-react": "^7.37.4",
+    "pbjs": "^0.0.14",
     "typescript": "^4.9.5",
     "vite": "^4.3.9",
     "vite-plugin-checker": "^0.9.1"

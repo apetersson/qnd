@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { Board, createInitialBoard } from "../models/Board";
-import { exportBoardStateForURL, importBoardStateFromURL } from "../utils/boardExport";
+import { exportBoardStateForURLWithProtobuf, importBoardStateFromURLWithProtobuf } from "../utils/boardExport";
 
 interface BoardStateContextType {
   board: Board;
@@ -24,7 +24,7 @@ export const BoardStateProvider: React.FC<BoardStateProviderProps> = ({
     if (window.location.hash.length > 1) {
       try {
         const encoded = window.location.hash.substring(1);
-        return importBoardStateFromURL(encoded);
+        return importBoardStateFromURLWithProtobuf(encoded);
       } catch (err) {
         console.error("Error decoding board state from URL:", err);
       }
@@ -35,8 +35,8 @@ export const BoardStateProvider: React.FC<BoardStateProviderProps> = ({
   useEffect(() => {
     try {
       const initialBoard = createInitialBoard(initialWidth, initialHeight);
-      const currentExport = exportBoardStateForURL(board);
-      const initialExport = exportBoardStateForURL(initialBoard);
+      const currentExport = exportBoardStateForURLWithProtobuf(board);
+      const initialExport = exportBoardStateForURLWithProtobuf(initialBoard);
       if (currentExport !== initialExport) {
         window.history.replaceState(null, "", `#${currentExport}`);
       } else {
@@ -48,7 +48,7 @@ export const BoardStateProvider: React.FC<BoardStateProviderProps> = ({
   }, [board, initialWidth, initialHeight]);
 
   return (
-    <BoardStateContext.Provider value={{ board, setBoard }}>
+    <BoardStateContext.Provider value={{board, setBoard}}>
       {children}
     </BoardStateContext.Provider>
   );

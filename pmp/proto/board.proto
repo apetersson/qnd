@@ -1,0 +1,41 @@
+// Filename: ./proto/board.proto
+syntax = "proto3";
+
+package board;
+
+// Use numeric enum values for compact encoding.
+enum Terrain {
+  NONE = 0;
+  FIELD = 1;
+  FOREST = 2;
+  MOUNTAIN = 3;
+  CITY = 4;
+  WATER = 5;
+}
+
+enum Building {
+  B_NONE = 0;
+  FARM = 1;
+  LUMBER_HUT = 2;
+  MINE = 3;
+  SAWMILL = 4;
+  WINDMILL = 5;
+  FORGE = 6;
+  MARKET = 7;
+  MONUMENT = 8;
+}
+
+message Tile {
+  int32 x = 1;
+  int32 y = 2;
+  Terrain terrain = 3;
+  Building building = 4;
+  // Use an empty string if no city association.
+  string cityId = 5;
+}
+
+message BoardExportData {
+  int32 width = 1;
+  int32 height = 2;
+  repeated Tile tiles = 3;
+}
