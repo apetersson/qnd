@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "proto": "yarn pbjs proto/board.proto --ts src/proto/wire-format.ts"
+    "proto": "yarn pbjs proto/board.proto --ts src/generated/wire-format.ts && echo '// @ts-nocheck' | cat - src/generated/wire-format.ts > src/generated/tmp.ts && mv src/generated/tmp.ts src/generated/wire-format.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

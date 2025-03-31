@@ -19,7 +19,7 @@ import {
   encodeBoardExportData,
   Terrain as WireTerrain,
   Tile as WireTile,
-} from "../proto/wire-format"; // Adjust path if needed
+} from "../generated/wire-format"; // Adjust path if needed
 
 export interface BoardExportData {
   width: number;

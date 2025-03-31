@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const enum Terrain {
   NONE = "NONE",
   FIELD = "FIELD",
