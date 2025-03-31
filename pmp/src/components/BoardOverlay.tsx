@@ -6,13 +6,15 @@ import { boardGridCommonStyle } from "./BoardGridStyles";
 
 interface BoardOverlayProps {
   board: Board;
+  useImages: boolean;
 }
 
-const BoardOverlay: React.FC<BoardOverlayProps> = ({board}) => {
+const BoardOverlay: React.FC<BoardOverlayProps> = ({board, useImages}) => {
   return (
     <div style={boardGridCommonStyle(board.width, false)}>
       {board.tiles.map((tile) => (
         <StyledTile
+          useImages={useImages}
           key={`${tile.x}-${tile.y}`}
           tile={tile}
           board={board}

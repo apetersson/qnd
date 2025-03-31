@@ -19,7 +19,7 @@ export const terrainColors: Record<Terrain, string> = {
   [Terrain.Field]: "#fff9e6",
   [Terrain.Forest]: "#e8f5e9",
   [Terrain.Mountain]: "#f5f5f5",
-  [Terrain.City]: "#fff",
+  [Terrain.City]: "#bc99dd",
   [Terrain.Water]: "#00bfff",
 };
 
@@ -40,6 +40,7 @@ interface StyledTileProps {
   board: Board;
   onMouseEnter: (tile: TileData) => void;
   onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  useImages: boolean;
 }
 
 const tileContainerStyle: React.CSSProperties = {
@@ -55,7 +56,7 @@ const tileContainerStyle: React.CSSProperties = {
   textAlign: "center",
 };
 
-const StyledTile: React.FC<StyledTileProps> = ({tile, board, onMouseEnter, onClick}) => {
+const StyledTile: React.FC<StyledTileProps> = ({tile, board, onMouseEnter, onClick, useImages}) => {
   const baseColor = terrainColors[tile.terrain];
   const bldgColor = buildingColors[tile.building];
   const borderStyle = computeTileBorderStyle(tile, board);
@@ -69,7 +70,10 @@ const StyledTile: React.FC<StyledTileProps> = ({tile, board, onMouseEnter, onCli
     } else {
       displayText = buildingKeys[tile.building].toUpperCase();
     }
+  } else if (tile.terrain === Terrain.City && tile.cityId !== undefined) {
+    displayText = `${tile.cityId}`;
   }
+
 
   const buildingImageMap: Record<Building, string | null> = {
     [Building.None]: null,
@@ -85,12 +89,16 @@ const StyledTile: React.FC<StyledTileProps> = ({tile, board, onMouseEnter, onCli
 
   const buildingImg = buildingImageMap[tile.building];
 
-  // Special terrain-level override: show city image even if no building
+// Special terrain-level override: show city image even if no building
   const isCityTile = tile.terrain === Terrain.City;
   const cityImageOverride = isCityTile && tile.building === Building.None;
 
-  const useImage = buildingImg || cityImageOverride;
-  const finalImage = buildingImg || (cityImageOverride ? cityImg : null);
+// NEW: Only compute finalImage if useImages is enabled
+  const finalImage = useImages
+    ? buildingImg || (cityImageOverride ? cityImg : null)
+    : null;
+
+  const useImage = !!finalImage;
 
   // Determine style dimensions dynamically
   const innerTileDynamicStyle: React.CSSProperties = {

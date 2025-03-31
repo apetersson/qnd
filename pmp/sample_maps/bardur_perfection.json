@@ -1,0 +1,1553 @@
+{
+  "width": 16,
+  "height": 16,
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 14,
+      "y": 0,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": "2-2"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "terrain": "FIELD",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 9,
+      "y": 1,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": "8-2"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 13,
+      "y": 1,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 14,
+      "y": 1,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 15,
+      "y": 1,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 9,
+      "y": 2,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "14-2"
+    },
+    {
+      "x": 14,
+      "y": 2,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 15,
+      "y": 2,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": "2-2"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-2"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "5-2"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "8-2"
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "11-4"
+    },
+    {
+      "x": 12,
+      "y": 3,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "terrain": "FIELD",
+      "building": "NONE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "14-2"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
+      "cityId": "2-6"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": null
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "11-4"
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "terrain": "NONE",
+      "building": "SAWMILL",
+      "cityId": "2-6"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "11-4"
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
+      "cityId": "2-6"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "2-6"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 7,
+      "y": 6,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "terrain": "NONE",
+      "building": "FORGE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 9,
+      "y": 6,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "8-5"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 11,
+      "y": 6,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "11-4"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
+      "cityId": "13-7"
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
+      "cityId": "13-7"
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "2-6"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "terrain": "FIELD",
+      "building": "FARM",
+      "cityId": "2-6"
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 6,
+      "y": 7,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 7,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": "13-7"
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
+      "x": 14,
+      "y": 7,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "13-7"
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-6"
+    },
+    {
+      "x": 2,
+      "y": 8,
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
+      "cityId": "2-6"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "terrain": "MOUNTAIN",
+      "building": "MINE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 7,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 10,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
+      "x": 13,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
+      "x": 14,
+      "y": 8,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "terrain": "FIELD",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": "5-8"
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
+      "cityId": "5-8"
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 10,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 14,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "terrain": "FIELD",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": "2-11"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-8"
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "9-9"
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 14,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 15,
+      "y": 10,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 1,
+      "y": 11,
+      "terrain": "FIELD",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 3,
+      "y": 11,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 4,
+      "y": 11,
+      "terrain": "MOUNTAIN",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 6,
+      "y": 11,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 13,
+      "y": 11,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 14,
+      "y": 11,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-10"
+    },
+    {
+      "x": 15,
+      "y": 11,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "terrain": "FIELD",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 2,
+      "y": 12,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 3,
+      "y": 12,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 4,
+      "y": 12,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 5,
+      "y": 12,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 6,
+      "y": 12,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "5-11"
+    },
+    {
+      "x": 11,
+      "y": 12,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 12,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 14,
+      "y": 12,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 15,
+      "y": 12,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 2,
+      "y": 13,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "2-11"
+    },
+    {
+      "x": 3,
+      "y": 13,
+      "terrain": "MOUNTAIN",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 4,
+      "y": 13,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "terrain": "FOREST",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 6,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 8,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 13,
+      "y": 13,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 14,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 15,
+      "y": 13,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 3,
+      "y": 14,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 4,
+      "y": 14,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 5,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 6,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 7,
+      "y": 14,
+      "terrain": "CITY",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 8,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 13,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 14,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "13-13"
+    },
+    {
+      "x": 15,
+      "y": 14,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 3,
+      "y": 15,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 4,
+      "y": 15,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 5,
+      "y": 15,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "4-14"
+    },
+    {
+      "x": 6,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 7,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 8,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": "7-14"
+    },
+    {
+      "x": 11,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 12,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 13,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 14,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    },
+    {
+      "x": 15,
+      "y": 15,
+      "terrain": "WATER",
+      "building": "NONE",
+      "cityId": null
+    }
+  ]
+}

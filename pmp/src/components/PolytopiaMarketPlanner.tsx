@@ -13,6 +13,7 @@ import ShortcutsInfo from "./ShortcutsInfo";
 import SolutionList, { Solution } from "./SolutionList";
 import BoardOverlay from "./BoardOverlay";
 import { useOptimizationContext } from "../contexts/OptimizationContext";
+import { ImageViewToggle } from "./ImageViewToggle";
 
 export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
@@ -40,10 +41,12 @@ export default function PolytopiaMarketPlanner() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [hoveredTile, handleTileAction]);
 
+  const [useImages, setUseImages] = useState(true);
 
   return (
     <div style={{margin: 20}}>
       <h1>Polytopia Market Planner</h1>
+
 
       <BoardSizeSelector/>
       <BoardExporter/>
@@ -72,9 +75,11 @@ export default function PolytopiaMarketPlanner() {
               setHoveredTile={setHoveredTile}
               setSelectedTile={setSelectedTile}
               setMenuAnchor={setMenuAnchor}
+              useImages={useImages}
           />}
           {/* Render the overlay if a solution is selected or hovered */}
-          {solutionOverlay && <BoardOverlay board={solutionOverlay.boardSnapshot}/>}
+          {solutionOverlay && <BoardOverlay board={solutionOverlay.boardSnapshot} useImages={useImages}
+          />}
         </div>
         {/* Right side: display the optimisation history */}
         <div style={{marginLeft: 20}}>
@@ -85,6 +90,8 @@ export default function PolytopiaMarketPlanner() {
           />
         </div>
       </div>
+
+      <ImageViewToggle checked={useImages} onChange={(e) => setUseImages(e.target.checked)}/>
 
       {/* Popup menu for tile actions */}
       <MouseOptions

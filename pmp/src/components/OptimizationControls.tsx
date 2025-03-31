@@ -32,6 +32,7 @@ const OptimizationControls: React.FC = () => {
 
   return (
     <div style={{marginBottom: 12}}>
+
       <AdvancedOptions
         dynamicOptions={dynamicOptions}
         setDynamicOptions={setDynamicOptions}

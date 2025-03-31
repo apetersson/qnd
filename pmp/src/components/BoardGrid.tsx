@@ -8,12 +8,14 @@ interface BoardGridProps {
   setHoveredTile: (tile: TileData | null) => void;
   setSelectedTile: (tile: TileData | null) => void;
   setMenuAnchor: (anchor: HTMLElement | null) => void;
+  useImages: boolean;
 }
 
 export default function BoardGrid({
                                     setHoveredTile,
                                     setSelectedTile,
                                     setMenuAnchor,
+                                    useImages,
                                   }: BoardGridProps) {
   const {board} = useBoardState();
 
@@ -32,6 +34,7 @@ export default function BoardGrid({
             setSelectedTile(tile);
             setMenuAnchor(e.currentTarget);
           }}
+          useImages={useImages}
         />
       ))}
     </div>
