@@ -13,6 +13,7 @@ import marketImg from "./images/market.webp";
 import mineImg from "./images/mine.webp";
 import sawmillImg from "./images/sawmill.webp";
 import windmillImg from "./images/windmill.webp";
+import { useOptimizationContext } from "../contexts/OptimizationContext";
 
 export const terrainColors: Record<Terrain, string> = {
   [Terrain.None]: "#ffffff",
@@ -43,6 +44,20 @@ interface StyledTileProps {
   useImages: boolean;
 }
 
+// Simple helper to lighten a hex color by a given percentage.
+function lightenColor(hex: string, percent: number): string {
+  const num = parseInt(hex.slice(1), 16);
+  const r = (num >> 16) & 0xff;
+  const g = (num >> 8) & 0xff;
+  const b = num & 0xff;
+  const newR = Math.min(255, Math.floor(r + (255 - r) * (percent / 100)));
+  const newG = Math.min(255, Math.floor(g + (255 - g) * (percent / 100)));
+  const newB = Math.min(255, Math.floor(b + (255 - b) * (percent / 100)));
+  return `#${((1 << 24) + (newR << 16) + (newG << 8) + newB)
+    .toString(16)
+    .slice(1)}`;
+}
+
 const tileContainerStyle: React.CSSProperties = {
   width: 40,
   height: 40,
@@ -57,7 +72,14 @@ const tileContainerStyle: React.CSSProperties = {
 };
 
 const StyledTile: React.FC<StyledTileProps> = ({tile, board, onMouseEnter, onClick, useImages}) => {
-  const baseColor = terrainColors[tile.terrain];
+  const {cityToggles} = useOptimizationContext();
+
+  // Determine base color; if it's a city and its toggle is off, use a lighter color.
+  let baseColor = terrainColors[tile.terrain];
+  if (tile.terrain === Terrain.City && tile.cityId && !cityToggles[tile.cityId]) {
+    baseColor = lightenColor(baseColor, 70); // Lighten by 30%
+  }
+
   const bldgColor = buildingColors[tile.building];
   const borderStyle = computeTileBorderStyle(tile, board);
 

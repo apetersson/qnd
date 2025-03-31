@@ -18,6 +18,7 @@ const OptimizationControls: React.FC = () => {
     startOptimization,
     stopOptimization,
     progress,
+    cityToggles, setCityToggles
     // solutionList,
   } = useOptimizationContext();
 
@@ -39,6 +40,27 @@ const OptimizationControls: React.FC = () => {
         overallBudget={overallBudget}
         setOverallBudget={setOverallBudget}
       />
+
+      <div style={{marginTop: 8}}>
+        <strong>Include Cities in Optimization:</strong>
+        <div style={{display: "flex", flexWrap: "wrap", gap: "8px", marginTop: 4}}>
+          {Object.keys(cityToggles).map((cityId) => (
+            <label key={cityId} style={{fontSize: "0.85rem"}}>
+              <input
+                type="checkbox"
+                checked={cityToggles[cityId]}
+                onChange={(e) =>
+                  setCityToggles(prev => ({...prev, [cityId]: e.target.checked}))
+                }
+                style={{marginRight: 4}}
+              />
+              {cityId}
+            </label>
+          ))}
+        </div>
+      </div>
+
+
       <p style={{marginTop: 4, fontSize: "0.9rem"}}>
         Estimated combinations: {activeOptions}^{emptyEligibleCount} ≈ 10^
         {estimatedStepsExponent.toFixed(2)} ; Estimated time: {estimatedTime}

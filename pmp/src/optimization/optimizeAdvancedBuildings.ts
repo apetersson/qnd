@@ -139,14 +139,16 @@ export async function optimizeAdvancedBuildingsAsync(
   cancelToken: { canceled: boolean },
   dynamicOptions: Record<string, boolean>,
   overallBudget: number,
-  progressCallback?: (progress: number) => void,
-  newSolutionCallback?: (
+  progressCallback: (progress: number) => void,
+  newSolutionCallback: (
     marketBonus: number,
     foodBonus: number,
     iteration: number,
     boardSnapshot: Board,
-    history: string[]
-  ) => void): Promise<Board> {
+    history: string[],
+  ) => void,
+  cityToggles: Record<string, boolean>
+): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);
 
@@ -222,7 +224,7 @@ export async function optimizeAdvancedBuildingsAsync(
 
     for (let i = 0; i < currentBoard.tiles.length; i++) {
       const tile = currentBoard.tiles[i]!;
-      if (!tile.cityId) continue;
+      if (!tile.cityId || !cityToggles[tile.cityId]) continue;
 
       // Go through every toggled-on action:
       for (const action of availableActions) {

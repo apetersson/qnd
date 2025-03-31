@@ -13,7 +13,7 @@
       "x": 1,
       "y": 0,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-2"
     },
     {
@@ -40,21 +40,21 @@
     {
       "x": 6,
       "y": 0,
-      "terrain": "WATER",
+      "terrain": "FOREST",
       "building": "NONE",
       "cityId": null
     },
     {
       "x": 7,
       "y": 0,
-      "terrain": "WATER",
+      "terrain": "FOREST",
       "building": "NONE",
       "cityId": null
     },
     {
-      "x": 8,
+      "x": 9,
       "y": 0,
-      "terrain": "WATER",
+      "terrain": "MOUNTAIN",
       "building": "NONE",
       "cityId": null
     },
@@ -104,14 +104,14 @@
       "x": 1,
       "y": 1,
       "terrain": "FIELD",
-      "building": "NONE",
+      "building": "SAWMILL",
       "cityId": "2-2"
     },
     {
       "x": 2,
       "y": 1,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-2"
     },
     {
@@ -125,7 +125,7 @@
       "x": 4,
       "y": 1,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "5-2"
     },
     {
@@ -146,14 +146,14 @@
       "x": 7,
       "y": 1,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "8-2"
     },
     {
       "x": 8,
       "y": 1,
-      "terrain": "NONE",
-      "building": "NONE",
+      "terrain": "FIELD",
+      "building": "FARM",
       "cityId": "8-2"
     },
     {
@@ -195,7 +195,7 @@
       "x": 0,
       "y": 2,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MARKET",
       "cityId": "2-2"
     },
     {
@@ -236,7 +236,7 @@
     {
       "x": 6,
       "y": 2,
-      "terrain": "FOREST",
+      "terrain": "NONE",
       "building": "NONE",
       "cityId": "5-2"
     },
@@ -244,7 +244,7 @@
       "x": 7,
       "y": 2,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "8-2"
     },
     {
@@ -257,22 +257,22 @@
     {
       "x": 9,
       "y": 2,
-      "terrain": "NONE",
-      "building": "NONE",
+      "terrain": "FIELD",
+      "building": "MARKET",
       "cityId": "8-2"
     },
     {
       "x": 10,
       "y": 2,
-      "terrain": "FOREST",
-      "building": "NONE",
+      "terrain": "FIELD",
+      "building": "FARM",
       "cityId": "11-4"
     },
     {
       "x": 11,
       "y": 2,
-      "terrain": "FOREST",
-      "building": "NONE",
+      "terrain": "FIELD",
+      "building": "FARM",
       "cityId": "11-4"
     },
     {
@@ -300,14 +300,14 @@
       "x": 15,
       "y": 2,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "FORGE",
       "cityId": "14-2"
     },
     {
       "x": 0,
       "y": 3,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "FORGE",
       "cityId": "2-2"
     },
     {
@@ -321,14 +321,14 @@
       "x": 2,
       "y": 3,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-2"
     },
     {
       "x": 3,
       "y": 3,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "2-2"
     },
     {
@@ -356,28 +356,28 @@
       "x": 7,
       "y": 3,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "8-2"
     },
     {
       "x": 8,
       "y": 3,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "SAWMILL",
       "cityId": "8-2"
     },
     {
       "x": 9,
       "y": 3,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "8-2"
     },
     {
       "x": 10,
       "y": 3,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "WINDMILL",
       "cityId": "11-4"
     },
     {
@@ -391,7 +391,7 @@
       "x": 12,
       "y": 3,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "FORGE",
       "cityId": "11-4"
     },
     {
@@ -405,21 +405,21 @@
       "x": 14,
       "y": 3,
       "terrain": "FIELD",
-      "building": "NONE",
+      "building": "WINDMILL",
       "cityId": "14-2"
     },
     {
       "x": 15,
       "y": 3,
-      "terrain": "FOREST",
-      "building": "NONE",
+      "terrain": "FIELD",
+      "building": "FARM",
       "cityId": "14-2"
     },
     {
       "x": 0,
       "y": 4,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MARKET",
       "cityId": "2-6"
     },
     {
@@ -460,22 +460,22 @@
     {
       "x": 7,
       "y": 4,
-      "terrain": "NONE",
-      "building": "NONE",
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
       "cityId": "8-5"
     },
     {
       "x": 8,
       "y": 4,
-      "terrain": "NONE",
-      "building": "NONE",
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
       "cityId": "8-5"
     },
     {
       "x": 9,
       "y": 4,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MARKET",
       "cityId": "8-5"
     },
     {
@@ -503,7 +503,7 @@
       "x": 13,
       "y": 4,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MARKET",
       "cityId": "11-4"
     },
     {
@@ -524,7 +524,7 @@
       "x": 2,
       "y": 5,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-6"
     },
     {
@@ -594,15 +594,22 @@
       "x": 13,
       "y": 5,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "SAWMILL",
       "cityId": "11-4"
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "terrain": "NONE",
+      "building": "SAWMILL",
+      "cityId": "13-7"
     },
     {
       "x": 15,
       "y": 5,
       "terrain": "FOREST",
-      "building": "NONE",
-      "cityId": null
+      "building": "LUMBER_HUT",
+      "cityId": "13-7"
     },
     {
       "x": 0,
@@ -670,8 +677,8 @@
     {
       "x": 9,
       "y": 6,
-      "terrain": "FOREST",
-      "building": "NONE",
+      "terrain": "FIELD",
+      "building": "FARM",
       "cityId": "8-5"
     },
     {
@@ -713,8 +720,8 @@
       "x": 15,
       "y": 6,
       "terrain": "FOREST",
-      "building": "NONE",
-      "cityId": null
+      "building": "LUMBER_HUT",
+      "cityId": "13-7"
     },
     {
       "x": 0,
@@ -727,7 +734,7 @@
       "x": 1,
       "y": 7,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-6"
     },
     {
@@ -777,7 +784,7 @@
       "y": 7,
       "terrain": "WATER",
       "building": "NONE",
-      "cityId": null
+      "cityId": "13-7"
     },
     {
       "x": 12,
@@ -801,9 +808,16 @@
       "cityId": "13-7"
     },
     {
+      "x": 15,
+      "y": 7,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
       "x": 0,
       "y": 8,
-      "terrain": "NONE",
+      "terrain": "WATER",
       "building": "NONE",
       "cityId": "2-6"
     },
@@ -811,7 +825,7 @@
       "x": 1,
       "y": 8,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-6"
     },
     {
@@ -825,7 +839,7 @@
       "x": 3,
       "y": 8,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "5-8"
     },
     {
@@ -882,7 +896,7 @@
       "y": 8,
       "terrain": "WATER",
       "building": "NONE",
-      "cityId": null
+      "cityId": "13-7"
     },
     {
       "x": 12,
@@ -906,6 +920,13 @@
       "cityId": "13-7"
     },
     {
+      "x": 15,
+      "y": 8,
+      "terrain": "NONE",
+      "building": "NONE",
+      "cityId": "13-7"
+    },
+    {
       "x": 0,
       "y": 9,
       "terrain": "NONE",
@@ -916,21 +937,21 @@
       "x": 1,
       "y": 9,
       "terrain": "FIELD",
-      "building": "NONE",
+      "building": "MARKET",
       "cityId": "2-11"
     },
     {
       "x": 2,
       "y": 9,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "SAWMILL",
       "cityId": "2-11"
     },
     {
       "x": 3,
       "y": 9,
-      "terrain": "NONE",
-      "building": "NONE",
+      "terrain": "FOREST",
+      "building": "LUMBER_HUT",
       "cityId": "5-8"
     },
     {
@@ -987,7 +1008,7 @@
       "y": 9,
       "terrain": "WATER",
       "building": "NONE",
-      "cityId": null
+      "cityId": "13-7"
     },
     {
       "x": 12,
@@ -1015,7 +1036,7 @@
       "y": 9,
       "terrain": "WATER",
       "building": "NONE",
-      "cityId": null
+      "cityId": "13-7"
     },
     {
       "x": 0,
@@ -1042,14 +1063,14 @@
       "x": 3,
       "y": 10,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "LUMBER_HUT",
       "cityId": "2-11"
     },
     {
       "x": 4,
       "y": 10,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "5-11"
     },
     {
@@ -1140,7 +1161,7 @@
       "x": 1,
       "y": 11,
       "terrain": "FIELD",
-      "building": "NONE",
+      "building": "FARM",
       "cityId": "2-11"
     },
     {
@@ -1161,7 +1182,7 @@
       "x": 4,
       "y": 11,
       "terrain": "MOUNTAIN",
-      "building": "NONE",
+      "building": "MINE",
       "cityId": "5-11"
     },
     {
@@ -1231,21 +1252,21 @@
       "x": 2,
       "y": 12,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "2-11"
     },
     {
       "x": 3,
       "y": 12,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "2-11"
     },
     {
       "x": 4,
       "y": 12,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "FORGE",
       "cityId": "5-11"
     },
     {
@@ -1259,7 +1280,7 @@
       "x": 6,
       "y": 12,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "5-11"
     },
     {
@@ -1315,28 +1336,28 @@
       "x": 2,
       "y": 13,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "2-11"
     },
     {
       "x": 3,
       "y": 13,
       "terrain": "MOUNTAIN",
-      "building": "NONE",
+      "building": "MINE",
       "cityId": "4-14"
     },
     {
       "x": 4,
       "y": 13,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "4-14"
     },
     {
       "x": 5,
       "y": 13,
       "terrain": "FOREST",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "4-14"
     },
     {
@@ -1359,6 +1380,13 @@
       "terrain": "WATER",
       "building": "NONE",
       "cityId": "7-14"
+    },
+    {
+      "x": 9,
+      "y": 13,
+      "terrain": "NONE",
+      "building": "MONUMENT",
+      "cityId": null
     },
     {
       "x": 11,
@@ -1476,20 +1504,20 @@
       "x": 3,
       "y": 15,
       "terrain": "NONE",
-      "building": "NONE",
+      "building": "MONUMENT",
       "cityId": "4-14"
     },
     {
       "x": 4,
       "y": 15,
-      "terrain": "NONE",
+      "terrain": "FIELD",
       "building": "NONE",
       "cityId": "4-14"
     },
     {
       "x": 5,
       "y": 15,
-      "terrain": "NONE",
+      "terrain": "WATER",
       "building": "NONE",
       "cityId": "4-14"
     },

@@ -1,6 +1,6 @@
 // Filename: ./contexts/OptimizationContext.tsx
 
-import React, { createContext, ReactNode, useContext, useRef, useState, } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useRef, useState, } from "react";
 import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
 import { dynamicActions } from "../optimization/action";
 import { useBoardState } from "./BoardStateContext";
@@ -18,6 +18,8 @@ interface OptimizationContextType {
   stopOptimization: () => void;
   progress: number;
   solutionList: Solution[];
+  cityToggles: Record<string, boolean>;
+  setCityToggles: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 const OptimizationContext = createContext<OptimizationContextType | undefined>(
@@ -36,7 +38,7 @@ function buildDefaultDynamicOptions() {
 export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
                                                                           children,
                                                                         }) => {
-  const {board, setBoard} = useBoardState();
+  const {board} = useBoardState();
 
   const [dynamicOptions, setDynamicOptions] = useState<Record<string, boolean>>(
     buildDefaultDynamicOptions
@@ -46,6 +48,19 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
   const [progress, setProgress] = useState<number>(0);
   const [solutionList, setSolutionList] = useState<Solution[]>([]);
   const cancelTokenRef = useRef<{ canceled: boolean }>({canceled: false});
+
+  const [cityToggles, setCityToggles] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const cities = Array.from(new Set(board.tiles.map(t => t.cityId).filter(Boolean))) as string[];
+    setCityToggles(prev => {
+      const updated: Record<string, boolean> = {};
+      for (const city of cities) {
+        updated[city] = prev[city] ?? true;
+      }
+      return updated;
+    });
+  }, [board]);
 
   const startOptimization = async () => {
     setSolutionList([]); // Reset solution list
@@ -77,10 +92,10 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
             history: [...currentHistory]
           }
         ]);
-      }
+      },
+      cityToggles
     );
-    setBoard(result);
-
+    // setBoard(result);
     setIsOptimizing(false);
   };
 
@@ -102,6 +117,7 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
         stopOptimization,
         progress,
         solutionList,
+        cityToggles, setCityToggles
       }}
     >
       {children}
