@@ -1,16 +1,7 @@
-import { Board, Building, getNeighbors, TileData } from "../models/Board";
+import { Board, Building, copyBoard, getNeighbors, TileData } from "../models/Board";
 import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/buildingTypes";
 import { getBuildingLevel, MAX_MARKET_LEVEL } from "../placement/placement";
 import { Action, dynamicActions } from "./action";
-
-/** Helper function to create a deep copy of the board */
-function copyBoard(board: Board): Board {
-  return {
-    width: board.width,
-    height: board.height,
-    tiles: board.tiles.map(t => ({...t})),
-  };
-}
 
 /** Calculates the market bonus for a tile if it holds a Market building */
 export function calculateMarketBonusForTile(tile: TileData, board: Board): number {
@@ -149,8 +140,13 @@ export async function optimizeAdvancedBuildingsAsync(
   dynamicOptions: Record<string, boolean>,
   overallBudget: number,
   progressCallback?: (progress: number) => void,
-  newSolutionCallback?: (marketBonus: number, foodBonus: number, iterationCount: number) => void
-): Promise<Board> {
+  newSolutionCallback?: (
+    marketBonus: number,
+    foodBonus: number,
+    iteration: number,
+    boardSnapshot: Board,
+    history: string[]
+  ) => void): Promise<Board> {
   // Create an initial board copy.
   const initialBoard = copyBoard(board);
 
@@ -325,7 +321,13 @@ export async function optimizeAdvancedBuildingsAsync(
         bestBudget = currentBudget;
         console.log(`New best bonus: ${bestBonus} (Secondary: ${secondary}) after ${iterationCount} iterations.`);
         console.log("Optimization history (actions):", bestHistory);
-        newSolutionCallback?.(bestBonus, bestSecondary, iterationCount);
+        newSolutionCallback?.(
+          bestBonus,
+          bestSecondary,
+          iterationCount,
+          copyBoard(currentBoard), // Make sure this is a deep copy of the board
+          [...currentHistory]      // A copy of the history array
+        );
         await new Promise(resolve => setTimeout(resolve, 0));
       }
       return;

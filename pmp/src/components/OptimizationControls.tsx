@@ -5,7 +5,7 @@ import { estimateCompletionTime } from "../utils/helpers";
 import { calculateMarketBonus, sumLevelsForFood } from "../optimization/optimizeAdvancedBuildings";
 import { AdvancedOptions } from "./AdvancedOptions";
 import ProgressBar from "./ProgressBar";
-import SolutionList from "./SolutionList";
+// import SolutionList from "./SolutionList";
 
 const OptimizationControls: React.FC = () => {
   const {board} = useBoardState();
@@ -18,7 +18,7 @@ const OptimizationControls: React.FC = () => {
     startOptimization,
     stopOptimization,
     progress,
-    solutionList,
+    // solutionList,
   } = useOptimizationContext();
 
   // Compute some stats for estimation
@@ -59,8 +59,7 @@ const OptimizationControls: React.FC = () => {
       {/* Show the progress bar at all times or conditionally */}
       <ProgressBar progress={progress}/>
 
-      {/* Render the list of new best solutions */}
-      <SolutionList solutions={solutionList}/>
+      {/*<SolutionList solutions={solutionList} onSolutionSelect={}/>*/}
     </div>
   );
 };

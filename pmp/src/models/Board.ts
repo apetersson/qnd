@@ -67,3 +67,12 @@ export function getNeighbors(tile: TileData, board: Board): TileData[] {
     .map(([dx, dy]) => board.tiles.find((t) => t.x === x + dx && t.y === y + dy))
     .filter((t): t is TileData => Boolean(t));
 }
+
+/** Helper function to create a deep copy of the board */
+export function copyBoard(board: Board): Board {
+  return {
+    width: board.width,
+    height: board.height,
+    tiles: board.tiles.map(t => ({...t})),
+  };
+}

@@ -9,13 +9,21 @@ import BoardExporter from "./BoardExporter";
 import CityManagementPanel from "./CityManagementPanel";
 import BoardSizeSelector from "./BoardSizeSelector";
 import OptimizationControls from "./OptimizationControls";
-import ShortcutsInfo from "./ShortcutsInfo"; // <-- Import the new component
+import ShortcutsInfo from "./ShortcutsInfo";
+import SolutionList, { Solution } from "./SolutionList";
+import BoardOverlay from "./BoardOverlay";
+import { useOptimizationContext } from "../contexts/OptimizationContext";
 
 export default function PolytopiaMarketPlanner() {
-  // Hover and selection for the “right-click” or menu usage
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+
+  // New state for solution overlay
+  const [solutionOverlay, setSolutionOverlay] = useState<Solution | null>(null);
+
+  // Assume solutionList comes from your optimization context:
+  const {solutionList} = useOptimizationContext();
 
   // The board actions from BoardActionsContext
   const {handleTileAction} = useBoardActions();
@@ -32,6 +40,7 @@ export default function PolytopiaMarketPlanner() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [hoveredTile, handleTileAction]);
 
+
   return (
     <div style={{margin: 20}}>
       <h1>Polytopia Market Planner</h1>
@@ -39,26 +48,51 @@ export default function PolytopiaMarketPlanner() {
       <BoardSizeSelector/>
       <BoardExporter/>
       <CityManagementPanel/>
-
-      {/* Now we just render our new dedicated shortcut info component */}
       <ShortcutsInfo/>
-
       <OptimizationControls/>
-
-      {/* The grid itself */}
-      <BoardGrid
-        {...{
-          setHoveredTile,
-          setSelectedTile,
-          setMenuAnchor,
+      <SolutionList
+        solutions={solutionList}
+        onSolutionSelect={(solutionOrNull: Solution | null) => {
+          setSolutionOverlay(solutionOrNull);
+          //
+          // // Toggle selection: if clicking the already-selected solution, deselect it.
+          // if (solutionOverlay && solutionOrNull && solutionOverlay.iteration === solutionOrNull.iteration) {
+          //   setSolutionOverlay(null);
+          // } else {
+          //   setSolutionOverlay(solutionOrNull);
+          // }
         }}
       />
 
-      {/* Popup menu for placing terrain/buildings via a click menu */}
+
+      {/* Wrap board and overlay in a relatively positioned container */}
+      <div style={{display: "flex", position: "relative"}}>
+        <div style={{position: "relative"}}>
+          {!solutionOverlay && <BoardGrid
+              setHoveredTile={setHoveredTile}
+              setSelectedTile={setSelectedTile}
+              setMenuAnchor={setMenuAnchor}
+          />}
+          {/* Render the overlay if a solution is selected or hovered */}
+          {solutionOverlay && <BoardOverlay board={solutionOverlay.boardSnapshot}/>}
+        </div>
+        {/* Right side: display the optimisation history */}
+        <div style={{marginLeft: 20}}>
+          <textarea
+            readOnly
+            value={solutionOverlay ? solutionOverlay.history.join("\n") : ""}
+            style={{width: 300, height: 400}}
+          />
+        </div>
+      </div>
+
+      {/* Popup menu for tile actions */}
       <MouseOptions
         anchorEl={menuAnchor}
         onClose={() => setMenuAnchor(null)}
         selectedTile={selectedTile}
-      /></div>
+      />
+
+    </div>
   );
 }

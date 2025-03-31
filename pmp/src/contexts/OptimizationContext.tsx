@@ -5,12 +5,8 @@ import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvanced
 import { dynamicActions } from "../optimization/action";
 import { useBoardState } from "./BoardStateContext";
 import { defaultTechEnabled } from "../models/Technology";
-
-interface Solution {
-  marketBonus: number;
-  foodBonus: number;
-  iteration: number;
-}
+import { Solution } from "../components/SolutionList";
+import { copyBoard } from "../models/Board";
 
 interface OptimizationContextType {
   dynamicOptions: Record<string, boolean>;
@@ -69,9 +65,18 @@ export const OptimizationProvider: React.FC<{ children: ReactNode }> = ({
         // fraction is in [0..1]
         setProgress(fraction);
       },
-      (marketBonus, foodBonus, iteration) => {
+      (marketBonus, foodBonus, iteration, boardSnapshot, currentHistory) => {
         // Append new best solution to the solutionList
-        setSolutionList(prev => [...prev, {marketBonus, foodBonus, iteration}]);
+        setSolutionList(prev => [
+          ...prev,
+          {
+            marketBonus,
+            foodBonus,
+            iteration,
+            boardSnapshot: copyBoard(boardSnapshot),
+            history: [...currentHistory]
+          }
+        ]);
       }
     );
     setBoard(result);
