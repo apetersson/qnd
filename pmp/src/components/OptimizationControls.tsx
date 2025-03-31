@@ -24,8 +24,13 @@ const OptimizationControls: React.FC = () => {
 
   // Compute some stats for estimation
   const emptyEligibleCount = board.tiles.filter(
-    (t) => t.terrain === "NONE" && t.building === "NONE" && t.cityId
+    (t) =>
+      t.terrain === "NONE" &&
+      t.building === "NONE" &&
+      t.cityId &&
+      cityToggles[t.cityId]
   ).length;
+
   // +2 is an example offset if you want to approximate the “no action” or “do nothing” paths
   const activeOptions = Object.values(dynamicOptions).filter(Boolean).length + 2;
   const estimatedStepsExponent = emptyEligibleCount * Math.log10(activeOptions);
