@@ -13,23 +13,21 @@ import ShortcutsInfo from "./ShortcutsInfo";
 import SolutionList, { Solution } from "./SolutionList";
 import BoardOverlay from "./BoardOverlay";
 import { useOptimizationContext } from "../contexts/OptimizationContext";
+import { useBoardState } from "../contexts/BoardStateContext";
 import { ImageViewToggle } from "./ImageViewToggle";
 
 export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
   const [selectedTile, setSelectedTile] = useState<TileData | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  // New state for selected optimisation
+  const [selectedSolution, setSelectedSolution] = useState<Solution | null>(null);
 
-  // New state for solution overlay
-  const [solutionOverlay, setSolutionOverlay] = useState<Solution | null>(null);
-
-  // Assume solutionList comes from your optimization context:
   const {solutionList} = useOptimizationContext();
-
-  // The board actions from BoardActionsContext
+  const {setBoard} = useBoardState();
   const {handleTileAction} = useBoardActions();
+  const [useImages, setUseImages] = useState(false);
 
-  // Optionally, we can allow hotkeys for placing buildings:
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (hoveredTile) {
@@ -40,8 +38,6 @@ export default function PolytopiaMarketPlanner() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [hoveredTile, handleTileAction]);
-
-  const [useImages, setUseImages] = useState(false);
 
   return (
     <div style={{margin: 20}}>
@@ -55,45 +51,60 @@ export default function PolytopiaMarketPlanner() {
       <OptimizationControls/>
       <SolutionList
         solutions={solutionList}
-        onSolutionSelect={(solutionOrNull: Solution | null) => {
-          setSolutionOverlay(solutionOrNull);
-          //
-          // // Toggle selection: if clicking the already-selected solution, deselect it.
-          // if (solutionOverlay && solutionOrNull && solutionOverlay.iteration === solutionOrNull.iteration) {
-          //   setSolutionOverlay(null);
-          // } else {
-          //   setSolutionOverlay(solutionOrNull);
-          // }
-        }}
+        selectedSolution={selectedSolution}
+        onSolutionSelect={(solutionOrNull: Solution | null) =>
+          setSelectedSolution(
+            selectedSolution &&
+            solutionOrNull &&
+            selectedSolution.iteration === solutionOrNull.iteration
+              ? null
+              : solutionOrNull
+          )
+        }
       />
 
+      {/* Apply Button */}
+      {/*
+  Always reserve space for the "Apply to Board" button by wrapping it in a container with a fixed height.
+*/}
+      <div style={{minHeight: "25px", marginTop: "10px"}}>
+        {selectedSolution && (
+          <button
+            onClick={() => {
+              setBoard(selectedSolution.boardSnapshot);
+              setSelectedSolution(null);
+            }}
+          >
+            Apply to Board
+          </button>
+        )}
+      </div>
 
-      {/* Wrap board and overlay in a relatively positioned container */}
+
+      {/* Board / Overlay */}
       <div style={{display: "flex", position: "relative"}}>
         <div style={{position: "relative"}}>
-          {!solutionOverlay && <BoardGrid
+          {!selectedSolution ? (
+            <BoardGrid
               setHoveredTile={setHoveredTile}
               setSelectedTile={setSelectedTile}
               setMenuAnchor={setMenuAnchor}
               useImages={useImages}
-          />}
-          {/* Render the overlay if a solution is selected or hovered */}
-          {solutionOverlay && <BoardOverlay board={solutionOverlay.boardSnapshot} useImages={useImages}
-          />}
+            />
+          ) : (
+            <BoardOverlay board={selectedSolution.boardSnapshot} useImages={useImages}/>
+          )}
         </div>
-        {/* Right side: display the optimisation history */}
         <div style={{marginLeft: 20}}>
           <textarea
             readOnly
-            value={solutionOverlay ? solutionOverlay.history.join("\n") : ""}
+            value={selectedSolution ? selectedSolution.history.join("\n") : ""}
             style={{width: 300, height: 400}}
           />
         </div>
       </div>
 
       <ImageViewToggle checked={useImages} onChange={(e) => setUseImages(e.target.checked)}/>
-
-      {/* Popup menu for tile actions */}
       <MouseOptions
         anchorEl={menuAnchor}
         onClose={() => setMenuAnchor(null)}
