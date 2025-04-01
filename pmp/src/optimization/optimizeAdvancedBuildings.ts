@@ -336,20 +336,68 @@ export async function optimizeAdvancedBuildingsAsync(
     }
 
     // Sort candidates descending by secondary score, then primary.
-    candidateActions.sort((a, b) => {
-// 1. Sort by cost ascending
-      if (a.action.cost !== b.action.cost) {
-        return a.action.cost - b.action.cost;
-      }
-      // 2. Then by secondary descending
-      if (b.score.secondary !== a.score.secondary) {
-        return b.score.secondary - a.score.secondary;
-      }
-      // 3. Then by primary descending
-      return b.score.primary - a.score.primary;
-    });
+    type Comparator<T> = (a: T, b: T) => number;
 
-    // Each candidate gets a sub-slice of [startProgress..endProgress]
+// Helper to compose multiple comparators.
+    function composeComparators<T>(comparators: Comparator<T>[]): Comparator<T> {
+      return (a: T, b: T) => {
+        for (const comparator of comparators) {
+          const result = comparator(a, b);
+          if (result !== 0) return result;
+        }
+        return 0;
+      };
+    }
+
+// Candidate type from your optimization function.
+    interface Candidate {
+      index: number;
+      action: {
+        cost: number;
+        // other properties...
+      };
+      score: {
+        primary: number;
+        secondary: number;
+      };
+    }
+
+// Define each comparator.
+    const costComparator: Comparator<Candidate> = (a, b) =>
+      a.action.cost - b.action.cost;
+
+    const secondaryComparator: Comparator<Candidate> = (a, b) =>
+      b.score.secondary - a.score.secondary;
+
+    const primaryComparator: Comparator<Candidate> = (a, b) =>
+      b.score.primary - a.score.primary;
+
+    const adjacentComparator: Comparator<Candidate> = (a, b) => {
+      const aTile = currentBoard.tiles[a.index]!;
+      const bTile = currentBoard.tiles[b.index]!;
+      const aAdjacent = getNeighbors(aTile, currentBoard).some(
+        nbr => nbr.cityId && nbr.cityId !== aTile.cityId
+      );
+      const bAdjacent = getNeighbors(bTile, currentBoard).some(
+        nbr => nbr.cityId && nbr.cityId !== bTile.cityId
+      );
+      if (aAdjacent && !bAdjacent) return -1;
+      if (!aAdjacent && bAdjacent) return 1;
+      return 0;
+    };
+
+// Compose them in desired order.
+    const combinedComparator = composeComparators<Candidate>([
+      adjacentComparator,
+      costComparator,
+      secondaryComparator,
+      primaryComparator,
+    ]);
+
+// Then sort your candidateActions array:
+    candidateActions.sort(combinedComparator);
+
+    // Each candidate gets a sub-slice of [startProgress...endProgress]
     const N = candidateActions.length;
     for (let i = 0; i < N; i++) {
       if (cancelToken.canceled) return;
