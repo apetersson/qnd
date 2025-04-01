@@ -41,7 +41,7 @@ export default function PolytopiaMarketPlanner() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [hoveredTile, handleTileAction]);
 
-  const [useImages, setUseImages] = useState(true);
+  const [useImages, setUseImages] = useState(false);
 
   return (
     <div style={{margin: 20}}>
