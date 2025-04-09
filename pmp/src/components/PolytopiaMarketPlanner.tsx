@@ -43,6 +43,7 @@ export default function PolytopiaMarketPlanner() {
   return (
     <div style={{margin: 20}}>
       <h1>Polytopia Market Planner</h1>
+      <h3>very cool but kinda cheating (john bone)</h3>
 
 
       <BoardSizeSelector/>
