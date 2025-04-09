@@ -5,8 +5,8 @@ import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvanced
 import { dynamicActions } from "../optimization/action";
 import { useBoardState } from "./BoardStateContext";
 import { defaultTechEnabled } from "../models/Technology";
-import { Solution } from "../components/SolutionList";
 import { copyBoard } from "../models/Board";
+import { Solution } from "../models/Solution";
 
 interface OptimizationContextType {
   dynamicOptions: Record<string, boolean>;

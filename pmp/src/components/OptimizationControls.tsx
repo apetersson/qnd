@@ -2,9 +2,9 @@ import React from "react";
 import { useBoardState } from "../contexts/BoardStateContext";
 import { useOptimizationContext } from "../contexts/OptimizationContext";
 import { estimateCompletionTime } from "../utils/helpers";
-import { calculateMarketBonus, sumLevelsForFood } from "../optimization/optimizeAdvancedBuildings";
 import { AdvancedOptions } from "./AdvancedOptions";
 import ProgressBar from "./ProgressBar";
+import { calculateMarketBonus, sumLevelsForFood } from "../models/bonuses";
 // import SolutionList from "./SolutionList";
 
 const OptimizationControls: React.FC = () => {

@@ -1,15 +1,7 @@
-// Modified SolutionList.tsx
 import React from "react";
-import { Board } from "../models/Board";
-import { HistoryEntry } from "../optimization/optimizeAdvancedBuildings";
-
-export interface Solution {
-  marketBonus: number;
-  foodBonus: number;
-  iteration: number;
-  boardSnapshot: Board;
-  history: HistoryEntry[];
-}
+import { useBoardState } from "../contexts/BoardStateContext";
+import { Solution } from "../models/Solution";
+import { calculateMarketBonus } from "../models/bonuses";
 
 interface SolutionListProps {
   solutions: Solution[];
@@ -22,6 +14,10 @@ const SolutionList: React.FC<SolutionListProps> = ({
                                                      selectedSolution,
                                                      onSolutionSelect,
                                                    }) => {
+  // Get the baseline board from state to compute starting market bonus.
+  const {board} = useBoardState();
+  const baselineMarketBonus = calculateMarketBonus(board);
+
   // Reverse to show most recent first.
   const reversedSolutions = solutions.slice().reverse();
 
@@ -39,6 +35,15 @@ const SolutionList: React.FC<SolutionListProps> = ({
         const isSelected =
           selectedSolution &&
           selectedSolution.iteration === sol.iteration; // or use a unique id if available
+
+        // Sum up the total cost from the solution's history.
+        const solutionCost = sol.history.reduce((acc, entry) => acc + entry.cost, 0);
+        // Calculate the bonus difference compared to the baseline.
+        const bonusDiff = sol.marketBonus - baselineMarketBonus;
+        // Compute turns to break even: if bonusDiff is > 0, divide cost by bonusDiff, otherwise display N/A.
+        const turnsToBreakEven =
+          bonusDiff > 0 ? (solutionCost / bonusDiff).toFixed(2) : "N/A";
+
         return (
           <div
             key={index}
@@ -47,7 +52,7 @@ const SolutionList: React.FC<SolutionListProps> = ({
               borderRadius: "4px",
               padding: "8px",
               textAlign: "center",
-              minWidth: "80px",
+              minWidth: "100px",
               cursor: "pointer",
               backgroundColor: isSelected ? "#e0e0e0" : "transparent",
             }}
@@ -59,6 +64,9 @@ const SolutionList: React.FC<SolutionListProps> = ({
               {sol.marketBonus}
             </div>
             <div style={{fontSize: "12px"}}>Food: {sol.foodBonus}</div>
+            <div style={{fontSize: "12px", marginTop: "4px"}}>
+              Break even: {turnsToBreakEven}
+            </div>
           </div>
         );
       })}

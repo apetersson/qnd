@@ -10,11 +10,12 @@ import CityManagementPanel from "./CityManagementPanel";
 import BoardSizeSelector from "./BoardSizeSelector";
 import OptimizationControls from "./OptimizationControls";
 import ShortcutsInfo from "./ShortcutsInfo";
-import SolutionList, { Solution } from "./SolutionList";
+import SolutionList from "./SolutionList";
 import BoardOverlay from "./BoardOverlay";
 import { useOptimizationContext } from "../contexts/OptimizationContext";
 import { useBoardState } from "../contexts/BoardStateContext";
 import { ImageViewToggle } from "./ImageViewToggle";
+import { Solution } from "../models/Solution";
 
 export default function PolytopiaMarketPlanner() {
   const [hoveredTile, setHoveredTile] = useState<TileData | null>(null);
