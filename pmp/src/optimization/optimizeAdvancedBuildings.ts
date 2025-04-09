@@ -3,6 +3,16 @@ import { ADVANCED_BUILDINGS, MARKET_CONTRIBUTIONG_BUILDINGS } from "../models/bu
 import { getBuildingLevel, MAX_MARKET_LEVEL } from "../placement/placement";
 import { Action, dynamicActions } from "./action";
 
+/** New: HistoryEntry interface for type‑safe history tracking */
+export interface HistoryEntry {
+  actionId: string;
+  description: string; // Keep for display formatting
+  x: number;
+  y: number;
+  cityId: string | null;
+  cost: number;
+}
+
 /** Calculates the market bonus for a tile if it holds a Market building */
 export function calculateMarketBonusForTile(tile: TileData, board: Board): number {
   if (tile.building !== Building.Market) return 0;
@@ -114,6 +124,27 @@ function createCompositeAction(
   };
 }
 
+/**
+ * Interface to represent evaluation metrics of a solution.
+ */
+interface SolutionMetrics {
+  bonus: number;
+  secondary: number;
+  cost: number;
+}
+
+/**
+ * Comparator for two solution metrics.
+ * Returns a positive value if a is better than b.
+ * - Higher bonus is better.
+ * - If bonus is equal, higher secondary is better.
+ * - If both bonus and secondary are equal, lower cost is better.
+ */
+function compareSolutionMetrics(a: SolutionMetrics, b: SolutionMetrics): number {
+  if (a.bonus !== b.bonus) return a.bonus - b.bonus;
+  if (a.secondary !== b.secondary) return a.secondary - b.secondary;
+  return b.cost - a.cost; // lower cost is better
+}
 
 /**
  * Asynchronous optimization function with dynamic actions, history logging,
@@ -131,7 +162,8 @@ function createCompositeAction(
  * @param dynamicOptions An object mapping dynamic action IDs to booleans.
  * @param overallBudget The maximum stars that can be spent.
  * @param progressCallback Callback to report progress (0-1).
- * @param newSolutionCallback
+ * @param newSolutionCallback Callback that receives a new best solution.
+ * @param cityToggles A mapping of city IDs to a boolean indicating whether the city is toggled on.
  * @returns A Promise that resolves to the optimized board.
  */
 export async function optimizeAdvancedBuildingsAsync(
@@ -145,7 +177,7 @@ export async function optimizeAdvancedBuildingsAsync(
     foodBonus: number,
     iteration: number,
     boardSnapshot: Board,
-    history: string[],
+    history: HistoryEntry[]
   ) => void,
   cityToggles: Record<string, boolean>
 ): Promise<Board> {
@@ -159,12 +191,12 @@ export async function optimizeAdvancedBuildingsAsync(
     return true;
   });
 
-  console.log(availableActions, "availableActions")
+  console.log(availableActions, "availableActions");
   let bestBonus = calculateMarketBonus(initialBoard);
   let bestSecondary = sumLevelsForFood(initialBoard);
   let bestBoard = copyBoard(initialBoard);
   let iterationCount = 0;
-  let bestHistory: string[] = [];
+  let bestHistory: HistoryEntry[] = [];
   let bestBudget = 0;
 
   // Memo table: key is board state, value is the minimum cost at which we reached that state.
@@ -179,15 +211,15 @@ export async function optimizeAdvancedBuildingsAsync(
    * and aborting the branch if the current cost already exceeds the budget.
    *
    * @param currentBoard Current board state.
-   * @param currentHistory Array recording the history of actions taken.
+   * @param currentHistory Array recording the history of actions taken (as HistoryEntry objects).
    * @param currentBudget The accumulated stars budget.
-   * @param startProgress between 0-1
-   * @param endProgress between 0-1
+   * @param startProgress between 0-1.
+   * @param endProgress between 0-1.
    */
   // Then, inside the function’s candidate generation loop:
   async function rec(
     currentBoard: Board,
-    currentHistory: string[],
+    currentHistory: HistoryEntry[],
     currentBudget: number,
     startProgress: number,
     endProgress: number
@@ -209,11 +241,9 @@ export async function optimizeAdvancedBuildingsAsync(
     if (iterationCount % 1000 === 0) {
       await new Promise(resolve => setTimeout(resolve, 0));
       if (cancelToken.canceled) return;
-      // e.g., call callback with the midpoint of [startProgress..endProgress]
-      console.log(memo.size, "memo.size")
+      console.log(memo.size, "memo.size");
       progressCallback?.(startProgress);
       await new Promise(resolve => setTimeout(resolve, 0));
-      // Alternatively: progressCallback?.(startProgress);
     }
     // Build the list of candidate actions for the current board.
     const candidateActions: {
@@ -303,7 +333,7 @@ export async function optimizeAdvancedBuildingsAsync(
 
             candidateActions.push({
               index: i,
-              action: composite, // store the composite
+              action: composite,
               score: {primary, secondary},
             });
           }
@@ -352,10 +382,7 @@ export async function optimizeAdvancedBuildingsAsync(
 // Candidate type from your optimization function.
     interface Candidate {
       index: number;
-      action: {
-        cost: number;
-        // other properties...
-      };
+      action: Action;
       score: {
         primary: number;
         secondary: number;
@@ -410,15 +437,34 @@ export async function optimizeAdvancedBuildingsAsync(
       if (currentBudget + candidate.action.cost > overallBudget) continue;
       const idx = candidate.index;
       const tile = currentBoard.tiles[idx]!;
+
+      // New: For destroy-building actions, check if there is already a placement action history on the same tile.
+      if (candidate.action.id === "destroy-building") {
+        const alreadyPlaced = currentHistory.some(entry =>
+            entry.x === tile.x &&
+            entry.y === tile.y
+          // && (entry.actionId.startsWith("place-") || entry.actionId.startsWith("add-"))
+        );
+        if (alreadyPlaced) {
+          continue;
+        }
+      }
+
       // Save original tile for backtracking.
       const originalTile: TileData = {...tile};
 
-      // Log the action.
-      currentHistory.push(
-        `${candidate.action.description} at (${tile.x},${tile.y})` +
-        (tile.cityId ? ` in city ${tile.cityId}` : "") +
-        ` (cost: ${candidate.action.cost})`
-      );
+      // Log the candidate action as a HistoryEntry.
+      const historyEntry: HistoryEntry = {
+        actionId: candidate.action.id,
+        description: `${candidate.action.description} at (${tile.x},${tile.y})` +
+          (tile.cityId ? ` in city ${tile.cityId}` : "") +
+          ` (cost: ${candidate.action.cost})`,
+        x: tile.x,
+        y: tile.y,
+        cityId: tile.cityId,
+        cost: candidate.action.cost,
+      };
+      currentHistory.push(historyEntry);
 
       // Apply the candidate action.
       candidate.action.perform(tile, currentBoard);
@@ -427,7 +473,7 @@ export async function optimizeAdvancedBuildingsAsync(
       await rec(currentBoard, currentHistory, currentBudget + candidate.action.cost, childStart,
         childEnd);
 
-      // Backtrack: restore original tile state and remove logged action.
+      // Backtrack: restore original tile state and remove logged history.
       currentBoard.tiles[idx] = {...originalTile};
       currentHistory.pop();
     }

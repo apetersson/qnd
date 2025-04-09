@@ -1,13 +1,14 @@
 // Modified SolutionList.tsx
 import React from "react";
 import { Board } from "../models/Board";
+import { HistoryEntry } from "../optimization/optimizeAdvancedBuildings";
 
 export interface Solution {
   marketBonus: number;
   foodBonus: number;
   iteration: number;
   boardSnapshot: Board;
-  history: string[];
+  history: HistoryEntry[];
 }
 
 interface SolutionListProps {

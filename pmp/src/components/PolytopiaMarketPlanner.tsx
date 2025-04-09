@@ -98,7 +98,7 @@ export default function PolytopiaMarketPlanner() {
         <div style={{marginLeft: 20}}>
           <textarea
             readOnly
-            value={selectedSolution ? selectedSolution.history.join("\n") : ""}
+            value={selectedSolution ? selectedSolution.history.map(value => value.description).join("\n") : ""}
             style={{width: 300, height: 400}}
           />
         </div>
