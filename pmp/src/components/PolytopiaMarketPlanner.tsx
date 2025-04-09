@@ -43,7 +43,9 @@ export default function PolytopiaMarketPlanner() {
   return (
     <div style={{margin: 20}}>
       <h1>Polytopia Market Planner</h1>
-      <h3>very cool but kinda cheating (john bone)</h3>
+      <a style={{color: "black", textDecoration: "none"}} target={"_blank"}
+         href={"https://discord.com/channels/283436219780825088/368485048493539329/1359533536717045821"} rel="noreferrer"><h3>very cool
+        but kinda cheating &rarr;</h3></a>
 
 
       <BoardSizeSelector/>
