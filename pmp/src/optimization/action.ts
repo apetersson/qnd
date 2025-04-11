@@ -1,5 +1,6 @@
 import { Board, Building, getNeighbors, Terrain, TileData } from "../models/Board";
 import { Technology } from "../models/Technology";
+import { HistoryEntry } from "../models/historyEntry";
 
 /** Interface for a dynamic action that can be applied on a tile during optimisation*/
 export interface Action {
@@ -7,7 +8,7 @@ export interface Action {
   description: string;
   cost: number; // Positive cost for placements, negative for removals
   perform: (tile: TileData, board: Board) => void;
-  canApply: (tile: TileData, board: Board) => boolean;
+  canApply: (tile: TileData, board: Board, history: HistoryEntry[]) => boolean;
   requiredTech: Technology;
 }
 
@@ -122,7 +123,17 @@ export const DESTROY_BUILDING_ACTION: Action = {
   perform: (tile, _board) => {
     tile.building = Building.None;
   },
-  canApply: (tile, _board) => tile.building !== Building.None,
+  canApply: (tile, _board, history) => {
+    //it only makes sense to destroy something on a tile if we didn't already create something here as part of the optimisation process,
+    // otherwise we'll get loops
+    if (tile.building === Building.None) return false;
+    for (const historyEntry of history) {
+      if (isBuildingPlacementAction(historyEntry.actionId)) {
+        if (historyEntry.x === tile.x && historyEntry.y === tile.y) return false;
+      }
+    }
+    return true;
+  },
 };
 
 export const GROW_FOREST_ACTION: Action = {
@@ -183,3 +194,12 @@ export const dynamicActions: Action[] = [
   FARM_ACTION,
   MINE_ACTION,
 ];
+
+/** Returns true if this action is one that places a building (used to find follow-up). */
+export function isBuildingPlacementAction(actionId: string): boolean {
+  // Example: match "place-" or "add-" IDs, or check if perform(...) sets tile.building != NONE
+  return (
+    actionId.startsWith("place-") ||
+    actionId.startsWith("add-")
+  );
+}

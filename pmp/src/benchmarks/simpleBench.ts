@@ -2,7 +2,13 @@
 import { Board, createInitialBoard } from "../models/Board";
 import { getBoardAction } from "../placement/getBoardAction";
 import { optimizeAdvancedBuildingsAsync } from "../optimization/optimizeAdvancedBuildings";
-import { dynamicActions, LUMBER_HUT_ACTION, MARKET_ACTION, SAWMILL_ACTION } from "../optimization/action";
+import {
+  DESTROY_BUILDING_ACTION,
+  dynamicActions,
+  LUMBER_HUT_ACTION,
+  MARKET_ACTION,
+  SAWMILL_ACTION
+} from "../optimization/action";
 import { HistoryEntry } from "../models/historyEntry";
 import { calculateMarketBonus } from "../models/bonuses";
 import { exportBoardState } from "../utils/boardExport";
@@ -23,10 +29,7 @@ function executeAction(key: string, x: number, y: number, board: Board): void {
   action.perform(board);
 }
 
-// --- Main Benchmark Function ---
-async function runBenchmark() {
-  console.log("Starting benchmark setup using board actions...");
-
+function setupTestingBoard1() {
   // 1. Create a board
   const width = 11;
   const height = 11;
@@ -45,11 +48,35 @@ async function runBenchmark() {
 
   console.log("Board setup complete. Current board state:");
   console.log(exportBoardState(board));
+  return board;
+}
 
+function setupDeleteBoard() {
+  // 1. Create a board
+  const width = 11;
+  const height = 11;
+  const board = createInitialBoard(width, height);
+
+  // 2. Set up two cities using the 'c' key:
+  // City 1 at (1,1)
+  executeAction("c", 1, 1, board);
+
+  // 3. Place three forests using the 'f' key:
+  executeAction("w", 0, 0, board);
+  executeAction("l", 0, 1, board);
+  executeAction("s", 0, 2, board);
+  executeAction("u", 1, 2, board);
+
+  console.log("Board setup complete. Current board state:");
+  console.log(exportBoardState(board));
+  return board;
+}
+
+async function expectBonus(board: Board, actions: string[], EXPECTED_MINIMUM_BONUS: number, maxBudget: number) {
   // 4. Define optimization parameters
   const cancelToken = {canceled: false};
 
-  const chosenActionIds = new Set([SAWMILL_ACTION.id, LUMBER_HUT_ACTION.id, MARKET_ACTION.id]);
+  const chosenActionIds: Set<string> = new Set(actions);
   const dynamicOptions = Object.fromEntries(
     dynamicActions.map(action => [action.id, chosenActionIds.has(action.id)])
   );
@@ -58,7 +85,7 @@ async function runBenchmark() {
 
   console.log("Enabled dynamic options:", Object.keys(dynamicOptions).filter(k => dynamicOptions[k]));
 
-  const overallBudget = 25; // set a modest stars budget for the test
+  const overallBudget = maxBudget; // set a modest stars budget for the test
   const cityToggles = {
     "1-1": true,
     "3-3": true,
@@ -110,7 +137,6 @@ async function runBenchmark() {
     }
 
 // Optionally, if you have a known expected value (from a previous verified run on this input)
-    const EXPECTED_MINIMUM_BONUS = 4;  // adjust according to your known optimum
     if (optimizedBonus < EXPECTED_MINIMUM_BONUS) {
       throw new Error(
         `Optimized bonus (${optimizedBonus}) is below the expected minimum optimal bonus (${EXPECTED_MINIMUM_BONUS}).`
@@ -121,7 +147,15 @@ async function runBenchmark() {
   } catch (error) {
     console.timeEnd("OptimizationTime");
     console.error("Optimization failed:", error);
+    process.exit(1);
   }
+}
+
+// --- Main Benchmark Function ---
+async function runBenchmark() {
+  console.log("Starting benchmark setup using board actions...");
+  await expectBonus(setupTestingBoard1(), [SAWMILL_ACTION.id, LUMBER_HUT_ACTION.id, MARKET_ACTION.id], 4, 25);
+  await expectBonus(setupDeleteBoard(), [DESTROY_BUILDING_ACTION.id, MARKET_ACTION.id], 1, 25);
 }
 
 // --- Execute the benchmark test ---

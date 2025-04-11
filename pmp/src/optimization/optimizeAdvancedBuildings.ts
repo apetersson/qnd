@@ -1,6 +1,5 @@
 import { Board, copyBoard, getNeighbors, TileData } from "../models/Board";
-import { ADVANCED_BUILDINGS } from "../models/buildingTypes";
-import { Action, dynamicActions } from "./action";
+import { Action, dynamicActions, isBuildingPlacementAction } from "./action";
 import { HistoryEntry } from "../models/historyEntry";
 import { calculateMarketBonus, sumLevelsForFood } from "../models/bonuses";
 
@@ -8,18 +7,8 @@ import { calculateMarketBonus, sumLevelsForFood } from "../models/bonuses";
 const PREP_ACTION_IDS = new Set([
   "remove-forest",
   "burn-forest",
-  "destroy-building",
   "grow-forest",
 ]);
-
-/** Returns true if this action is one that places a building (used to find follow-up). */
-function isBuildingPlacementAction(action: Action): boolean {
-  // Example: match "place-" or "add-" IDs, or check if perform(...) sets tile.building != NONE
-  return (
-    action.id.startsWith("place-") ||
-    action.id.startsWith("add-")
-  );
-}
 
 /**
  * Compute a 32-bit FNV-1a hash of a string.
@@ -177,6 +166,25 @@ export async function optimizeAdvancedBuildingsAsync(
     // Otherwise, store the current cost.
     memo.set(key, currentBudget);
 
+    // Check and update the best solution even if not at a leaf
+    const currentBonus = calculateMarketBonus(currentBoard);
+    const currentSecondary = sumLevelsForFood(currentBoard);
+    if (currentBonus > bestBonus || (currentBonus === bestBonus && currentSecondary > bestSecondary)) {
+      bestBonus = currentBonus;
+      bestSecondary = currentSecondary;
+      bestBoard = copyBoard(currentBoard);
+      bestHistory = [...currentHistory];
+      bestBudget = currentBudget;
+      console.log(`New best bonus (intermediate): ${bestBonus} (Secondary: ${currentSecondary}) at iteration ${iterationCount}.`);
+      newSolutionCallback(
+        bestBonus,
+        bestSecondary,
+        iterationCount,
+        copyBoard(currentBoard),
+        [...currentHistory]
+      );
+    }
+
     iterationCount++;
     if (iterationCount % 1000 === 0) {
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -199,7 +207,7 @@ export async function optimizeAdvancedBuildingsAsync(
       // Go through every toggled-on action:
       for (const action of availableActions) {
         if (!dynamicOptions[action.id]) continue;
-        if (!action.canApply(tile, currentBoard)) continue;
+        if (!action.canApply(tile, currentBoard, currentHistory)) continue;
 
         // Case 1: Normal (non-prep) action => single-step as usual
         if (!PREP_ACTION_IDS.has(action.id)) {
@@ -221,30 +229,6 @@ export async function optimizeAdvancedBuildingsAsync(
         // Case 2: Prep action => see what building placements become possible
         else {
           // Case 2: Prep action => see what building placements become possible
-
-          //  if we're destroying a tile that currently has an advanced building,
-          //    skip making a composite. Just add the single "destroy" step, since it might be beneficial to move a building
-          if (action.id === "destroy-building" && ADVANCED_BUILDINGS.includes(tile.building)) {
-            // If we can't afford it, skip
-            if (currentBudget + action.cost > overallBudget) {
-              continue;
-            }
-            // We handle it like a single-step action, ignoring the normal "composite" logic.
-            const tempBoard = copyBoard(currentBoard);
-            action.perform(tempBoard.tiles[i]!, tempBoard);
-            const primary = calculateMarketBonus(tempBoard);
-            const secondary = sumLevelsForFood(tempBoard);
-
-            candidateActions.push({
-              index: i,
-              action,
-              score: {primary, secondary},
-            });
-
-            // Don't try to do a composite, so 'continue' here
-            continue;
-          }
-
           // Step A: Apply the prep action to a temp board
           const tempBoardPrep = copyBoard(currentBoard);
           action.perform(tempBoardPrep.tiles[i]!, tempBoardPrep);
@@ -252,10 +236,10 @@ export async function optimizeAdvancedBuildingsAsync(
           // Step B: Check for all building-laying actions that are toggled on
           for (const buildingAction of availableActions) {
             if (!dynamicOptions[buildingAction.id]) continue;
-            if (!isBuildingPlacementAction(buildingAction)) continue;
+            if (!isBuildingPlacementAction(buildingAction.id)) continue;
 
             const tileAfterPrep = tempBoardPrep.tiles[i]!;
-            if (!buildingAction.canApply(tileAfterPrep, tempBoardPrep)) {
+            if (!buildingAction.canApply(tileAfterPrep, tempBoardPrep, currentHistory)) {
               continue;
             }
 
@@ -280,7 +264,6 @@ export async function optimizeAdvancedBuildingsAsync(
         }
       }
     }
-
     // If no candidate actions, then we've reached a leaf.
     if (candidateActions.length === 0) {
       const bonus = calculateMarketBonus(currentBoard);
@@ -293,7 +276,7 @@ export async function optimizeAdvancedBuildingsAsync(
         bestBudget = currentBudget;
         console.log(`New best bonus: ${bestBonus} (Secondary: ${secondary}) after ${iterationCount} iterations.`);
         console.log("Optimization history (actions):", bestHistory);
-        newSolutionCallback?.(
+        newSolutionCallback(
           bestBonus,
           bestSecondary,
           iterationCount,
@@ -377,18 +360,6 @@ export async function optimizeAdvancedBuildingsAsync(
       if (currentBudget + candidate.action.cost > overallBudget) continue;
       const idx = candidate.index;
       const tile = currentBoard.tiles[idx]!;
-
-      // New: For destroy-building actions, check if there is already a placement action history on the same tile.
-      if (candidate.action.id === "destroy-building") {
-        const alreadyPlaced = currentHistory.some(entry =>
-            entry.x === tile.x &&
-            entry.y === tile.y
-          // && (entry.actionId.startsWith("place-") || entry.actionId.startsWith("add-"))
-        );
-        if (alreadyPlaced) {
-          continue;
-        }
-      }
 
       // Save original tile for backtracking.
       const originalTile: TileData = {...tile};
