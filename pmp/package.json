@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "proto": "yarn pbjs proto/board.proto --ts src/generated/wire-format.ts && echo '// @ts-nocheck' | cat - src/generated/wire-format.ts > src/generated/tmp.ts && mv src/generated/tmp.ts src/generated/wire-format.ts"
+    "proto": "yarn pbjs proto/board.proto --ts src/generated/wire-format.ts && echo '// @ts-nocheck' | cat - src/generated/wire-format.ts > src/generated/tmp.ts && mv src/generated/tmp.ts src/generated/wire-format.ts",
+    "benchmark": "tsx src/benchmarks/simpleBench.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -30,6 +31,7 @@
     "eslint": "^9.22.0",
     "eslint-plugin-react": "^7.37.4",
     "pbjs": "^0.0.14",
+    "tsx": "^4.19.3",
     "typescript": "^4.9.5",
     "vite": "^4.3.9",
     "vite-plugin-checker": "^0.9.1"
