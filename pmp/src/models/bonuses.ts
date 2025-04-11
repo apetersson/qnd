@@ -24,7 +24,7 @@ export function calculateMarketBonus(board: Board): number {
 export function sumLevelsForFood(board: Board): number {
   let sum = 0;
   const buildingFactors: Record<Building, number> = {
-    MONUMENT: 3,
+    [Building.Monument]: 3,
     [Building.LumberHut]: 1,
     [Building.Farm]: 2,
     [Building.Mine]: 2,

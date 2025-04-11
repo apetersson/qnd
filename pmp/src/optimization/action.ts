@@ -117,7 +117,7 @@ export const BURN_FOREST_ACTION: Action = {
 export const DESTROY_BUILDING_ACTION: Action = {
   id: 'destroy-building',
   description: 'Destroy Building',
-  cost: 5,
+  cost: 0,
   requiredTech: Technology.Chivalry,
   perform: (tile, _board) => {
     tile.building = Building.None;
