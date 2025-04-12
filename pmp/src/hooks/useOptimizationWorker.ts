@@ -1,12 +1,12 @@
-// Filename: ./hooks/useOptimizationWorker.ts
-import { useState, useEffect, useRef, useCallback } from "react";
 import { Board } from "../models/Board";
 import { Solution } from "../models/Solution";
+import { useCallback, useEffect, useRef, useState } from "react";
+import OptimizationWorkerConstructor from "../optimization/optimization.worker?worker"; // Adjust path if needed
 
 // Define message types for worker communication
 interface WorkerMessage {
   type: "progress" | "newSolution" | "result" | "error" | "ready" | "cancelled";
-  payload?: any; // Adjust type as needed, e.g., number for progress, Solution for newSolution, Board for result
+  payload?: any;
 }
 
 export function useOptimizationWorker() {
@@ -22,15 +22,12 @@ export function useOptimizationWorker() {
   useEffect(() => {
     // Create the worker instance.
     // The `new URL(...)` pattern is needed for Vite to correctly handle the worker file.
-    workerRef.current = new Worker(
-      new URL("../optimization.worker.ts", import.meta.url),
-      { type: "module" } // Important for using ES modules in the worker
-    );
+    workerRef.current = new OptimizationWorkerConstructor();
     console.log("Optimization worker created.");
 
     // --- Message Handler ---
     workerRef.current.onmessage = (event: MessageEvent<WorkerMessage>) => {
-      const { type, payload } = event.data;
+      const {type, payload} = event.data;
       // console.log("Main thread received message from worker:", type);
 
       switch (type) {
@@ -136,7 +133,7 @@ export function useOptimizationWorker() {
   const stopOptimization = useCallback(() => {
     if (workerRef.current && isOptimizing) {
       console.log("Sending cancel message to worker.");
-      workerRef.current.postMessage({ type: "cancel" });
+      workerRef.current.postMessage({type: "cancel"});
       setIsOptimizing(false); // Update UI state immediately
       // Don't reset progress here, let the user see where it stopped.
       // setProgress(0); // Or reset if preferred
