@@ -17,6 +17,7 @@ function formatPercentageGeneric(pct: number): string {
   // If pct=0.56 then order=-1 and decimals = max(2 - (-1) - 1, 2) = 2.
   // If pct=0.00000123 then order=-7 and decimals = max(2 - (-7) - 1, 2) = 8.
   const decimals = Math.max(2 - order - 1, 2);
+  if (decimals >= 100) return "HEATH DEATH OF THE UNIVERSE!!";
   return pct.toFixed(decimals);
 }
 
