@@ -1,40 +1,28 @@
+// src/components/MouseOptions.tsx
+import React from "react";
 import { Menu, MenuItem } from "@mui/material";
 import { buildingKeyMap, terrainKeyMap, useBoardActions } from "../contexts/BoardActionsContext";
-import { TileData } from "../models/Board";
 import { useBoardState } from "../contexts/BoardStateContext";
-import { BoardAction } from "../placement/BoardAction";
 import { getBoardAction } from "../placement/getBoardAction";
+import { useOptimizationContext } from "../contexts/OptimizationContext";
+import { Terrain, TileData } from "../models/Board";
+import { BoardAction } from "../placement/BoardAction";
 
 interface MouseOptionsProps {
   anchorEl: HTMLElement | null;
   onClose: () => void;
-  selectedTile: TileData | null;
+  selectedTile: TileData;
 }
 
 export function MouseOptions({anchorEl, onClose, selectedTile}: MouseOptionsProps) {
   const {handleTileAction} = useBoardActions();
   const {board} = useBoardState();
+  const {cityToggles, setCityToggles} = useOptimizationContext();
 
-  if (!selectedTile) {
-    return (
-      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
-        <MenuItem onClick={onClose}>No tile selected</MenuItem>
-      </Menu>
-    );
-  }
-
-  // We’ll build a comprehensive list of all possible keys we want to show:
-  //  - all terrain keys from terrainKeyMap
-  //  - all building keys from buildingKeyMap
-  //  - plus special single-char keys if any
-  //   e.g. "e" for city extension
+  // Build a set of keys for terrain, building and special commands (e.g. "e" for extend city)
   const allKeys = new Set<string>();
-
-  // from terrainKeyMap
   Object.keys(terrainKeyMap).forEach((k) => allKeys.add(k));
-  // from buildingKeyMap
   Object.keys(buildingKeyMap).forEach((k) => allKeys.add(k));
-  // special ones
   allKeys.add("e");
 
   // Now we see which ones yield a valid BoardAction for the selected tile
@@ -46,17 +34,36 @@ export function MouseOptions({anchorEl, onClose, selectedTile}: MouseOptionsProp
 
   return (
     <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
-      {validActions.map((action) => (
+      {/* If the selected tile represents a city, add a toggle action */}
+      {selectedTile && selectedTile.cityId && selectedTile.terrain === Terrain.City && (
         <MenuItem
-          key={action.key}
           onClick={() => {
-            handleTileAction(action.key, selectedTile);
+            // Toggle the inclusion state for this city in optimization.
+            setCityToggles((prev) => ({
+              ...prev,
+              [selectedTile.cityId!]: !prev[selectedTile.cityId!],
+            }));
             onClose();
           }}
         >
-          {action.label}
+          {cityToggles[selectedTile.cityId!]
+            ? "Exclude City from Optimization"
+            : "Include City in Optimization"}
         </MenuItem>
-      ))}
+      )}
+      {
+        validActions.map((action) => (
+          <MenuItem
+            key={action.key}
+            onClick={() => {
+              handleTileAction(action.key, selectedTile);
+              onClose();
+            }}
+          >
+            {action.label}
+          </MenuItem>
+        ))
+      }
     </Menu>
   );
 }

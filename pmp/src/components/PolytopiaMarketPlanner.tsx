@@ -109,11 +109,11 @@ export default function PolytopiaMarketPlanner() {
       </div>
 
       <ImageViewToggle checked={useImages} onChange={(e) => setUseImages(e.target.checked)}/>
-      <MouseOptions
+      {selectedTile && <MouseOptions
         anchorEl={menuAnchor}
         onClose={() => setMenuAnchor(null)}
         selectedTile={selectedTile}
-      />
+      />}
 
     </div>
   );
