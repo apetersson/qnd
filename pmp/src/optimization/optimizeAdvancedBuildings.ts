@@ -193,6 +193,9 @@ export async function optimizeAdvancedBuildingsAsync(
       progressCallback?.(startProgress);
       await new Promise(resolve => setTimeout(resolve, 0));
     }
+
+    const remainingBudget = overallBudget - currentBudget;
+
     // Build the list of candidate actions for the current board.
     const candidateActions: {
       index: number;
@@ -207,7 +210,7 @@ export async function optimizeAdvancedBuildingsAsync(
       // Go through every toggled-on action:
       for (const action of availableActions) {
         if (!dynamicOptions[action.id]) continue;
-        if (!action.canApply(tile, currentBoard, currentHistory)) continue;
+        if (!action.canApply(tile, currentBoard, currentHistory, remainingBudget)) continue;
 
         // Case 1: Normal (non-prep) action => single-step as usual
         if (!PREP_ACTION_IDS.has(action.id)) {
@@ -239,7 +242,7 @@ export async function optimizeAdvancedBuildingsAsync(
             if (!isBuildingPlacementAction(buildingAction.id)) continue;
 
             const tileAfterPrep = tempBoardPrep.tiles[i]!;
-            if (!buildingAction.canApply(tileAfterPrep, tempBoardPrep, currentHistory)) {
+            if (!buildingAction.canApply(tileAfterPrep, tempBoardPrep, currentHistory, remainingBudget)) {
               continue;
             }
 

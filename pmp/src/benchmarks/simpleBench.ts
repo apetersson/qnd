@@ -66,6 +66,7 @@ function setupDeleteBoard() {
   executeAction("l", 0, 1, board);
   executeAction("s", 0, 2, board);
   executeAction("u", 1, 2, board);
+  executeAction("p", 2, 2, board); //extra building that might be deleted
 
   console.log("Board setup complete. Current board state:");
   console.log(exportBoardState(board));
@@ -155,7 +156,7 @@ async function expectBonus(board: Board, actions: string[], EXPECTED_MINIMUM_BON
 async function runBenchmark() {
   console.log("Starting benchmark setup using board actions...");
   await expectBonus(setupTestingBoard1(), [SAWMILL_ACTION.id, LUMBER_HUT_ACTION.id, MARKET_ACTION.id], 4, 25);
-  await expectBonus(setupDeleteBoard(), [DESTROY_BUILDING_ACTION.id, MARKET_ACTION.id], 1, 25);
+  await expectBonus(setupDeleteBoard(), [DESTROY_BUILDING_ACTION.id, MARKET_ACTION.id], 1, 5);
 }
 
 // --- Execute the benchmark test ---

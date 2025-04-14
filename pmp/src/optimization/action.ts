@@ -8,7 +8,7 @@ export interface Action {
   description: string;
   cost: number; // Positive cost for placements, negative for removals
   perform: (tile: TileData, board: Board) => void;
-  canApply: (tile: TileData, board: Board, history: HistoryEntry[]) => boolean;
+  canApply: (tile: TileData, board: Board, history: HistoryEntry[], remainingBudget: number) => boolean;
   requiredTech: Technology;
 }
 
@@ -123,15 +123,25 @@ export const DESTROY_BUILDING_ACTION: Action = {
   perform: (tile, _board) => {
     tile.building = Building.None;
   },
-  canApply: (tile, _board, history) => {
+  canApply: (tile, _board, history, remainingBudget) => {
     //it only makes sense to destroy something on a tile if we didn't already create something here as part of the optimisation process,
     // otherwise we'll get loops
     if (tile.building === Building.None) return false;
+
+    //check if we have a chance to rebuild what we destroyed,
+    // since it only makes sense to destroy to make place for something else or move it.
+    const alreadyDeleted = history.filter(previousValue => previousValue.actionId === "destroy-building").length;
+    const assumed_Cost_rebuild = 5;
+    if (((alreadyDeleted + 1) * assumed_Cost_rebuild / remainingBudget) > 1) return false;
+
+    //check if we placed something on that tile earlier, if so don't destroy what we just placed
     for (const historyEntry of history) {
       if (isBuildingPlacementAction(historyEntry.actionId)) {
         if (historyEntry.x === tile.x && historyEntry.y === tile.y) return false;
       }
     }
+    //todo also check the other way don't place the same stuff we just destroyed on the same spot again.
+    // for this we will need to keep track of what we deleted in the history and do the check in canApply of the placement actions
     return true;
   },
 };
