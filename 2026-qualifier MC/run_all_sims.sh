@@ -11,7 +11,6 @@ time go run simulate.go "$CONFIG_FILE"
 
 # Install Python dependencies
 echo "Running Python simulation..."
-pip install PyYAML
 time python simulate.py "$CONFIG_FILE"
 
 echo "Running TypeScript simulation..."
