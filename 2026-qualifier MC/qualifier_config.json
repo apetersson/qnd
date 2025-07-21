@@ -1,0 +1,39 @@
+{
+  "numberOfSimulations": 1000000,
+  "teams": ["Austria", "Bosnia-Herzegovina", "Romania", "Cyprus", "San Marino"],
+  "elo": {
+    "Austria": 2101,
+    "Bosnia-Herzegovina": 1853,
+    "Romania": 1990,
+    "Cyprus": 2018,
+    "San Marino": 1326
+  },
+
+  "homeBonus": 10,
+
+  "currentPoints": {
+    "Bosnia-Herzegovina": 9,
+    "Austria": 6,
+    "Romania": 6,
+    "Cyprus": 3,
+    "San Marino": 0
+  },
+
+  "fixtures": [
+    ["Austria", "Cyprus"],
+    ["San Marino", "Bosnia-Herzegovina"],
+    ["Bosnia-Herzegovina", "Austria"],
+    ["Cyprus", "Romania"],
+    ["Austria", "San Marino"],
+    ["Cyprus", "Bosnia-Herzegovina"],
+    ["San Marino", "Cyprus"],
+    ["Romania", "Austria"],
+    ["Cyprus", "Austria"],
+    ["Bosnia-Herzegovina", "Romania"],
+    ["Austria", "Bosnia-Herzegovina"],
+    ["Romania", "San Marino"]
+  ],
+
+  "drawR": 0.4,
+  "playoffWinProb": 0.5
+}

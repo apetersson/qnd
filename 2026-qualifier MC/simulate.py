@@ -1,170 +1,118 @@
-import random
+#!/usr/bin/env python3
+# Monte Carlo Qualifier Simulator – Python
+# All parameters come from qualifier_config.json
+# ---------------------------------------------
 
-def monte_carlo_qualification(
-        n_sim: int = 100_000,
-        playoff_win_prob: float = 0.50,
-        seed: int = 42
-) -> dict[str, float]:
-    """
-    Quick‑n‑dirty World‑Cup‑2026 qualification simulator for Austria (UEFA Group H).
+import json, random, time
+from pathlib import Path
+from typing import Dict, List, Tuple, Literal, TypedDict, Any
 
-    Returns a dict with the probabilities of:
-      • direct  – winning the group
-      • playoff – finishing 2nd (before the playoff itself)
-      • fail    – 3rd or worse
-      • overall – direct + playoff * playoff_win_prob
-    """
+# ---------------------------------------------------------------------------
+# Load config
+# ---------------------------------------------------------------------------
 
-    random.seed(seed)
+cfg_path = Path("qualifier_config.json")
+cfg: Dict[str, Any] = json.loads(cfg_path.read_text())
 
-    teams = ["Austria", "Bosnia", "Romania", "Cyprus", "San Marino"]
+NUM_SIMS: int      = cfg.get("numberOfSimulations", 1_000_000)
+TEAMS: Tuple[str]  = tuple(cfg["teams"])              # type: ignore
+RATING: Dict[str]  = cfg["elo"]                       # type: ignore
+HOME_BONUS: int    = cfg["homeBonus"]
+DRAW_R: float      = cfg["drawR"]
+PLAYOFF_P: float   = cfg["playoffWinProb"]
+INITIAL_POINTS     = cfg["currentPoints"]             # type: ignore
+FIXTURES           = [tuple(f) for f in cfg["fixtures"]]  # type: ignore
 
-    # Elo‑style “common‑sense” ratings
-    rating = {
-        "Austria":     1900,
-        "Bosnia":      1750,
-        "Romania":     1700,
-        "Cyprus":      1450,
-        "San Marino":  1050,
-    }
+Team = Literal["Austria", "Bosnia-Herzegovina", "Romania", "Cyprus", "San Marino"]
 
-    HOME_BONUS = 100.0       # home‑field edge in Elo points
-    DRAW_P      = 0.25       # flat draw probability
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-    direct = playoff = fail = 0
+def elo_win(a: float, b: float) -> float:
+    return 1 / (1 + 10 ** ((b - a) / 400))
 
-    for _ in range(n_sim):
-        pts = {t: 0 for t in teams}
+def draw_prob(delta: float) -> float:
+    w = 1 / (1 + 10 ** (-delta / 400))
+    return 2 * w * (1 - w) * DRAW_R
 
-        # double round‑robin: each pair meets home & away
-        for i in range(len(teams)):
-            for j in range(i + 1, len(teams)):
-                t1, t2 = teams[i], teams[j]
+def odds(home: Team, away: Team):
+    delta = (RATING[home] + HOME_BONUS) - RATING[away]
+    d = draw_prob(delta)
+    h = (1 - d) * elo_win(RATING[home] + HOME_BONUS, RATING[away])
+    return h, d, 1 - h - d
 
-                for home, away in [(t1, t2), (t2, t1)]:
-                    # Elo‑style win expectation for the home side
-                    d          = (rating[home] + HOME_BONUS) - rating[away]
-                    win_expect = 1 / (1 + 10 ** (-d / 400))
+# ---------------------------------------------------------------------------
+# Monte‑Carlo
+# ---------------------------------------------------------------------------
 
-                    p_home_win = (1 - DRAW_P) * win_expect
-                    p_away_win = (1 - DRAW_P) * (1 - win_expect)
+class Tally(TypedDict): direct: int; playoff: int; fail: int
 
-                    r = random.random()
-                    if r < p_home_win:              # home win
-                        pts[home] += 3
-                    elif r < p_home_win + DRAW_P:   # draw
-                        pts[home] += 1
-                        pts[away] += 1
-                    else:                           # away win
-                        pts[away] += 3
-
-        # rank by points (random tiebreaker if needed)
-        table = sorted(teams, key=lambda t: (pts[t], random.random()), reverse=True)
-        pos   = table.index("Austria") + 1
-
-        if pos == 1:
-            direct += 1
-        elif pos == 2:
-            playoff += 1
-        else:
-            fail += 1
-
-    direct_p  = direct  / n_sim
-    playoff_p = playoff / n_sim
-    overall_p = direct_p + playoff_p * playoff_win_prob
-
-    return {
-        "direct":  direct_p,
-        "playoff": playoff_p,
-        "fail":    fail / n_sim,
-        "overall": overall_p,
-    }
-
-# Example run
-if __name__ == "__main__":
-    print(monte_carlo_qualification())
-import random
-
-def monte_carlo_qualification(
-        n_sim: int = 100_000,
-        playoff_win_prob: float = 0.50,
-        seed: int = 42
-) -> dict[str, float]:
-    """
-    Quick‑n‑dirty World‑Cup‑2026 qualification simulator for Austria (UEFA Group H).
-
-    Returns a dict with the probabilities of:
-      • direct  – winning the group
-      • playoff – finishing 2nd (before the playoff itself)
-      • fail    – 3rd or worse
-      • overall – direct + playoff * playoff_win_prob
-    """
-
-    random.seed(seed)
-
-    teams = ["Austria", "Bosnia", "Romania", "Cyprus", "San Marino"]
-
-    # Elo‑style “common‑sense” ratings
-    rating = {
-        "Austria":     1800,
-        "Bosnia":      1750,
-        "Romania":     1700,
-        "Cyprus":      1450,
-        "San Marino":  1050,
-    }
-
-    HOME_BONUS = 100.0       # home‑field edge in Elo points
-    DRAW_P      = 0.25       # flat draw probability
-
-    direct = playoff = fail = 0
+def simulate(n_sim: int = NUM_SIMS):
+    tally: Dict[Team, Tally] = {t: {"direct": 0, "playoff": 0, "fail": 0} for t in TEAMS}
 
     for _ in range(n_sim):
-        pts = {t: 0 for t in teams}
+        pts = INITIAL_POINTS.copy()
 
-        # double round‑robin: each pair meets home & away
-        for i in range(len(teams)):
-            for j in range(i + 1, len(teams)):
-                t1, t2 = teams[i], teams[j]
+        for h, a in FIXTURES:
+            p_home, p_draw, _ = odds(h, a)          # away prob = 1 - …
+            r = random.random()
+            if r < p_home:
+                pts[h] += 3
+            elif r < p_home + p_draw:
+                pts[h] += 1; pts[a] += 1
+            else:
+                pts[a] += 3
 
-                for home, away in [(t1, t2), (t2, t1)]:
-                    # Elo‑style win expectation for the home side
-                    d          = (rating[home] + HOME_BONUS) - rating[away]
-                    win_expect = 1 / (1 + 10 ** (-d / 400))
+        ranking = sorted(TEAMS, key=lambda t: (-pts[t], random.random()))
+        tally[ranking[0]]["direct"] += 1
+        tally[ranking[1]]["playoff"] += 1
+        for t in ranking[2:]:
+            tally[t]["fail"] += 1
 
-                    p_home_win = (1 - DRAW_P) * win_expect
-                    p_away_win = (1 - DRAW_P) * (1 - win_expect)
+    results: Dict[Team, Dict[str, float]] = {}
+    for t in TEAMS:
+        d = tally[t]["direct"] / n_sim
+        p = tally[t]["playoff"] / n_sim
+        f = tally[t]["fail"] / n_sim
+        results[t] = {"direct": d, "playoff": p, "fail": f, "overall": d + p * PLAYOFF_P}
+    return results
 
-                    r = random.random()
-                    if r < p_home_win:              # home win
-                        pts[home] += 3
-                    elif r < p_home_win + DRAW_P:   # draw
-                        pts[home] += 1
-                        pts[away] += 1
-                    else:                           # away win
-                        pts[away] += 3
+# ---------------------------------------------------------------------------
+# Presentation
+# ---------------------------------------------------------------------------
 
-        # rank by points (random tiebreaker if needed)
-        table = sorted(teams, key=lambda t: (pts[t], random.random()), reverse=True)
-        pos   = table.index("Austria") + 1
+def pct(x: float) -> str: return f"{x*100:.1f}%"
 
-        if pos == 1:
-            direct += 1
-        elif pos == 2:
-            playoff += 1
-        else:
-            fail += 1
+def show_team_odds(res):
+    hdr = ["Direct", "Playoff", "Eliminated", "Overall"]
+    print(f"\nQualification probabilities ({NUM_SIMS:,} sims):\n")
+    print(f"{'Team':<20} | " + " | ".join(f'{h:>10}' for h in hdr))
+    print("-"*20 + "-+-" + "-+-".join("-"*10 for _ in hdr))
+    for t in sorted(res, key=lambda x: res[x]["overall"], reverse=True):
+        r = res[t]
+        row = [pct(r[k]) for k in ("direct", "playoff", "fail", "overall")]
+        print(f"{t:<20} | " + " | ".join(f"{v:>10}" for v in row))
 
-    direct_p  = direct  / n_sim
-    playoff_p = playoff / n_sim
-    overall_p = direct_p + playoff_p * playoff_win_prob
+def show_match_odds():
+    hdr = ["Home Win", "Draw", "Away Win"]
+    width = max(len(f"{h} vs {a}") for h,a in FIXTURES)
+    print("\nOdds for each remaining fixture:\n")
+    print(f"{'Match':<{width}} | " + " | ".join(f"{h:>10}" for h in hdr))
+    print("-"*width + "-+-" + "-+-".join("-"*10 for _ in hdr))
+    for h, a in FIXTURES:
+        ph, pd, pa = odds(h, a)
+        row = [pct(ph), pct(pd), pct(pa)]
+        print(f"{h} vs {a:<{width-len(h)-4}} | " + " | ".join(f"{v:>10}" for v in row))
 
-    return {
-        "direct":  direct_p,
-        "playoff": playoff_p,
-        "fail":    fail / n_sim,
-        "overall": overall_p,
-    }
+# ---------------------------------------------------------------------------
+# Entry
+# ---------------------------------------------------------------------------
 
-# Example run
 if __name__ == "__main__":
-    print(monte_carlo_qualification())
+    print("Starting Monte Carlo simulation...")
+    t0 = time.perf_counter()
+    results = simulate()
+    print(f"Simulation time: {time.perf_counter() - t0:.3f}s")
+    show_team_odds(results)
+    show_match_odds()

@@ -8,6 +8,13 @@ interface TeamResult {
   overall: number;
 }
 
+// A helper interface to define the shape of the simulation counters.
+interface TallyCount {
+  direct: number;
+  playoff: number;
+  fail: number;
+}
+
 type ResultTable = Record<Team, TeamResult>;
 
 const TEAMS = [
@@ -63,7 +70,7 @@ const FIXTURES: Array<[Team, Team]> = [
   ["Romania", "San Marino"],
 ];
 
-const HOME_BONUS = 100; // Elo pts
+const HOME_BONUS = 10; // Elo pts
 
 // -----------------------------------------------------------------------------
 // Probability helpers
@@ -89,11 +96,12 @@ function matchOdds(home: Team, away: Team) {
 // -----------------------------------------------------------------------------
 // Monte‑Carlo core (simulates only remaining matches)
 // -----------------------------------------------------------------------------
-function simulate(nSim = 1_000_000, playoffWinProb = 0.5): ResultTable {
-  // counters per team
-  const tally: Record<Team, { direct: number; playoff: number; fail: number }> =
+function simulate(nSim = 10_000_000, playoffWinProb = 0.5): ResultTable {
+  // counters per team, initialized to zero for each outcome.
+  // Using a specific type assertion `as Record<...>` instead of `as any`.
+  const tally: Record<Team, TallyCount> =
     TEAMS.reduce((acc, t) => ({...acc, [t]: {direct: 0, playoff: 0, fail: 0}}),
-      {} as any);
+      {} as Record<Team, TallyCount>);
 
   for (let s = 0; s < nSim; s++) {
     const pts: Record<Team, number> = {...INITIAL_POINTS};
@@ -123,7 +131,10 @@ function simulate(nSim = 1_000_000, playoffWinProb = 0.5): ResultTable {
   }
 
   // convert counts → probabilities
-  const res: ResultTable = {} as any;
+  // Initialize with a specific type assertion instead of `as any`.
+  // This informs TypeScript that the object will conform to `ResultTable`
+  // once it has been populated by the loop.
+  const res = {} as ResultTable;
   for (const t of TEAMS) {
     const d = tally[t].direct / nSim;
     const p = tally[t].playoff / nSim;
@@ -172,7 +183,15 @@ function showMatchOdds(): void {
 // -----------------------------------------------------------------------------
 
 (function main() {
+  console.log("Starting Monte Carlo simulation...");
+  // Start a timer with a descriptive label
+  console.time("Simulation time");
+
   const results = simulate();
+
+  // Stop the timer and print the elapsed time to the console
+  console.timeEnd("Simulation time");
+
   showTeamOdds(results);
   showMatchOdds();
 })();
