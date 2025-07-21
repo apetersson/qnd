@@ -16,7 +16,7 @@ cfg: Dict[str, Any] = json.loads(cfg_path.read_text())
 
 NUM_SIMS: int      = cfg.get("numberOfSimulations", 1_000_000)
 TEAMS: Tuple[str]  = tuple(cfg["teams"])              # type: ignore
-RATING: Dict[str]  = cfg["elo"]                       # type: ignore
+RATING: Dict[str, float]  = cfg["elo"]                       # type: ignore
 HOME_BONUS: int    = cfg["homeBonus"]
 DRAW_R: float      = cfg["drawR"]
 PLAYOFF_P: float   = cfg["playoffWinProb"]

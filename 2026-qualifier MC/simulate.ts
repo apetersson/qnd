@@ -32,12 +32,12 @@ const cfg: Config = JSON.parse(fs.readFileSync("qualifier_config.json", "utf-8")
 const TEAMS = cfg.teams;
 type Team = (typeof TEAMS)[number];
 
-const RATING: Record<Team, number>          = cfg.elo;
-const INITIAL_POINTS: Record<Team, number>  = cfg.currentPoints;
-const FIXTURES: Array<[Team, Team]>        = cfg.fixtures as [Team, Team][];
-const HOME_BONUS: number                     = cfg.homeBonus;
-const DRAW_R: number                         = cfg.drawR;
-const DEFAULT_PLAYOFF: number                = cfg.playoffWinProb;
+const RATING: Record<Team, number> = cfg.elo;
+const INITIAL_POINTS: Record<Team, number> = cfg.currentPoints;
+const FIXTURES: Array<[Team, Team]> = cfg.fixtures as [Team, Team][];
+const HOME_BONUS: number = cfg.homeBonus;
+const DRAW_R: number = cfg.drawR;
+const DEFAULT_PLAYOFF: number = cfg.playoffWinProb;
 
 // -----------------------------------------------------------------------------
 // Probability helpers
@@ -47,9 +47,9 @@ function eloWinProb(rA: number, rB: number): number {
   return 1 / (1 + Math.pow(10, (rB - rA) / 400));
 }
 
-function drawProb(deltaElo: number, r = 0.4): number {
+function drawProb(deltaElo: number): number {
   const w = 1 / (1 + Math.pow(10, -deltaElo / 400));
-  return 2 * w * (1 - w) * r;
+  return 2 * w * (1 - w) * DRAW_R;
 }
 
 function matchOdds(home: Team, away: Team) {
@@ -63,14 +63,14 @@ function matchOdds(home: Team, away: Team) {
 // -----------------------------------------------------------------------------
 // Monte‑Carlo core (simulates only remaining matches)
 // -----------------------------------------------------------------------------
-function simulate(nSim = 10_000_000, playoffWinProb = 0.5): ResultTable {
+function simulate(): ResultTable {
   // counters per team, initialized to zero for each outcome.
   // Using a specific type assertion `as Record<...>` instead of `as any`.
   const tally: Record<Team, TallyCount> =
     TEAMS.reduce((acc, t) => ({...acc, [t]: {direct: 0, playoff: 0, fail: 0}}),
       {} as Record<Team, TallyCount>);
 
-  for (let s = 0; s < nSim; s++) {
+  for (let s = 0; s < cfg.numberOfSimulations; s++) {
     const pts: Record<Team, number> = {...INITIAL_POINTS};
 
     for (const [home, away] of FIXTURES) {
@@ -103,10 +103,10 @@ function simulate(nSim = 10_000_000, playoffWinProb = 0.5): ResultTable {
   // once it has been populated by the loop.
   const res = {} as ResultTable;
   for (const t of TEAMS) {
-    const d = tally[t].direct / nSim;
-    const p = tally[t].playoff / nSim;
-    const f = tally[t].fail / nSim;
-    res[t] = {direct: d, playoff: p, fail: f, overall: d + p * playoffWinProb};
+    const d = tally[t].direct / cfg.numberOfSimulations;
+    const p = tally[t].playoff / cfg.numberOfSimulations;
+    const f = tally[t].fail / cfg.numberOfSimulations;
+    res[t] = {direct: d, playoff: p, fail: f, overall: d + p * cfg.playoffWinProb};
   }
   return res;
 }

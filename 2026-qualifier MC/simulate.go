@@ -1,9 +1,21 @@
+// simulate.go
+// Monte‑Carlo World‑Cup‑2026 qualifier simulator (UEFA Group H)
+// Uses a single JSON file (qualifier_config.json) for **all** inputs:
+//   • teams, Elo ratings, current table
+//   • remaining fixtures
+//   • model parameters (draw‑R, home bonus, playoff win prob)
+//   • numberOfSimulations  ← NEW
+//
+// Build / run:
+//   go run simulate.go
+// ---------------------------------------------------------------------------
+
 package main
 
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"math"
 	"math/rand"
 	"os"
@@ -11,114 +23,76 @@ import (
 	"time"
 )
 
-/* -----------------------------------------------------------------------
-   Data
------------------------------------------------------------------------ */
-
-var teams = []string{
-	"Austria", "Bosnia-Herzegovina", "Romania", "Cyprus", "San Marino",
-}
-
-// Elo ratings 21	Jul	2025
-var rating = map[string]float64{
-	"Austria":            2101,
-	"Bosnia-Herzegovina": 1853,
-	"Romania":            1990,
-	"Cyprus":             2018,
-	"San Marino":         1326,
-}
-
-var points0 = map[string]int{
-	"Bosnia-Herzegovina": 9,
-	"Austria":            6,
-	"Romania":            6,
-	"Cyprus":             3,
-	"San Marino":         0,
-}
-
-// remaining fixtures
-var fixtures = [][2]string{
-	{"Austria", "Cyprus"}, {"San Marino", "Bosnia-Herzegovina"},
-	{"Bosnia-Herzegovina", "Austria"}, {"Cyprus", "Romania"},
-	{"Austria", "San Marino"}, {"Cyprus", "Bosnia-Herzegovina"},
-	{"San Marino", "Cyprus"}, {"Romania", "Austria"},
-	{"Cyprus", "Austria"}, {"Bosnia-Herzegovina", "Romania"},
-	{"Austria", "Bosnia-Herzegovina"}, {"Romania", "San Marino"},
-}
-
-/* -----------------------------------------------------------------------
-   Parameters
------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------
+   Config loader
+-------------------------------------------------------------------------- */
 
 type Config struct {
-	NumberOfSimulations int     `json:"numberOfSimulations"`
-	HomeBonus           float64 `json:"homeBonus"`
-	DrawR               float64 `json:"drawR"`
-	PlayoffWinProb      float64 `json:"playoffWinProb"`
+	NumberOfSimulations int                `json:"numberOfSimulations"`
+	Teams               []string           `json:"teams"`
+	Elo                 map[string]float64 `json:"elo"`
+	HomeBonus           float64            `json:"homeBonus"`
+	CurrentPoints       map[string]int     `json:"currentPoints"`
+	Fixtures            [][2]string        `json:"fixtures"`
+	DrawR               float64            `json:"drawR"`
+	PlayoffWinProb      float64            `json:"playoffWinProb"`
 }
 
-var config Config
-
-func init() {
-	file, err := ioutil.ReadFile("qualifier_config.json")
+func loadConfig() Config {
+	raw, err := os.ReadFile("qualifier_config.json")
 	if err != nil {
-		fmt.Printf("Error reading config file: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("can’t read qualifier_config.json: %v", err)
 	}
-
-	err = json.Unmarshal(file, &config)
-	if err != nil {
-		fmt.Printf("Error parsing config file: %v\n", err)
-		os.Exit(1)
+	var c Config
+	if err := json.Unmarshal(raw, &c); err != nil {
+		log.Fatalf("bad JSON: %v", err)
 	}
+	if c.NumberOfSimulations <= 0 {
+		c.NumberOfSimulations = 1_000_000
+	}
+	return c
 }
 
-const homeBonus = 10.0
-const rDraw = 0.4
-const playoffWinProb = 0.5
+var cfg = loadConfig()
 
-/* -----------------------------------------------------------------------
-   Probabilities
------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------
+   Probability helpers
+-------------------------------------------------------------------------- */
 
-func elo(a, b float64) float64 { return 1 / (1 + math.Pow(10, (b-a)/400)) }
+func eloWin(a, b float64) float64 { return 1 / (1 + math.Pow(10, (b-a)/400)) }
 
-func draw(delta float64) float64 {
+func drawProb(delta float64) float64 {
 	w := 1 / (1 + math.Pow(10, -delta/400))
-	return 2 * w * (1 - w) * rDraw
+	return 2 * w * (1 - w) * cfg.DrawR
 }
-
-type result struct{ direct, playoff, fail float64 }
 
 func matchOdds(home, away string) (pHome, pDraw, pAway float64) {
-	delta := rating[home] + homeBonus - rating[away]
-	pDraw = draw(delta)
-	pHome = (1 - pDraw) * elo(rating[home]+homeBonus, rating[away])
+	delta := cfg.Elo[home] + cfg.HomeBonus - cfg.Elo[away]
+	pDraw = drawProb(delta)
+	pHome = (1 - pDraw) * eloWin(cfg.Elo[home]+cfg.HomeBonus, cfg.Elo[away])
 	pAway = 1 - pHome - pDraw
 	return
 }
 
-/* -----------------------------------------------------------------------
-   Main
------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------
+   Simulation
+-------------------------------------------------------------------------- */
 
-func main() {
-	rand.Seed(time.Now().UnixNano())
-	start := time.Now()
+type tallies struct{ direct, playoff, fail int64 }
 
-	// tallies
-	count := map[string]result{}
-	for _, t := range teams {
-		count[t] = result{}
+func simulate() map[string]tallies {
+	count := map[string]tallies{}
+	for _, t := range cfg.Teams {
+		count[t] = tallies{}
 	}
 
-	for s := 0; s < config.NumberOfSimulations; s++ {
-		pts := map[string]int{}
-		for k, v := range points0 {
+	for s := 0; s < cfg.NumberOfSimulations; s++ {
+		pts := make(map[string]int, len(cfg.Teams))
+		for k, v := range cfg.CurrentPoints {
 			pts[k] = v
 		}
 
-		for _, f := range fixtures {
+		for _, f := range cfg.Fixtures {
 			h, a := f[0], f[1]
 			pHome, pDraw, _ := matchOdds(h, a)
 			r := rand.Float64()
@@ -133,30 +107,24 @@ func main() {
 			}
 		}
 
-		// rank (random tie	break)
+		// rank with random tie‑break
 		best, second := "", ""
-		for _, t := range teams {
-			if best == "" ||
-				pts[t] > pts[best] ||
-				(pts[t] == pts[best] && rand.Float64() < 0.5) {
+		for _, t := range cfg.Teams {
+			if best == "" || pts[t] > pts[best] || (pts[t] == pts[best] && rand.Float64() < 0.5) {
 				second = best
 				best = t
-			} else if second == "" ||
-				pts[t] > pts[second] ||
-				(pts[t] == pts[second] && rand.Float64() < 0.5) {
+			} else if second == "" || pts[t] > pts[second] || (pts[t] == pts[second] && rand.Float64() < 0.5) {
 				second = t
 			}
 		}
 
-		b := count[best]
-		b.direct++
-		count[best] = b
-
-		sn := count[second]
-		sn.playoff++
-		count[second] = sn
-
-		for _, t := range teams {
+		c := count[best]
+		c.direct++
+		count[best] = c
+		c = count[second]
+		c.playoff++
+		count[second] = c
+		for _, t := range cfg.Teams {
 			if t != best && t != second {
 				c := count[t]
 				c.fail++
@@ -164,37 +132,50 @@ func main() {
 			}
 		}
 	}
+	return count
+}
 
-	// timing
-	fmt.Printf("Simulation time: %v\n\n", time.Since(start))
+/* -------------------------------------------------------------------------
+   Pretty print helpers
+-------------------------------------------------------------------------- */
 
-	/* -------------------------------------------------------------------
-	   Table	1	– qualification probabilities
-	------------------------------------------------------------------- */
+func pct(x float64) string { return fmt.Sprintf("%.1f%%", x*100) }
+
+/* -------------------------------------------------------------------------
+   Main
+-------------------------------------------------------------------------- */
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	start := time.Now()
+
+	count := simulate()
+	elapsed := time.Since(start)
+	fmt.Printf("Simulation time: %v\n\n", elapsed)
+
+	// Table 1 – qualification probabilities
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 	fmt.Fprintln(w, "Team\tDirect\tPlayoff\tEliminated\tOverall")
-	for _, t := range teams {
-		r := count[t]
-		d := r.direct / float64(config.NumberOfSimulations)
-		p := r.playoff / float64(config.NumberOfSimulations)
-		f := r.fail / float64(config.NumberOfSimulations)
-		overall := d + p*config.PlayoffWinProb
-		fmt.Fprintf(w, "%s\t%.1f%%\t%.1f%%\t%.1f%%\t%.1f%%\n",
-			t, d*100, p*100, f*100, overall*100)
+	for _, t := range cfg.Teams {
+		c := count[t]
+		d := float64(c.direct) / float64(cfg.NumberOfSimulations)
+		p := float64(c.playoff) / float64(cfg.NumberOfSimulations)
+		f := float64(c.fail) / float64(cfg.NumberOfSimulations)
+		overall := d + p*cfg.PlayoffWinProb
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+			t, pct(d), pct(p), pct(f), pct(overall))
 	}
 	w.Flush()
 	fmt.Println()
 
-	/* -------------------------------------------------------------------
-	   Table	2	– odds for remaining fixtures
-	------------------------------------------------------------------- */
+	// Table 2 – per‑fixture odds
 	w2 := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-	fmt.Fprintln(w2, "Match\tHome\tWin\tDraw\tAway\tWin")
-	for _, f := range fixtures {
+	fmt.Fprintln(w2, "Match\tHome Win\tDraw\tAway Win")
+	for _, f := range cfg.Fixtures {
 		h, a := f[0], f[1]
 		ph, pd, pa := matchOdds(h, a)
-		fmt.Fprintf(w2, "%s vs %s\t%.1f%%\t%.1f%%\t%.1f%%\n",
-			h, a, ph*100, pd*100, pa*100)
+		fmt.Fprintf(w2, "%s vs %s\t%s\t%s\t%s\n",
+			h, a, pct(ph), pct(pd), pct(pa))
 	}
 	w2.Flush()
 }
