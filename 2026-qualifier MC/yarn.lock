@@ -24,7 +24,7 @@
 
 "@esbuild/darwin-arm64@0.25.8":
   version "0.25.8"
-  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.8.tgz"
+  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.8.tgz#a5e1252ca2983d566af1c0ea39aded65736fc66d"
   integrity sha512-Jw0mxgIaYX6R8ODrdkLLPwBqHTtYHJSmzzd+QeytSugzQ0Vg4c5rDky5VgkoowbZQahCbsv1rT1KW72MPIkevw==
 
 "@esbuild/darwin-x64@0.25.8":
@@ -134,7 +134,7 @@
 
 "@oven/bun-darwin-aarch64@1.2.19":
   version "1.2.19"
-  resolved "https://registry.npmjs.org/@oven/bun-darwin-aarch64/-/bun-darwin-aarch64-1.2.19.tgz"
+  resolved "https://registry.npmjs.org/@oven/bun-darwin-aarch64/-/bun-darwin-aarch64-1.2.19.tgz#c6d8a38d4a7ed1916d9d80f047abfafc67a6512e"
   integrity sha512-pJBuez9gwR03Wjtk4hSSBA6QgNdhvPLbrxU4DDzVY8Ee+Q67xNkU0CMK6rFdQF8Qetj2R+Vf8AJDlwAc1QdG1w==
 
 "@oven/bun-darwin-x64-baseline@1.2.19":
@@ -189,24 +189,24 @@
 
 "@types/js-yaml@^4.0.9":
   version "4.0.9"
-  resolved "https://registry.npmjs.org/@types/js-yaml/-/js-yaml-4.0.9.tgz"
+  resolved "https://registry.npmjs.org/@types/js-yaml/-/js-yaml-4.0.9.tgz#cd82382c4f902fed9691a2ed79ec68c5898af4c2"
   integrity sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==
 
 "@types/node@^24.0.15":
   version "24.0.15"
-  resolved "https://registry.npmjs.org/@types/node/-/node-24.0.15.tgz"
+  resolved "https://registry.npmjs.org/@types/node/-/node-24.0.15.tgz#f34fbc973e7d64217106e0c59ed8761e6b51381e"
   integrity sha512-oaeTSbCef7U/z7rDeJA138xpG3NuKc64/rZ2qmUFkFJmnMsAPaluIifqyWd8hSSMxyP9oie3dLAqYPblag9KgA==
   dependencies:
     undici-types "~7.8.0"
 
 argparse@^2.0.1:
   version "2.0.1"
-  resolved "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
+  resolved "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
   integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
 
 bun@^1.2.19:
   version "1.2.19"
-  resolved "https://registry.npmjs.org/bun/-/bun-1.2.19.tgz"
+  resolved "https://registry.npmjs.org/bun/-/bun-1.2.19.tgz#79db68c6696a358107d9c994437e9bdef1c1f293"
   integrity sha512-P70KUfH9cvgcl8Hjvamr98NinEatV23yX6qaY7z1+3rBPdds0oVX0u6FfrYnWc8F3ayFQ4do6/6xBLWY4itJkQ==
   optionalDependencies:
     "@oven/bun-darwin-aarch64" "1.2.19"
@@ -223,7 +223,7 @@ bun@^1.2.19:
 
 esbuild@~0.25.0:
   version "0.25.8"
-  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.25.8.tgz"
+  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.25.8.tgz#482d42198b427c9c2f3a81b63d7663aecb1dda07"
   integrity sha512-vVC0USHGtMi8+R4Kz8rt6JhEWLxsv9Rnu/lGYbPR8u47B+DCBksq9JarW0zOO7bs37hyOK1l2/oqtbciutL5+Q==
   optionalDependencies:
     "@esbuild/aix-ppc64" "0.25.8"
@@ -255,31 +255,31 @@ esbuild@~0.25.0:
 
 fsevents@~2.3.3:
   version "2.3.3"
-  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 get-tsconfig@^4.7.5:
   version "4.10.1"
-  resolved "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.10.1.tgz"
+  resolved "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.10.1.tgz#d34c1c01f47d65a606c37aa7a177bc3e56ab4b2e"
   integrity sha512-auHyJ4AgMz7vgS8Hp3N6HXSmlMdUyhSUrfBF16w153rxtLIEOE+HGqaBppczZvnHLqQJfiHotCYpNhl0lUROFQ==
   dependencies:
     resolve-pkg-maps "^1.0.0"
 
 js-yaml@^4.1.0:
   version "4.1.0"
-  resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz"
+  resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
   integrity sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==
   dependencies:
     argparse "^2.0.1"
 
 resolve-pkg-maps@^1.0.0:
   version "1.0.0"
-  resolved "https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz"
+  resolved "https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz#616b3dc2c57056b5588c31cdf4b3d64db133720f"
   integrity sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==
 
 tsx@^4.20.3:
   version "4.20.3"
-  resolved "https://registry.npmjs.org/tsx/-/tsx-4.20.3.tgz"
+  resolved "https://registry.npmjs.org/tsx/-/tsx-4.20.3.tgz#f913e4911d59ad177c1bcee19d1035ef8dd6e2fb"
   integrity sha512-qjbnuR9Tr+FJOMBqJCW5ehvIo/buZq7vH7qD7JziU98h6l3qGy0a/yPFjwO+y0/T7GFpNgNAvEcPPVfyT8rrPQ==
   dependencies:
     esbuild "~0.25.0"
@@ -289,10 +289,10 @@ tsx@^4.20.3:
 
 typescript@^5.8.3:
   version "5.8.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz#92f8a3e5e3cf497356f4178c34cd65a7f5e8440e"
   integrity sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==
 
 undici-types@~7.8.0:
   version "7.8.0"
-  resolved "https://registry.npmjs.org/undici-types/-/undici-types-7.8.0.tgz"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-7.8.0.tgz#de00b85b710c54122e44fbfd911f8d70174cd294"
   integrity sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==

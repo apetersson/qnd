@@ -6,6 +6,7 @@
 import json, random, time, sys, yaml
 from pathlib import Path
 from typing import Dict, List, Tuple, Literal, TypedDict, Any
+from multiprocessing import Pool, cpu_count
 
 # ---------------------------------------------------------------------------
 # Load config
@@ -66,42 +67,58 @@ for h, a in FIXTURES:
 
 class Tally(TypedDict): direct: int; playoff: int; fail: int
 
-def simulate(n_sim: int = NUM_SIMS):
+def run_single_simulation(_: int) -> Dict[Team, Tally]:
+    # Each process gets its own random seed
+    random.seed()
+
     tally: Dict[Team, Tally] = {t: {"direct": 0, "playoff": 0, "fail": 0} for t in TEAMS}
+    pts = BASE_PTS.copy()
 
-    for _ in range(n_sim):
-        pts = BASE_PTS.copy() # Use pre-computed base points
+    for hi, ai, pH, pD, _ in FIX:
+        r = random.random()
+        if r < pH:
+            pts[hi] += 3
+        elif r < pH + pD:
+            pts[hi] += 1
+            pts[ai] += 1
+        else:
+            pts[ai] += 3
 
-        for hi, ai, pH, pD, _ in FIX: # Iterate through pre-computed fixtures
-            r = random.random()
-            if r < pH:
-                pts[hi] += 3
-            elif r < pH + pD:
-                pts[hi] += 1; pts[ai] += 1
-            else:
-                pts[ai] += 3
+    team_scores = []
+    for i, p in enumerate(pts):
+        team_scores.append((-p, random.random(), i))
 
-        # Optimized ranking: avoid dict lookups and string comparisons in hot loop
-        # Create a list of (points, random_tiebreaker, team_index) tuples
-        team_scores = []
-        for i, p in enumerate(pts):
-            team_scores.append((-p, random.random(), i)) # Negative points for descending sort
+    team_scores.sort()
 
-        # Sort based on points and tie-breaker
-        team_scores.sort()
+    tally[TEAMS[team_scores[0][2]]]["direct"] += 1
+    tally[TEAMS[team_scores[1][2]]]["playoff"] += 1
+    for i in range(2, len(team_scores)):
+        tally[TEAMS[team_scores[i][2]]]["fail"] += 1
 
-        # Update tally using original team names
-        tally[TEAMS[team_scores[0][2]]]["direct"] += 1
-        tally[TEAMS[team_scores[1][2]]]["playoff"] += 1
-        for i in range(2, len(team_scores)):
-            tally[TEAMS[team_scores[i][2]]]["fail"] += 1
+    return tally
+
+def simulate(n_sim: int = NUM_SIMS):
+    num_cores = cpu_count()
+    print(f"Using {num_cores} cores for simulation...")
+
+    with Pool(processes=num_cores) as pool:
+        results_list = pool.map(run_single_simulation, range(n_sim))
+
+    # Aggregate results from all simulations
+    final_tally: Dict[Team, Tally] = {t: {"direct": 0, "playoff": 0, "fail": 0} for t in TEAMS}
+    for res in results_list:
+        for team, tally in res.items():
+            final_tally[team]["direct"] += tally["direct"]
+            final_tally[team]["playoff"] += tally["playoff"]
+            final_tally[team]["fail"] += tally["fail"]
 
     results: Dict[Team, Dict[str, float]] = {}
-    for i, t in enumerate(TEAMS): # Iterate using index for direct access
-        d = tally[t]["direct"] / n_sim
-        p = tally[t]["playoff"] / n_sim
-        f = tally[t]["fail"] / n_sim
+    for t in TEAMS:
+        d = final_tally[t]["direct"] / n_sim
+        p = final_tally[t]["playoff"] / n_sim
+        f = final_tally[t]["fail"] / n_sim
         results[t] = {"direct": d, "playoff": p, "fail": f, "overall": d + p * PLAYOFF_P}
+
     return results
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,8 @@
 import * as fs from "node:fs";
 import * as yaml from "js-yaml";
+import { Worker } from "worker_threads";
+import * as os from "os";
+import * as path from "path";
 
 interface TeamResult {
   direct: number;
@@ -8,7 +11,6 @@ interface TeamResult {
   overall: number;
 }
 
-// A helper interface to define the shape of the simulation counters.
 interface TallyCount {
   direct: number;
   playoff: number;
@@ -26,13 +28,9 @@ interface Config {
   fixtures: [string, string][];
   drawR: number;
   playoffWinProb: number;
-
-  // Precomputed data
   teamIdx: Map<string, number>;
   basePts: number[];
-  precomputedFixtures: [number, number, number, number, number][]; // home_idx, away_idx, p_home, p_draw, p_away
-
-  // Methods
+  precomputedFixtures: [number, number, number, number, number][];
   eloWinProb(rA: number, rB: number): number;
   drawProb(deltaElo: number): number;
 }
@@ -51,150 +49,130 @@ if (ext === "json") {
   throw new Error(`Unsupported config file format: ${ext}`);
 }
 
-// Add methods to cfg
-cfg.eloWinProb = function(rA: number, rB: number): number {
-  return 1 / (1 + Math.pow(10, (rB - rA) / 400));
-};
-
-cfg.drawProb = function(deltaElo: number): number {
+cfg.eloWinProb = (rA: number, rB: number) => 1 / (1 + Math.pow(10, (rB - rA) / 400));
+cfg.drawProb = function (deltaElo: number) {
   const w = 1 / (1 + Math.pow(10, -deltaElo / 400));
   return 2 * w * (1 - w) * this.drawR;
 };
 
-// Precompute team indices and base points
 cfg.teamIdx = new Map<string, number>();
-cfg.basePts = new Array<number>(cfg.teams.length);
+cfg.basePts = [];
 cfg.teams.forEach((team, i) => {
   cfg.teamIdx.set(team, i);
   cfg.basePts[i] = cfg.currentPoints[team];
 });
 
-// Precompute fixture odds with integer indices
 cfg.precomputedFixtures = cfg.fixtures.map(([home, away]) => {
   const homeIdx = cfg.teamIdx.get(home)!;
   const awayIdx = cfg.teamIdx.get(away)!;
-
-  const delta = (cfg.elo[home] + cfg.homeBonus) - cfg.elo[away];
+  const delta = cfg.elo[home] + cfg.homeBonus - cfg.elo[away];
   const pDraw = cfg.drawProb(delta);
   const pHome = (1 - pDraw) * cfg.eloWinProb(cfg.elo[home] + cfg.homeBonus, cfg.elo[away]);
   const pAway = 1 - pHome - pDraw;
-
   return [homeIdx, awayIdx, pHome, pDraw, pAway];
 });
 
 const TEAMS = cfg.teams;
 type Team = (typeof TEAMS)[number];
 
+async function simulate(): Promise<ResultTable> {
+  const numCores = os.cpus().length;
+  const simsPerWorker = Math.floor(cfg.numberOfSimulations / numCores);
+  const promises: Promise<Record<Team, TallyCount>>[] = [];
 
+  console.log(`Using ${numCores} cores for simulation...`);
 
-// -----------------------------------------------------------------------------
-// Monte‑Carlo core (simulates only remaining matches)
-// -----------------------------------------------------------------------------
-function simulate(): ResultTable {
-  // counters per team, initialized to zero for each outcome.
-  // Using a specific type assertion `as Record<...>` instead of `as any`.
-  const tally: Record<Team, TallyCount> =
-    TEAMS.reduce((acc, t) => ({...acc, [t]: {direct: 0, playoff: 0, fail: 0}}),
-      {} as Record<Team, TallyCount>);
+  const serializableCfg = {
+    ...cfg,
+    teamIdx: Array.from(cfg.teamIdx.entries()),
+  };
+  delete (serializableCfg as any).eloWinProb;
+  delete (serializableCfg as any).drawProb;
 
-  for (let s = 0; s < cfg.numberOfSimulations; s++) {
-    const pts: number[] = [...cfg.basePts]; // Use pre-computed base points
+  const isBun = !!process.env.BUN_ENV;
 
-    for (const [homeIdx, awayIdx, pHome, pDraw] of cfg.precomputedFixtures) {
-      const r = Math.random();
-      if (r < pHome) {
-        pts[homeIdx] += 3;
-      } else if (r < pHome + pDraw) {
-        pts[homeIdx] += 1;
-        pts[awayIdx] += 1;
-      } else {
-        pts[awayIdx] += 3;
-      }
-    }
+  for (let i = 0; i < numCores; i++) {
+    const startIdx = i * simsPerWorker;
+    const endIdx = i === numCores - 1 ? cfg.numberOfSimulations : startIdx + simsPerWorker;
 
-    // Optimized ranking: avoid dict lookups and string comparisons in hot loop
-    // Create a list of (points, random_tiebreaker, team_index) tuples
-    const teamScores: { points: number; tiebreaker: number; index: number }[] = [];
-    for (let i = 0; i < pts.length; i++) {
-      teamScores.push({ points: pts[i], tiebreaker: Math.random(), index: i });
-    }
+    const workerPromise = new Promise<Record<Team, TallyCount>>((resolve, reject) => {
+      const workerPath = isBun
+        ? new URL('./simulate_worker.js', import.meta.url).href
+        : path.join(__dirname, 'simulate_worker.js');
 
-    // Sort based on points (descending) and tie-breaker (ascending)
-    teamScores.sort((a, b) => {
-      if (b.points !== a.points) return b.points - a.points;
-      return a.tiebreaker - b.tiebreaker;
+      const workerOptions = {
+        workerData: { cfg: serializableCfg, startIdx, endIdx },
+      };
+
+      const worker = new Worker(workerPath, workerOptions);
+
+      worker.on("message", resolve);
+      worker.on("error", reject);
+      worker.on("exit", (code) => {
+        if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
+      });
     });
+    promises.push(workerPromise);
+  }
 
-    // Update tally using original team names
-    tally[TEAMS[teamScores[0].index]].direct++;
-    tally[TEAMS[teamScores[1].index]].playoff++;
-    for (let i = 2; i < teamScores.length; i++) {
-      tally[TEAMS[teamScores[i].index]].fail++;
+  const workerResults = await Promise.all(promises);
+
+  const finalTally: Record<Team, TallyCount> = TEAMS.reduce(
+    (acc, t) => ({ ...acc, [t]: { direct: 0, playoff: 0, fail: 0 } }),
+    {} as Record<Team, TallyCount>
+  );
+
+  for (const workerResult of workerResults) {
+    for (const t of TEAMS) {
+      finalTally[t].direct += workerResult[t].direct;
+      finalTally[t].playoff += workerResult[t].playoff;
+      finalTally[t].fail += workerResult[t].fail;
     }
   }
 
-  // convert counts → probabilities
-  // Initialize with a specific type assertion instead of `as any`.
-  // This informs TypeScript that the object will conform to `ResultTable`
-  // once it has been populated by the loop.
   const res = {} as ResultTable;
   for (const t of TEAMS) {
-    const d = tally[t].direct / cfg.numberOfSimulations;
-    const p = tally[t].playoff / cfg.numberOfSimulations;
-    const f = tally[t].fail / cfg.numberOfSimulations;
-    res[t] = {direct: d, playoff: p, fail: f, overall: d + p * cfg.playoffWinProb};
+    const d = finalTally[t].direct / cfg.numberOfSimulations;
+    const p = finalTally[t].playoff / cfg.numberOfSimulations;
+    const f = finalTally[t].fail / cfg.numberOfSimulations;
+    res[t] = { direct: d, playoff: p, fail: f, overall: d + p * cfg.playoffWinProb };
   }
+
   return res;
 }
 
-// -----------------------------------------------------------------------------
-// Pretty printers
-// -----------------------------------------------------------------------------
 const pct = (x: number) => (x * 100).toFixed(1) + "%";
 
 function showTeamOdds(table: ResultTable): void {
-  console.log(`
-Qualification probabilities (${cfg.numberOfSimulations} sims):\n`);
-  const view: Record<string, Record<string, string>> = {};
-  for (const t of TEAMS) {
-    view[t] = {
-      "Direct": pct(table[t].direct),
-      "Playoff": pct(table[t].playoff),
-      "Eliminated": pct(table[t].fail),
-      "Overall": pct(table[t].overall),
-    };
-  }
-  console.table(view);
+  console.log(`\nQualification probabilities (${cfg.numberOfSimulations} sims):\n`);
+  console.table(
+    TEAMS.map(t => ({
+      Team: t,
+      Direct: pct(table[t].direct),
+      Playoff: pct(table[t].playoff),
+      Eliminated: pct(table[t].fail),
+      Overall: pct(table[t].overall),
+    }))
+  );
 }
 
 function showMatchOdds(): void {
   console.log("\nOdds for each remaining fixture:\n");
   console.table(
-    cfg.precomputedFixtures.map(([homeIdx, awayIdx, pHome, pDraw, pAway]) => {
-      return {
-        Match: `${cfg.teams[homeIdx]} vs ${cfg.teams[awayIdx]}`,
-        "Home Win": pct(pHome),
-        Draw: pct(pDraw),
-        "Away Win": pct(pAway),
-      };
-    }),
+    cfg.precomputedFixtures.map(([homeIdx, awayIdx, pHome, pDraw, pAway]) => ({
+      Match: `${cfg.teams[homeIdx]} vs ${cfg.teams[awayIdx]} `,
+      "Home Win": pct(pHome),
+      Draw: pct(pDraw),
+      "Away Win": pct(pAway),
+    }))
   );
 }
 
-// -----------------------------------------------------------------------------
-// Entry point
-// -----------------------------------------------------------------------------
-
-(function main() {
+(async function main() {
   console.log("Starting Monte Carlo simulation...");
-  // Start a timer with a descriptive label
   console.time("Simulation time");
-
-  const results = simulate();
-
-  // Stop the timer and print the elapsed time to the console
+  const results = await simulate();
   console.timeEnd("Simulation time");
-
   showTeamOdds(results);
   showMatchOdds();
 })();
