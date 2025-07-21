@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    /* Language & environment */
+    "target": "ES2022",               // Array.flatMap, Promise.allSettled, etc.
+    "lib": ["ES2022"],                // add DOM if you ever need browser types
+    "module": "NodeNext",             // native ESM for Node ≥18
+    "moduleResolution": "NodeNext",
+    "types": ["node"],                // pulls @types/node
+
+    /* Strictness & hygiene */
+    "strict": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,             // speeds up CI
+
+    /* I/O */
+    "rootDir": ".",                   // assume sources at project root
+    "outDir": "dist",
+    "resolveJsonModule": true
+  },
+
+  /* ts‑node runtime tweaks */
+  "ts-node": {
+    "esm": true,                      // let ts-node run ESM directly
+    "experimentalResolver": true      // respects NodeNext resolution rules
+  },
+
+  /* Project scope */
+  "include": ["*.ts", "**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}
