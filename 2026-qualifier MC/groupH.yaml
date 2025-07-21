@@ -6,19 +6,19 @@ teams:
   - Cyprus
   - San Marino
 elo:
-  Austria: 1800
-  Bosnia-Herzegovina: 1700
-  Romania: 1600
-  Cyprus: 1500
-  San Marino: 1000
-homeBonus: 100
-drawR: 0.5
+  Austria: 2101
+  Bosnia-Herzegovina: 1853
+  Romania: 1990
+  Cyprus: 2018
+  San Marino: 1326
+homeBonus: 10
+drawR: 0.4
 playoffWinProb: 0.5
 currentPoints:
-  Austria: 10
   Bosnia-Herzegovina: 9
-  Romania: 7
-  Cyprus: 6
+  Austria: 6
+  Romania: 6
+  Cyprus: 3
   San Marino: 0
 fixtures:
   - [Austria, Cyprus]

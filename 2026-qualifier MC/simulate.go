@@ -33,14 +33,14 @@ import (
 -------------------------------------------------------------------------- */
 
 type Config struct {
-	NumberOfSimulations int                `json:"numberOfSimulations"`
-	Teams               []string           `json:"teams"`
-	Elo                 map[string]float64 `json:"elo"`
-	HomeBonus           float64            `json:"homeBonus"`
-	CurrentPoints       map[string]int     `json:"currentPoints"`
-	Fixtures            [][2]string        `json:"fixtures"`
-	DrawR               float64            `json:"drawR"`
-	PlayoffWinProb      float64            `json:"playoffWinProb"`
+	NumberOfSimulations int                `json:"numberOfSimulations" yaml:"numberOfSimulations"`
+	Teams               []string           `json:"teams" yaml:"teams"`
+	Elo                 map[string]float64 `json:"elo" yaml:"elo"`
+	HomeBonus           float64            `json:"homeBonus" yaml:"homeBonus"`
+	CurrentPoints       map[string]int     `json:"currentPoints" yaml:"currentPoints"`
+	Fixtures            [][2]string        `json:"fixtures" yaml:"fixtures"`
+	DrawR               float64            `json:"drawR" yaml:"drawR"`
+	PlayoffWinProb      float64            `json:"playoffWinProb" yaml:"playoffWinProb"`
 
 	// Precomputed data
 	TeamIdx             map[string]int
@@ -76,6 +76,28 @@ func loadConfig() Config {
 
 	if c.NumberOfSimulations <= 0 {
 		c.NumberOfSimulations = 1_000_000
+	}
+
+	if len(c.Teams) == 0 {
+		log.Fatalf("config error: 'teams' cannot be empty")
+	}
+	if len(c.Elo) == 0 {
+		log.Fatalf("config error: 'elo' cannot be empty")
+	}
+	if c.HomeBonus == 0 {
+		log.Fatalf("config error: 'homeBonus' cannot be zero")
+	}
+	if len(c.CurrentPoints) == 0 {
+		log.Fatalf("config error: 'currentPoints' cannot be empty")
+	}
+	if len(c.Fixtures) == 0 {
+		log.Fatalf("config error: 'fixtures' cannot be empty")
+	}
+	if c.DrawR == 0 {
+		log.Fatalf("config error: 'drawR' cannot be zero")
+	}
+	if c.PlayoffWinProb == 0 {
+		log.Fatalf("config error: 'playoffWinProb' cannot be zero")
 	}
 
 	// Precompute team indices and base points
