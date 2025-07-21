@@ -25,40 +25,54 @@ interface Config {
   fixtures: [string, string][];
   drawR: number;
   playoffWinProb: number;
+
+  // Precomputed data
+  teamIdx: Map<string, number>;
+  basePts: number[];
+  precomputedFixtures: [number, number, number, number, number][]; // home_idx, away_idx, p_home, p_draw, p_away
+
+  // Methods
+  eloWinProb(rA: number, rB: number): number;
+  drawProb(deltaElo: number): number;
 }
 
 const cfg: Config = JSON.parse(fs.readFileSync("qualifier_config.json", "utf-8"));
 
+// Add methods to cfg
+cfg.eloWinProb = function(rA: number, rB: number): number {
+  return 1 / (1 + Math.pow(10, (rB - rA) / 400));
+};
+
+cfg.drawProb = function(deltaElo: number): number {
+  const w = 1 / (1 + Math.pow(10, -deltaElo / 400));
+  return 2 * w * (1 - w) * this.drawR;
+};
+
+// Precompute team indices and base points
+cfg.teamIdx = new Map<string, number>();
+cfg.basePts = new Array<number>(cfg.teams.length);
+cfg.teams.forEach((team, i) => {
+  cfg.teamIdx.set(team, i);
+  cfg.basePts[i] = cfg.currentPoints[team];
+});
+
+// Precompute fixture odds with integer indices
+cfg.precomputedFixtures = cfg.fixtures.map(([home, away]) => {
+  const homeIdx = cfg.teamIdx.get(home)!;
+  const awayIdx = cfg.teamIdx.get(away)!;
+
+  const delta = (cfg.elo[home] + cfg.homeBonus) - cfg.elo[away];
+  const pDraw = cfg.drawProb(delta);
+  const pHome = (1 - pDraw) * cfg.eloWinProb(cfg.elo[home] + cfg.homeBonus, cfg.elo[away]);
+  const pAway = 1 - pHome - pDraw;
+
+  return [homeIdx, awayIdx, pHome, pDraw, pAway];
+});
+
 const TEAMS = cfg.teams;
 type Team = (typeof TEAMS)[number];
 
-const RATING: Record<Team, number> = cfg.elo;
-const INITIAL_POINTS: Record<Team, number> = cfg.currentPoints;
-const FIXTURES: Array<[Team, Team]> = cfg.fixtures as [Team, Team][];
-const HOME_BONUS: number = cfg.homeBonus;
-const DRAW_R: number = cfg.drawR;
-const DEFAULT_PLAYOFF: number = cfg.playoffWinProb;
 
-// -----------------------------------------------------------------------------
-// Probability helpers
-// -----------------------------------------------------------------------------
-
-function eloWinProb(rA: number, rB: number): number {
-  return 1 / (1 + Math.pow(10, (rB - rA) / 400));
-}
-
-function drawProb(deltaElo: number): number {
-  const w = 1 / (1 + Math.pow(10, -deltaElo / 400));
-  return 2 * w * (1 - w) * DRAW_R;
-}
-
-function matchOdds(home: Team, away: Team) {
-  const delta = (RATING[home] + HOME_BONUS) - RATING[away];
-  const pDraw = drawProb(delta);
-  const pHome = (1 - pDraw) * eloWinProb(RATING[home] + HOME_BONUS, RATING[away]);
-  const pAway = 1 - pHome - pDraw;
-  return {pHome, pDraw, pAway};
-}
 
 // -----------------------------------------------------------------------------
 // Monte‑Carlo core (simulates only remaining matches)
@@ -71,30 +85,39 @@ function simulate(): ResultTable {
       {} as Record<Team, TallyCount>);
 
   for (let s = 0; s < cfg.numberOfSimulations; s++) {
-    const pts: Record<Team, number> = {...INITIAL_POINTS};
+    const pts: number[] = [...cfg.basePts]; // Use pre-computed base points
 
-    for (const [home, away] of FIXTURES) {
-      const {pHome, pDraw} = matchOdds(home, away);
+    for (const [homeIdx, awayIdx, pHome, pDraw] of cfg.precomputedFixtures) {
       const r = Math.random();
       if (r < pHome) {
-        pts[home] += 3;
+        pts[homeIdx] += 3;
       } else if (r < pHome + pDraw) {
-        pts[home] += 1;
-        pts[away] += 1;
+        pts[homeIdx] += 1;
+        pts[awayIdx] += 1;
       } else {
-        pts[away] += 3;
+        pts[awayIdx] += 3;
       }
     }
 
-    // order table, random tie‑break
-    const ranking = [...TEAMS].sort((a, b) => {
-      if (pts[b] !== pts[a]) return pts[b] - pts[a];
-      return Math.random() - 0.5;
+    // Optimized ranking: avoid dict lookups and string comparisons in hot loop
+    // Create a list of (points, random_tiebreaker, team_index) tuples
+    const teamScores: { points: number; tiebreaker: number; index: number }[] = [];
+    for (let i = 0; i < pts.length; i++) {
+      teamScores.push({ points: pts[i], tiebreaker: Math.random(), index: i });
+    }
+
+    // Sort based on points (descending) and tie-breaker (ascending)
+    teamScores.sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      return a.tiebreaker - b.tiebreaker;
     });
 
-    tally[ranking[0]].direct++;
-    tally[ranking[1]].playoff++;
-    ranking.slice(2).forEach((t) => tally[t].fail++);
+    // Update tally using original team names
+    tally[TEAMS[teamScores[0].index]].direct++;
+    tally[TEAMS[teamScores[1].index]].playoff++;
+    for (let i = 2; i < teamScores.length; i++) {
+      tally[TEAMS[teamScores[i].index]].fail++;
+    }
   }
 
   // convert counts → probabilities
@@ -134,13 +157,12 @@ Qualification probabilities (${cfg.numberOfSimulations} sims):\n`);
 function showMatchOdds(): void {
   console.log("\nOdds for each remaining fixture:\n");
   console.table(
-    FIXTURES.map(([h, a]) => {
-      const {pHome, pDraw, pAway} = matchOdds(h, a);
+    cfg.precomputedFixtures.map(([homeIdx, awayIdx, pHome, pDraw, pAway]) => {
       return {
-        Match: `${h} vs ${a}`,
-        "Home Win": pct(pHome),
+        Match: `${cfg.teams[homeIdx]} vs ${cfg.teams[awayIdx]}`,
+        "Home Win": pct(pHome),
         Draw: pct(pDraw),
-        "Away Win": pct(pAway),
+        "Away Win": pct(pAway),
       };
     }),
   );

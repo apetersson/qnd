@@ -19,6 +19,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"sort"
 	"text/tabwriter"
 	"time"
 )
@@ -36,6 +37,11 @@ type Config struct {
 	Fixtures            [][2]string        `json:"fixtures"`
 	DrawR               float64            `json:"drawR"`
 	PlayoffWinProb      float64            `json:"playoffWinProb"`
+
+	// Precomputed data
+	TeamIdx             map[string]int
+	BasePts             []int
+	PrecomputedFixtures [][5]float64 // home_idx, away_idx, p_home, p_draw, p_away
 }
 
 func loadConfig() Config {
@@ -50,6 +56,29 @@ func loadConfig() Config {
 	if c.NumberOfSimulations <= 0 {
 		c.NumberOfSimulations = 1_000_000
 	}
+
+	// Precompute team indices and base points
+	c.TeamIdx = make(map[string]int, len(c.Teams))
+	c.BasePts = make([]int, len(c.Teams))
+	for i, team := range c.Teams {
+		c.TeamIdx[team] = i
+		c.BasePts[i] = c.CurrentPoints[team]
+	}
+
+	// Precompute fixture odds with integer indices
+	c.PrecomputedFixtures = make([][5]float64, len(c.Fixtures))
+	for i, f := range c.Fixtures {
+		home, away := f[0], f[1]
+		homeIdx, awayIdx := c.TeamIdx[home], c.TeamIdx[away]
+
+		delta := c.Elo[home] + c.HomeBonus - c.Elo[away]
+		pDraw := c.drawProb(delta)
+		pHome := (1 - pDraw) * eloWin(c.Elo[home]+c.HomeBonus, c.Elo[away])
+		pAway := 1 - pHome - pDraw
+
+		c.PrecomputedFixtures[i] = [5]float64{float64(homeIdx), float64(awayIdx), pHome, pDraw, pAway}
+	}
+
 	return c
 }
 
@@ -61,17 +90,9 @@ var cfg = loadConfig()
 
 func eloWin(a, b float64) float64 { return 1 / (1 + math.Pow(10, (b-a)/400)) }
 
-func drawProb(delta float64) float64 {
+func (c *Config) drawProb(delta float64) float64 {
 	w := 1 / (1 + math.Pow(10, -delta/400))
-	return 2 * w * (1 - w) * cfg.DrawR
-}
-
-func matchOdds(home, away string) (pHome, pDraw, pAway float64) {
-	delta := cfg.Elo[home] + cfg.HomeBonus - cfg.Elo[away]
-	pDraw = drawProb(delta)
-	pHome = (1 - pDraw) * eloWin(cfg.Elo[home]+cfg.HomeBonus, cfg.Elo[away])
-	pAway = 1 - pHome - pDraw
-	return
+	return 2 * w * (1 - w) * c.DrawR
 }
 
 /* -------------------------------------------------------------------------
@@ -87,49 +108,57 @@ func simulate() map[string]tallies {
 	}
 
 	for s := 0; s < cfg.NumberOfSimulations; s++ {
-		pts := make(map[string]int, len(cfg.Teams))
-		for k, v := range cfg.CurrentPoints {
-			pts[k] = v
-		}
+		pts := make([]int, len(cfg.Teams))
+		copy(pts, cfg.BasePts)
 
-		for _, f := range cfg.Fixtures {
-			h, a := f[0], f[1]
-			pHome, pDraw, _ := matchOdds(h, a)
+		for _, f := range cfg.PrecomputedFixtures {
+			homeIdx, awayIdx := int(f[0]), int(f[1])
+			pHome, pDraw := f[2], f[3]
 			r := rand.Float64()
 			switch {
 			case r < pHome:
-				pts[h] += 3
+				pts[homeIdx] += 3
 			case r < pHome+pDraw:
-				pts[h]++
-				pts[a]++
+				pts[homeIdx]++
+				pts[awayIdx]++
 			default:
-				pts[a] += 3
+				pts[awayIdx] += 3
 			}
 		}
 
-		// rank with random tie‑break
-		best, second := "", ""
-		for _, t := range cfg.Teams {
-			if best == "" || pts[t] > pts[best] || (pts[t] == pts[best] && rand.Float64() < 0.5) {
-				second = best
-				best = t
-			} else if second == "" || pts[t] > pts[second] || (pts[t] == pts[second] && rand.Float64() < 0.5) {
-				second = t
-			}
+		// Optimized ranking: avoid map lookups and string comparisons in hot loop
+		// Create a slice of (points, random_tiebreaker, team_index) tuples
+		type teamScore struct {
+			points     int
+			tiebreaker float64
+			index      int
+		}
+		teamScores := make([]teamScore, len(cfg.Teams))
+		for i, p := range pts {
+			teamScores[i] = teamScore{points: p, tiebreaker: rand.Float64(), index: i}
 		}
 
-		c := count[best]
+		// Sort based on points (descending) and tie-breaker (ascending)
+		sort.Slice(teamScores, func(i, j int) bool {
+			if teamScores[i].points != teamScores[j].points {
+				return teamScores[i].points > teamScores[j].points
+			}
+			return teamScores[i].tiebreaker < teamScores[j].tiebreaker
+		})
+
+		// Update tally using original team names
+		c := count[cfg.Teams[teamScores[0].index]]
 		c.direct++
-		count[best] = c
-		c = count[second]
+		count[cfg.Teams[teamScores[0].index]] = c
+
+		c = count[cfg.Teams[teamScores[1].index]]
 		c.playoff++
-		count[second] = c
-		for _, t := range cfg.Teams {
-			if t != best && t != second {
-				c := count[t]
-				c.fail++
-				count[t] = c
-			}
+		count[cfg.Teams[teamScores[1].index]] = c
+
+		for i := 2; i < len(teamScores); i++ {
+			c = count[cfg.Teams[teamScores[i].index]]
+			c.fail++
+			count[cfg.Teams[teamScores[i].index]] = c
 		}
 	}
 	return count
@@ -170,12 +199,12 @@ func main() {
 
 	// Table 2 – per‑fixture odds
 	w2 := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-	fmt.Fprintln(w2, "Match\tHome Win\tDraw\tAway Win")
-	for _, f := range cfg.Fixtures {
-		h, a := f[0], f[1]
-		ph, pd, pa := matchOdds(h, a)
+	fmt.Fprintln(w2, "Match\tHome Win\tDraw\tAway Win")
+	for _, f := range cfg.PrecomputedFixtures {
+		homeIdx, awayIdx := int(f[0]), int(f[1])
+		pHome, pDraw, pAway := f[2], f[3], f[4]
 		fmt.Fprintf(w2, "%s vs %s\t%s\t%s\t%s\n",
-			h, a, pct(ph), pct(pd), pct(pa))
+			cfg.Teams[homeIdx], cfg.Teams[awayIdx], pct(pHome), pct(pDraw), pct(pAway))
 	}
 	w2.Flush()
 }

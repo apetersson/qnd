@@ -1,8 +1,12 @@
 {
   "devDependencies": {
     "@types/node": "^24.0.15",
-    "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "bun": "^1.2.19"
+  },
+  "scripts": {
+    "sim:ts": "bun run simulate.ts",
+    "test": "bun test"
   }
 }
