@@ -1,5 +1,4 @@
-// Monte Carlo Qualifier Simulator – updated for current standings
-// Language: TypeScript (Node ≥18, ts-node, yarn)
+import * as fs from "node:fs";
 
 interface TeamResult {
   direct: number;
@@ -17,60 +16,28 @@ interface TallyCount {
 
 type ResultTable = Record<Team, TeamResult>;
 
-const TEAMS = [
-  "Austria",
-  "Bosnia-Herzegovina",
-  "Romania",
-  "Cyprus",
-  "San Marino",
-] as const;
+interface Config {
+  numberOfSimulations: number;
+  teams: string[];
+  elo: Record<string, number>;
+  homeBonus: number;
+  currentPoints: Record<string, number>;
+  fixtures: [string, string][];
+  drawR: number;
+  playoffWinProb: number;
+}
 
+const cfg: Config = JSON.parse(fs.readFileSync("qualifier_config.json", "utf-8"));
+
+const TEAMS = cfg.teams;
 type Team = (typeof TEAMS)[number];
 
-// Elo ratings from https://www.eloratings.net/ (as of 2025-07-21)
-const RATING: Record<Team, number> = {
-  "Austria": 2101,
-  "Bosnia-Herzegovina": 1853,
-  "Romania": 1990,
-  "Cyprus": 2018,
-  "San Marino": 1326,
-
-  // "Austria": 1844,
-  // "Bosnia-Herzegovina": 1522,
-  // "Romania": 1680,
-  // "Cyprus": 1299,
-  // "San Marino": 845,
-};
-
-// Current points after MD2 for AUT, MD3‑4 for others (10 Jun 2025)
-const INITIAL_POINTS: Record<Team, number> = {
-  "Bosnia-Herzegovina": 9,
-  "Austria": 6,
-  "Romania": 6,
-  "Cyprus": 3,
-  "San Marino": 0,
-};
-
-// Remaining fixtures (home first)
-const FIXTURES: Array<[Team, Team]> = [
-  // September 2025
-  ["Austria", "Cyprus"],
-  ["San Marino", "Bosnia-Herzegovina"],
-  ["Bosnia-Herzegovina", "Austria"],
-  ["Cyprus", "Romania"],
-  // October 2025
-  ["Austria", "San Marino"],
-  ["Cyprus", "Bosnia-Herzegovina"],
-  ["San Marino", "Cyprus"],
-  ["Romania", "Austria"],
-  // November 2025
-  ["Cyprus", "Austria"],
-  ["Bosnia-Herzegovina", "Romania"],
-  ["Austria", "Bosnia-Herzegovina"],
-  ["Romania", "San Marino"],
-];
-
-const HOME_BONUS = 10; // Elo pts
+const RATING: Record<Team, number>          = cfg.elo;
+const INITIAL_POINTS: Record<Team, number>  = cfg.currentPoints;
+const FIXTURES: Array<[Team, Team]>        = cfg.fixtures as [Team, Team][];
+const HOME_BONUS: number                     = cfg.homeBonus;
+const DRAW_R: number                         = cfg.drawR;
+const DEFAULT_PLAYOFF: number                = cfg.playoffWinProb;
 
 // -----------------------------------------------------------------------------
 // Probability helpers
@@ -150,7 +117,8 @@ function simulate(nSim = 10_000_000, playoffWinProb = 0.5): ResultTable {
 const pct = (x: number) => (x * 100).toFixed(1) + "%";
 
 function showTeamOdds(table: ResultTable): void {
-  console.log("\nQualification probabilities (1 000 000 sims):\n");
+  console.log(`
+Qualification probabilities (${cfg.numberOfSimulations} sims):\n`);
   const view: Record<string, Record<string, string>> = {};
   for (const t of TEAMS) {
     view[t] = {
