@@ -1,0 +1,43 @@
+{
+  "numberOfSimulations": 1000000,
+  "teams": ["Norway", "Israel", "Italy", "Estonia", "Moldova"],
+  "elo": {
+    "Norway": 1977,
+    "Israel": 1730,
+    "Italy": 2047,
+    "Estonia": 1500,
+    "Moldova": 1495
+  },
+  "homeBonus": 10,
+  "currentPoints": {
+    "Norway": 12,
+    "Israel": 6,
+    "Italy": 3,
+    "Estonia": 3,
+    "Moldova": 0
+  },
+  "fixtures": [
+    ["Moldova", "Norway"],
+    ["Israel", "Estonia"],
+    ["Moldova", "Estonia"],
+    ["Israel", "Norway"],
+    ["Estonia", "Israel"],
+    ["Norway", "Italy"],
+    ["Estonia", "Norway"],
+    ["Italy", "Moldova"],
+    ["Moldova", "Israel"],
+    ["Italy", "Estonia"],
+    ["Israel", "Italy"],
+    ["Norway", "Moldova"],
+    ["Norway", "Israel"],
+    ["Estonia", "Italy"],
+    ["Estonia", "Moldova"],
+    ["Italy", "Israel"],
+    ["Norway", "Estonia"],
+    ["Moldova", "Italy"],
+    ["Israel", "Moldova"],
+    ["Italy", "Norway"]
+  ],
+  "drawR": 0.4,
+  "playoffWinProb": 0.5
+}

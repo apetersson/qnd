@@ -1,6 +1,6 @@
 // simulate.go
 // Monte‑Carlo World‑Cup‑2026 qualifier simulator (UEFA Group H)
-// Uses a single JSON file (qualifier_config.json) for **all** inputs:
+// Uses a single JSON file (groupH.json) for **all** inputs:
 //   • teams, Elo ratings, current table
 //   • remaining fixtures
 //   • model parameters (draw‑R, home bonus, playoff win prob)
@@ -45,9 +45,14 @@ type Config struct {
 }
 
 func loadConfig() Config {
-	raw, err := os.ReadFile("qualifier_config.json")
+	cfgPath := "groupH.json" // Default config file
+	if len(os.Args) > 1 {
+		cfgPath = os.Args[1]
+	}
+
+	raw, err := os.ReadFile(cfgPath)
 	if err != nil {
-		log.Fatalf("can’t read qualifier_config.json: %v", err)
+		log.Fatalf("can’t read %s: %v", cfgPath, err)
 	}
 	var c Config
 	if err := json.Unmarshal(raw, &c); err != nil {

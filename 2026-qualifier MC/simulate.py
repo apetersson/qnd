@@ -3,7 +3,7 @@
 # All parameters come from qualifier_config.json
 # ---------------------------------------------
 
-import json, random, time
+import json, random, time, sys
 from pathlib import Path
 from typing import Dict, List, Tuple, Literal, TypedDict, Any
 
@@ -11,7 +11,11 @@ from typing import Dict, List, Tuple, Literal, TypedDict, Any
 # Load config
 # ---------------------------------------------------------------------------
 
-cfg_path = Path("qualifier_config.json")
+if len(sys.argv) > 1:
+    cfg_path = Path(sys.argv[1])
+else:
+    cfg_path = Path("groupH.json") # Default to groupH.json
+
 cfg: Dict[str, Any] = json.loads(cfg_path.read_text())
 
 NUM_SIMS: int      = cfg.get("numberOfSimulations", 1_000_000)

@@ -36,7 +36,8 @@ interface Config {
   drawProb(deltaElo: number): number;
 }
 
-const cfg: Config = JSON.parse(fs.readFileSync("qualifier_config.json", "utf-8"));
+const configPath = process.argv[2] || "groupH.json";
+const cfg: Config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
 // Add methods to cfg
 cfg.eloWinProb = function(rA: number, rB: number): number {
