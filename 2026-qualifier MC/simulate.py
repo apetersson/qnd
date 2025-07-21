@@ -113,6 +113,6 @@ if __name__ == "__main__":
     print("Starting Monte Carlo simulation...")
     t0 = time.perf_counter()
     results = simulate()
-    print(f"Simulation time: {time.perf_counter() - t0:.3f}s")
+    print(f"Simulation time: {time.perf_counter() - t0:.3f}s ({NUM_SIMS:,} simulations)")
     show_team_odds(results)
     show_match_odds()

@@ -151,7 +151,7 @@ func main() {
 
 	count := simulate()
 	elapsed := time.Since(start)
-	fmt.Printf("Simulation time: %v\n\n", elapsed)
+	fmt.Printf("Simulation time: %v (%d simulations)\n\n", elapsed, cfg.NumberOfSimulations)
 
 	// Table 1 – qualification probabilities
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
