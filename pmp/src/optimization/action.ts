@@ -146,6 +146,8 @@ export const DESTROY_BUILDING_ACTION: Action = {
   },
 };
 
+/*https://apetersson.github.io/qnd/pmp/#eJxdlcluhDAMQCHOBgGGI+qp50pInZG6/f+P1YljY3Pzc5z4xU2ZvO3bW87DPhzhfcBolChj5Fo0SVQkWiRa+44V947H8D58wOt8ITqLYDEghorfDSOiuzBxMWFm/Gs4cTHhrFer5CiSFFU1d4BWc4fXas6qOe0SuZjVnFVzVq0Xs1rvy2quqw07iBpQN1YDOzWzGhhZDezUgLqxGlg1sFMDPbUVMXQ139U8Ru28r/OrNfe0gzBqrMP28g4CX+G73cggIIYLPaLTPQLNj3v0YuqRqPhtw8vQNv/8xGM2vI3l0psSV6donSI/AHKKx6idor5oQATtFC/j+n8SxSnenKjJ5RSVU51YlDeQrF3SOoAIF0bE1v/n/G1/9L5KmBEDY3VKN6d0m1O6OaX+DGDP/a16iUKPqkQmY5bINE+WUKv1A5LlA5L78UvPbXj5qRn71/n8RHbIg2JAHoWrTuOmQ1HVmazOZGcyXRN7oA4VB7wznvjAodwSxSaq7SSfu2bbvGfj6ZC98Z5p1J0j1/+czydyQh4VZ65vXDXnuyY1UJq0QzRXTLBcucmV21AtR2Rn5ApdRuSKkq9yRbeucrdEwQTYGRaZIUfjvvRXEClSAouZVkYG4fqmln7GjBG/KY5WWR32VX7a1p5zklskt1LuHybrkPc=*/
+
 export const GROW_FOREST_ACTION: Action = {
   id: 'grow-forest',
   description: 'Grow Forest',
