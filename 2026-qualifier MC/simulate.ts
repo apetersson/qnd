@@ -1,12 +1,14 @@
 // Monte Carlo Qualifier Simulator – updated for current standings
 // Language: TypeScript (Node ≥18, ts-node, yarn)
 
-interface Result {
+interface TeamResult {
   direct: number;
   playoff: number;
   fail: number;
   overall: number;
 }
+
+type ResultTable = Record<Team, TeamResult>;
 
 const TEAMS = [
   "Austria",
@@ -33,93 +35,75 @@ const RATING: Record<Team, number> = {
   // "San Marino": 845,
 };
 
-const HOME_BONUS = 100;    // elo pts
-
-// Current standings (as of 10 June 2025)
-const initialPts: Record<Team, number> = {
+// Current points after MD2 for AUT, MD3‑4 for others (10 Jun 2025)
+const INITIAL_POINTS: Record<Team, number> = {
   "Bosnia-Herzegovina": 9,
   "Austria": 6,
   "Romania": 6,
   "Cyprus": 3,
-  "San Marino": 0
+  "San Marino": 0,
 };
 
-// Remaining fixtures (home team first)
-const REMAINING_MATCHES: Array<[Team, Team]> = [
+// Remaining fixtures (home first)
+const FIXTURES: Array<[Team, Team]> = [
   // September 2025
-  ['Austria', 'Cyprus'],
-  ['San Marino', 'Bosnia-Herzegovina'],
-  ['Bosnia-Herzegovina', 'Austria'],
-  ['Cyprus', 'Romania'],
-
+  ["Austria", "Cyprus"],
+  ["San Marino", "Bosnia-Herzegovina"],
+  ["Bosnia-Herzegovina", "Austria"],
+  ["Cyprus", "Romania"],
   // October 2025
-  ['Austria', 'San Marino'],
-  ['Cyprus', 'Bosnia-Herzegovina'],
-  ['San Marino', 'Cyprus'],
-  ['Romania', 'Austria'],
-
+  ["Austria", "San Marino"],
+  ["Cyprus", "Bosnia-Herzegovina"],
+  ["San Marino", "Cyprus"],
+  ["Romania", "Austria"],
   // November 2025
-  ['Cyprus', 'Austria'],
-  ['Bosnia-Herzegovina', 'Romania'],
-  ['Austria', 'Bosnia-Herzegovina'],
-  ['Romania', 'San Marino']
+  ["Cyprus", "Austria"],
+  ["Bosnia-Herzegovina", "Romania"],
+  ["Austria", "Bosnia-Herzegovina"],
+  ["Romania", "San Marino"],
 ];
 
+const HOME_BONUS = 100; // Elo pts
+
 // -----------------------------------------------------------------------------
-// Utility helpers
+// Probability helpers
 // -----------------------------------------------------------------------------
 
 function eloWinProb(rA: number, rB: number): number {
-  /** expected score of player A vs B */
   return 1 / (1 + Math.pow(10, (rB - rA) / 400));
 }
 
-interface PairOdds {
-  home: Team;
-  away: Team;
-  pHomeWin: number;
-  pDraw: number;
-  pAwayWin: number;
-}
-
 function drawProb(deltaElo: number, r = 0.4): number {
-  const w = 1 / (1 + Math.pow(10, -deltaElo / 400)); // binary win prob for home
+  const w = 1 / (1 + Math.pow(10, -deltaElo / 400));
   return 2 * w * (1 - w) * r;
 }
 
-function calcPairOdds(home: Team, away: Team) {
+function matchOdds(home: Team, away: Team) {
   const delta = (RATING[home] + HOME_BONUS) - RATING[away];
-  const pDraw  = drawProb(delta);                 // replaces constant 0.25
-  const pHomeW = (1 - pDraw) *
-    (1 / (1 + Math.pow(10, -delta / 400)));
-  const pAwayW = 1 - pHomeW - pDraw;
-  return { pHomeWin: pHomeW, pDraw, pAwayWin: pAwayW };
+  const pDraw = drawProb(delta);
+  const pHome = (1 - pDraw) * eloWinProb(RATING[home] + HOME_BONUS, RATING[away]);
+  const pAway = 1 - pHome - pDraw;
+  return {pHome, pDraw, pAway};
 }
 
 // -----------------------------------------------------------------------------
-// Monte Carlo core (updated for current standings)
+// Monte‑Carlo core (simulates only remaining matches)
 // -----------------------------------------------------------------------------
+function simulate(nSim = 1_000_000, playoffWinProb = 0.5): ResultTable {
+  // counters per team
+  const tally: Record<Team, { direct: number; playoff: number; fail: number }> =
+    TEAMS.reduce((acc, t) => ({...acc, [t]: {direct: 0, playoff: 0, fail: 0}}),
+      {} as any);
 
-function monteCarloQualification(
-  nSim = 1_000_000,
-  playoffWinProb = 0.5,
-): Result {
-  let direct = 0;
-  let playoff = 0;
-  let fail = 0;
+  for (let s = 0; s < nSim; s++) {
+    const pts: Record<Team, number> = {...INITIAL_POINTS};
 
-  for (let sim = 0; sim < nSim; sim++) {
-    // Start with current points
-    const pts: Record<Team, number> = { ...initialPts };
-
-    // Simulate remaining matches
-    for (const [home, away] of REMAINING_MATCHES) {
-      const { pHomeWin, pDraw } = calcPairOdds(home, away);
-      const pAwayWin = 1 - pHomeWin - pDraw;
+    for (const [home, away] of FIXTURES) {
+      const {pHome, pDraw} = matchOdds(home, away);
       const r = Math.random();
-      if (r < pHomeWin) {
+      if (r < pHome) {
         pts[home] += 3;
-      } else if (r < pHomeWin + pDraw) {
+      } else if (r < pHome + pDraw) {
         pts[home] += 1;
         pts[away] += 1;
       } else {
@@ -127,61 +111,68 @@ function monteCarloQualification(
       }
     }
 
-    // Standings by pts (random tie-breaker)
-    const table = [...TEAMS].sort((a, b) => {
+    // order table, random tie‑break
+    const ranking = [...TEAMS].sort((a, b) => {
       if (pts[b] !== pts[a]) return pts[b] - pts[a];
       return Math.random() - 0.5;
     });
-    const rank = table.indexOf("Austria") + 1;
 
-    if (rank === 1) direct++;
-    else if (rank === 2) playoff++;
-    else fail++;
+    tally[ranking[0]].direct++;
+    tally[ranking[1]].playoff++;
+    ranking.slice(2).forEach((t) => tally[t].fail++);
   }
 
-  const directP = direct / nSim;
-  const playoffP = playoff / nSim;
-  return {
-    direct: directP,
-    playoff: playoffP,
-    fail: fail / nSim,
-    overall: directP + playoffP * playoffWinProb,
-  };
+  // convert counts → probabilities
+  const res: ResultTable = {} as any;
+  for (const t of TEAMS) {
+    const d = tally[t].direct / nSim;
+    const p = tally[t].playoff / nSim;
+    const f = tally[t].fail / nSim;
+    res[t] = {direct: d, playoff: p, fail: f, overall: d + p * playoffWinProb};
+  }
+  return res;
 }
 
 // -----------------------------------------------------------------------------
-// Pretty-print helpers
+// Pretty printers
 // -----------------------------------------------------------------------------
-function pct(x: number): string {
-  return (x * 100).toFixed(1) + "%";
-}
+const pct = (x: number) => (x * 100).toFixed(1) + "%";
 
-function printRemainingMatchOdds(): void {
-  console.log("\nOdds for remaining matches:\n");
-  const matchData = REMAINING_MATCHES.map(([home, away]) => {
-    const { pHomeWin, pDraw, pAwayWin } = calcPairOdds(home, away);
-    return {
-      Match: `${home} vs ${away}`,
-      "Home Win": pct(pHomeWin),
-      Draw: pct(pDraw),
-      "Away Win": pct(pAwayWin),
+function showTeamOdds(table: ResultTable): void {
+  console.log("\nQualification probabilities (1 000 000 sims):\n");
+  const view: Record<string, Record<string, string>> = {};
+  for (const t of TEAMS) {
+    view[t] = {
+      "Direct": pct(table[t].direct),
+      "Playoff": pct(table[t].playoff),
+      "Eliminated": pct(table[t].fail),
+      "Overall": pct(table[t].overall),
     };
-  });
-  console.table(matchData);
+  }
+  console.table(view);
+}
+
+function showMatchOdds(): void {
+  console.log("\nOdds for each remaining fixture:\n");
+  console.table(
+    FIXTURES.map(([h, a]) => {
+      const {pHome, pDraw, pAway} = matchOdds(h, a);
+      return {
+        Match: `${h} vs ${a}`,
+        "Home Win": pct(pHome),
+        Draw: pct(pDraw),
+        "Away Win": pct(pAway),
+      };
+    }),
+  );
 }
 
 // -----------------------------------------------------------------------------
-// Script entry
+// Entry point
 // -----------------------------------------------------------------------------
 
 (function main() {
-  const sim = monteCarloQualification();
-  console.log("\nQualification probabilities for Austria (1M sims):\n");
-  console.table({
-    "Direct Qualification": pct(sim.direct),
-    "Playoff Qualification": pct(sim.playoff),
-    "Elimination": pct(sim.fail),
-    "Overall Chance": pct(sim.overall),
-  });
-  printRemainingMatchOdds();
+  const results = simulate();
+  showTeamOdds(results);
+  showMatchOdds();
 })();
