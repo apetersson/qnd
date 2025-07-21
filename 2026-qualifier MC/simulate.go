@@ -19,9 +19,12 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"sort"
 	"text/tabwriter"
 	"time"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 /* -------------------------------------------------------------------------
@@ -55,9 +58,21 @@ func loadConfig() Config {
 		log.Fatalf("can’t read %s: %v", cfgPath, err)
 	}
 	var c Config
-	if err := json.Unmarshal(raw, &c); err != nil {
-		log.Fatalf("bad JSON: %v", err)
+
+	ext := filepath.Ext(cfgPath)
+	switch ext {
+	case ".json":
+		if err := json.Unmarshal(raw, &c); err != nil {
+			log.Fatalf("bad JSON: %v", err)
+		}
+	case ".yaml", ".yml":
+		if err := yaml.Unmarshal(raw, &c); err != nil {
+			log.Fatalf("bad YAML: %v", err)
+		}
+	default:
+		log.Fatalf("unsupported config file format: %s", ext)
 	}
+
 	if c.NumberOfSimulations <= 0 {
 		c.NumberOfSimulations = 1_000_000
 	}

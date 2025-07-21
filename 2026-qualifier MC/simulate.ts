@@ -1,4 +1,5 @@
 import * as fs from "node:fs";
+import * as yaml from "js-yaml";
 
 interface TeamResult {
   direct: number;
@@ -37,7 +38,18 @@ interface Config {
 }
 
 const configPath = process.argv[2] || "groupH.json";
-const cfg: Config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+const configContent = fs.readFileSync(configPath, "utf-8");
+
+let cfg: Config;
+const ext = configPath.split(".").pop();
+
+if (ext === "json") {
+  cfg = JSON.parse(configContent);
+} else if (ext === "yaml" || ext === "yml") {
+  cfg = yaml.load(configContent) as Config;
+} else {
+  throw new Error(`Unsupported config file format: ${ext}`);
+}
 
 // Add methods to cfg
 cfg.eloWinProb = function(rA: number, rB: number): number {

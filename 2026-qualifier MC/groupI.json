@@ -17,24 +17,21 @@
     "Moldova": 0
   },
   "fixtures": [
-    ["Moldova", "Norway"],
-    ["Israel", "Estonia"],
-    ["Moldova", "Estonia"],
-    ["Israel", "Norway"],
-    ["Estonia", "Israel"],
-    ["Norway", "Italy"],
-    ["Estonia", "Norway"],
-    ["Italy", "Moldova"],
     ["Moldova", "Israel"],
     ["Italy", "Estonia"],
+
     ["Israel", "Italy"],
     ["Norway", "Moldova"],
+
     ["Norway", "Israel"],
     ["Estonia", "Italy"],
+
     ["Estonia", "Moldova"],
     ["Italy", "Israel"],
+
     ["Norway", "Estonia"],
     ["Moldova", "Italy"],
+
     ["Israel", "Moldova"],
     ["Italy", "Norway"]
   ],

@@ -3,7 +3,7 @@
 # All parameters come from qualifier_config.json
 # ---------------------------------------------
 
-import json, random, time, sys
+import json, random, time, sys, yaml
 from pathlib import Path
 from typing import Dict, List, Tuple, Literal, TypedDict, Any
 
@@ -16,7 +16,13 @@ if len(sys.argv) > 1:
 else:
     cfg_path = Path("groupH.json") # Default to groupH.json
 
-cfg: Dict[str, Any] = json.loads(cfg_path.read_text())
+config_content = cfg_path.read_text()
+if cfg_path.suffix in (".yaml", ".yml"):
+    cfg: Dict[str, Any] = yaml.safe_load(config_content)
+elif cfg_path.suffix == ".json":
+    cfg: Dict[str, Any] = json.loads(config_content)
+else:
+    raise ValueError(f"Unsupported config file format: {cfg_path.suffix}")
 
 NUM_SIMS: int      = cfg.get("numberOfSimulations", 1_000_000)
 TEAMS: Tuple[str]  = tuple(cfg["teams"])              # type: ignore

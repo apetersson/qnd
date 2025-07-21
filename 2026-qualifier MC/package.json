@@ -1,9 +1,11 @@
 {
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.0.15",
+    "bun": "^1.2.19",
+    "js-yaml": "^4.1.0",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "bun": "^1.2.19"
+    "typescript": "^5.8.3"
   },
   "scripts": {
     "sim:ts": "bun run simulate.ts",

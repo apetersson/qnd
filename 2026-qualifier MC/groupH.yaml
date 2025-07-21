@@ -1,0 +1,35 @@
+numberOfSimulations: 1000000
+teams:
+  - Austria
+  - Bosnia-Herzegovina
+  - Romania
+  - Cyprus
+  - San Marino
+elo:
+  Austria: 1800
+  Bosnia-Herzegovina: 1700
+  Romania: 1600
+  Cyprus: 1500
+  San Marino: 1000
+homeBonus: 100
+drawR: 0.5
+playoffWinProb: 0.5
+currentPoints:
+  Austria: 10
+  Bosnia-Herzegovina: 9
+  Romania: 7
+  Cyprus: 6
+  San Marino: 0
+fixtures:
+  - [Austria, Cyprus]
+  - [San Marino, Bosnia-Herzegovina]
+  - [Bosnia-Herzegovina, Austria]
+  - [Cyprus, Romania]
+  - [Austria, San Marino]
+  - [Cyprus, Bosnia-Herzegovina]
+  - [San Marino, Cyprus]
+  - [Romania, Austria]
+  - [Cyprus, Austria]
+  - [Bosnia-Herzegovina, Romania]
+  - [Austria, Bosnia-Herzegovina]
+  - [Romania, San Marino]

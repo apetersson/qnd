@@ -4,6 +4,9 @@
 
 CONFIG_FILE=${1:-groupH.json}
 
+# Install Python dependencies
+pip install PyYAML
+
 echo "Running Go simulation..."
 time go run simulate.go "$CONFIG_FILE"
 
