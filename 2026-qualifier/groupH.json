@@ -1,5 +1,5 @@
 {
-  "numberOfSimulations": 1000000,
+  "numberOfSimulations": 100000000,
   "teams": ["Austria", "Bosnia-Herzegovina", "Romania", "Cyprus", "San Marino"],
   "elo": {
     "Austria": 2101,
@@ -12,16 +12,14 @@
   "homeBonus": 10,
 
   "currentPoints": {
-    "Bosnia-Herzegovina": 9,
-    "Austria": 6,
+    "Bosnia-Herzegovina": 12,
+    "Austria": 9,
     "Romania": 6,
     "Cyprus": 3,
     "San Marino": 0
   },
 
   "fixtures": [
-    ["Austria", "Cyprus"],
-    ["San Marino", "Bosnia-Herzegovina"],
     ["Bosnia-Herzegovina", "Austria"],
     ["Cyprus", "Romania"],
     ["Austria", "San Marino"],

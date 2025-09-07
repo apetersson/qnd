@@ -4,6 +4,18 @@ import { Worker } from "worker_threads";
 import * as os from "os";
 import * as path from "path";
 
+// --- Option Parsing ---
+const args = process.argv.slice(2);
+const options = {
+  configFile: args.find(a => !a.startsWith('--')) || 'groupH.json',
+  algo: args.find(a => a.startsWith('--algo='))?.split('=')[1] || 'scan',
+  worker: args.find(a => a.startsWith('--worker='))?.split('=')[1] || 'threads',
+  prng: args.find(a => a.startsWith('--prng='))?.split('=')[1] || 'xorshift32',
+};
+
+console.log('Running with options:', options);
+
+
 interface TeamResult {
   direct: number;
   playoff: number;
@@ -35,11 +47,10 @@ interface Config {
   drawProb(deltaElo: number): number;
 }
 
-const configPath = process.argv[2] || "groupH.json";
-const configContent = fs.readFileSync(configPath, "utf-8");
+const configContent = fs.readFileSync(options.configFile, "utf-8");
 
 let cfg: Config;
-const ext = configPath.split(".").pop();
+const ext = options.configFile.split(".").pop();
 
 if (ext === "json") {
   cfg = JSON.parse(configContent);
@@ -89,28 +100,29 @@ async function simulate(): Promise<ResultTable> {
   delete (serializableCfg as any).eloWinProb;
   delete (serializableCfg as any).drawProb;
 
-  const isBun = !!process.env.BUN_ENV;
-
   for (let i = 0; i < numCores; i++) {
     const startIdx = i * simsPerWorker;
     const endIdx = i === numCores - 1 ? cfg.numberOfSimulations : startIdx + simsPerWorker;
 
     const workerPromise = new Promise<Record<Team, TallyCount>>((resolve, reject) => {
-      const workerPath = isBun
-        ? new URL('./simulate_worker.js', import.meta.url).href
-        : path.join(__dirname, 'simulate_worker.js');
+      const workerData = { cfg: serializableCfg, startIdx, endIdx, opts: options, workerId: i };
 
-      const workerOptions = {
-        workerData: { cfg: serializableCfg, startIdx, endIdx },
-      };
-
-      const worker = new Worker(workerPath, workerOptions);
-
-      worker.on("message", resolve);
-      worker.on("error", reject);
-      worker.on("exit", (code) => {
-        if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
-      });
+      if (options.worker === 'web') {
+        const worker = new (globalThis as any).Worker(new URL('./simulate_web_worker.js', import.meta.url).href, { type: 'module' });
+        worker.onmessage = (event: any) => {
+          resolve(event.data);
+          worker.terminate();
+        };
+        worker.onerror = (err: any) => reject(err);
+        worker.postMessage(workerData);
+      } else { // Default to threads
+        const worker = new Worker(path.join(__dirname, 'simulate_worker.js'), { workerData });
+        worker.on("message", resolve);
+        worker.on("error", reject);
+        worker.on("exit", (code) => {
+          if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
+        });
+      }
     });
     promises.push(workerPromise);
   }
