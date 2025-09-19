@@ -20,3 +20,4 @@ node_modules
 # Editor settings
 .vscode
 .DS_Store
+/batteryctl/config.yaml
