@@ -11,6 +11,6 @@
 - `peekaboo__list` reliably enumerates Chrome windows; the stem sometimes omits off-screen windows, so fall back to manual selection if no title match.
 - `peekaboo__image` works well for JPEG captures; keep `capture_focus` at `foreground` to avoid blank screenshots. Saving under `/tmp` is safe and requires no extra cleanup.
 - Local `curl` calls to sandboxed ports fail without escalated permissions; rerun with `with_escalated_permissions: true` and supply a short justification.
-- IntelliJ MCP file tools are fast for reads but occasionally reject new file writes; `shell` with a heredoc is a reliable fallback for creating files.
+- IntelliJ MCP file tools are fast for reads but flaky for new writes; editing via `shell` (heredoc + `cat`/`apply_patch`) has proven more reliable for file creation and updates.
 - `yarn` and other package scripts may emit cache warnings in the sandbox; they are harmless, but expect missing global folders on macOS runners.
 - Backend config now loads once on startup; if `config.local.yaml` is missing or invalid the process aborts, so confirm the file before booting instead of trying to hot-reload it.
