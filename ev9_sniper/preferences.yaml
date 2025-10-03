@@ -1,21 +1,140 @@
-# Value weighting for EV9 listings
-reference_year: 2025
+# Personal value model for ranking EV9 listings (Austria, 2025)
 
+# Depreciation model
+reference_year: 2025
+age_penalty_per_year: 2500    # € per year older than reference_year
+km_penalty_per_1000: 300      # € per 1,000 km
+max_km_penalty: 15000         # cap for mileage penalty
+
+# Drivetrain valuation
+# Note: PERF_AWD is the GT/Performance high-power AWD (≈509 PS)
 drivetrain_bonus:
-  AWD: 10000    # AWD worth +€10,000 to you
+  PERF_AWD: 14000
+  AWD: 10000
   RWD: 0
-  Unk: 0    # penalise unknown drivetrain a bit
+  Unk: 0
+
+# Seat configuration valuation (positive or negative)
+seat_bonus:
+  "6": -1500   # prefer 7 seats by default
+  "7": 0
+
+# Colour valuation: map normalised colour names to bonuses/penalties
+color_bonus:
+  white: -300
+  black: 0
+  grey: -200
+  silver: -200
+  blue: 800
+  red: 600
+  green: 1200
+  matte: 0
+
+# Optional: aliases used to normalise colours from listing text
+color_aliases:
+  weiß: white
+  weiss: white
+  uni-weiß: white
+  uni-weiss: white
+  schwarz: black
+  grau: grey
+  silber: silver
+  blau: blue
+  rot: red
+  grün: green
+  gruen: green
+  matt: matte
+
+# Subjective trim preference (adds on top of feature valuation)
 trim_bonus:
-  GT-Line: 1000   # preference for GT-Line styling/kit
-  Earth: 0
+  GT-Line AWD: 1000
+  GT/Performance: 1500
+  Earth AWD: 0
+  Earth RWD: 0
+  Earth Baseline: -500
   default: 0
 
-age_penalty_per_year: 2500   # deduct €2,500 for each year older than reference_year
-km_penalty_per_1000: 300     # deduct €300 per 1,000 km driven
-max_km_penalty: 15000        # cap depreciation
+# Features you care about and their value to you.
+# Each feature has detection keywords for fuzzy matching in title/description/specs.
+features:
+  matrix_led:
+    value: 1000
+    keywords: ["matrix-led", "matrix led", "matrixscheinwerfer", "led matrix"]
+  pano_roof:
+    value: 1300
+    keywords: ["panoramadach", "glasdach", "schiebedach", "panorama"]
+  digital_mirrors:
+    value: 1500
+    keywords: ["digitale außenspiegel", "digitale aussenspiegel", "digital mirrors", "kamera spiegel", "spiegel kamera"]
+  meridian_audio:
+    value: 1200
+    keywords: ["meridian", "premium sound", "soundsystem"]
+  seat_heat_rear:
+    value: 450
+    keywords: ["sitzheizung hinten", "rückbank heizung", "ruecksitz heizung"]
+  seat_vent_front:
+    value: 600
+    keywords: ["sitzbelüftung", "sitzbelueftung", "belüftete sitze", "ventilierte sitze"]
+  swivel_row2:
+    value: 1800
+    keywords: ["2. sitzreihe drehbar", "drehbar", "drehbare sitze", "kapitänssitze", "kapitaenssitze"]
+  relaxation_seats_front:
+    value: 1200
+    keywords: ["relaxation seats", "entspannungssitze", "liegesitze", "komfortsitze"]
+  climate_3zone:
+    value: 500
+    keywords: ["3-zonen", "3 zonen", "dreizonen", "3-zone klima", "3-zone klimaautomatik"]
+  head_up_display:
+    value: 1200
+    keywords: ["head-up", "head up", "hud", "projektionsdisplay"]
+  hda2:
+    value: 1500
+    keywords: ["highway driving assist 2", "hda2", "autobahn assistent"]
+  v2l:
+    value: 0
+    keywords: ["v2l", "vehicle-to-load", "steckdose"]
+  wheels_20:
+    value: 700
+    keywords: ["20\"", "20 zoll", "20zoll"]
+  wheels_21:
+    value: 1500
+    keywords: ["21\"", "21 zoll", "21zoll"]
 
-# Small bonuses for options mentioned in heading/spec text
+# Automatic inclusion of features by trim (based on feature_matrix.md)
+# If a trim sets includes_all: true, all features above are considered present.
+trim_includes:
+  Earth Baseline:
+    includes: ["v2l"]
+  Earth RWD:
+    includes: ["climate_3zone", "v2l"]
+  Earth AWD:
+    includes: ["seat_heat_rear", "seat_vent_front", "climate_3zone", "hda2", "v2l"]
+  GT-Line AWD:
+    includes: [
+      "matrix_led", "pano_roof", "digital_mirrors", "meridian_audio",
+      "seat_heat_rear", "seat_vent_front", "relaxation_seats_front",
+      "climate_3zone", "head_up_display", "hda2", "v2l", "wheels_21"
+    ]
+  GT/Performance:
+    includes_all: true
+
+# Default seat count per trim (used when listing doesn't specify seats)
+seat_defaults_by_trim:
+  GT/Performance: 7
+  GT-Line AWD: 7
+  Earth AWD: 7
+  Earth RWD: 7
+  Earth Baseline: 7
+
+# Trim name normalisation (match keywords to canonical trim)
+trim_aliases:
+  GT/Performance: ["performance", "gt performance", "gt-line performance", "509", "509ps", "509 ps"]
+  GT-Line AWD: ["gt-line", "gt line"]
+  Earth AWD: ["earth awd", "awd earth"]
+  Earth RWD: ["earth", "rwd"]
+  Earth Baseline: ["baseline", "basis"]
+
+# Backwards-compatible free-form keywords that add small bonuses if mentioned
 option_keywords:
-  schiebedach: 600
   vollausstattung: 2000
   matt: 0
