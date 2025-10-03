@@ -1,0 +1,21 @@
+# Value weighting for EV9 listings
+reference_year: 2025
+
+drivetrain_bonus:
+  AWD: 10000    # AWD worth +€10,000 to you
+  RWD: 0
+  Unk: 0    # penalise unknown drivetrain a bit
+trim_bonus:
+  GT-Line: 1000   # preference for GT-Line styling/kit
+  Earth: 0
+  default: 0
+
+age_penalty_per_year: 2500   # deduct €2,500 for each year older than reference_year
+km_penalty_per_1000: 300     # deduct €300 per 1,000 km driven
+max_km_penalty: 15000        # cap depreciation
+
+# Small bonuses for options mentioned in heading/spec text
+option_keywords:
+  schiebedach: 600
+  vollausstattung: 2000
+  matt: 0
