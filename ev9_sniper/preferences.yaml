@@ -9,7 +9,7 @@ max_km_penalty: 15000         # cap for mileage penalty
 # Drivetrain valuation
 # Note: PERF_AWD is the GT/Performance high-power AWD (≈509 PS)
 drivetrain_bonus:
-  PERF_AWD: 14000
+  PERF_AWD: 11000
   AWD: 10000
   RWD: 0
   Unk: 0
@@ -21,13 +21,13 @@ seat_bonus:
 
 # Colour valuation: map normalised colour names to bonuses/penalties
 color_bonus:
-  white: -300
+  white: 0
   black: 0
-  grey: -200
-  silver: -200
-  blue: 800
-  red: 600
-  green: 1200
+  grey: 0
+  silver: 0
+  blue: 0
+  red: -1000
+  green: 0
   matte: 0
 
 # Optional: aliases used to normalise colours from listing text
@@ -47,11 +47,11 @@ color_aliases:
 
 # Subjective trim preference (adds on top of feature valuation)
 trim_bonus:
-  GT-Line AWD: 1000
-  GT/Performance: 1500
+  GT-Line AWD: 0
+  GT/Performance: 0
   Earth AWD: 0
   Earth RWD: 0
-  Earth Baseline: -500
+  Earth Baseline: 0
   default: 0
 
 # Features you care about and their value to you.
@@ -61,13 +61,13 @@ features:
     value: 1000
     keywords: ["matrix-led", "matrix led", "matrixscheinwerfer", "led matrix"]
   pano_roof:
-    value: 1300
+    value: 0
     keywords: ["panoramadach", "glasdach", "schiebedach", "panorama"]
   digital_mirrors:
-    value: 1500
+    value: 0
     keywords: ["digitale außenspiegel", "digitale aussenspiegel", "digital mirrors", "kamera spiegel", "spiegel kamera"]
   meridian_audio:
-    value: 1200
+    value: 0
     keywords: ["meridian", "premium sound", "soundsystem"]
   seat_heat_rear:
     value: 450
@@ -76,7 +76,7 @@ features:
     value: 600
     keywords: ["sitzbelüftung", "sitzbelueftung", "belüftete sitze", "ventilierte sitze"]
   swivel_row2:
-    value: 1800
+    value: 0
     keywords: ["2. sitzreihe drehbar", "drehbar", "drehbare sitze", "kapitänssitze", "kapitaenssitze"]
   relaxation_seats_front:
     value: 1200
@@ -85,7 +85,7 @@ features:
     value: 500
     keywords: ["3-zonen", "3 zonen", "dreizonen", "3-zone klima", "3-zone klimaautomatik"]
   head_up_display:
-    value: 1200
+    value: 0
     keywords: ["head-up", "head up", "hud", "projektionsdisplay"]
   hda2:
     value: 1500
@@ -97,7 +97,7 @@ features:
     value: 700
     keywords: ["20\"", "20 zoll", "20zoll"]
   wheels_21:
-    value: 1500
+    value: 0
     keywords: ["21\"", "21 zoll", "21zoll"]
 
 # Automatic inclusion of features by trim (based on feature_matrix.md)
