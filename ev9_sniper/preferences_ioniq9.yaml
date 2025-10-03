@@ -1,0 +1,127 @@
+# Personal value model for ranking Ioniq 9 listings (Austria, 2025)
+
+# Depreciation model
+reference_year: 2025
+age_penalty_per_year: 2500
+km_penalty_per_1000: 300
+max_km_penalty: 15000
+
+# Drivetrain valuation
+# PERF_AWD is the higher-power AWD (Performance pack where applicable)
+drivetrain_bonus:
+  PERF_AWD: 14000
+  AWD: 10000
+  RWD: 0
+  Unk: 0
+
+# Seat configuration valuation
+seat_bonus:
+  "6": -1500
+  "7": 0
+
+# Colour valuation
+color_bonus:
+  white: -300
+  black: 0
+  grey: -200
+  silver: -200
+  blue: 800
+  red: 600
+  green: 1200
+  matte: 0
+
+color_aliases:
+  weiß: white
+  weiss: white
+  uni-weiß: white
+  uni-weiss: white
+  schwarz: black
+  grau: grey
+  silber: silver
+  blau: blue
+  rot: red
+  grün: green
+  gruen: green
+  matt: matte
+
+# Subjective trim preference
+trim_bonus:
+  Calligraphy: 1200
+  Prestige Line: 500
+  Trend Line: 0
+  default: 0
+
+# Features of interest (values are subjective)
+features:
+  matrix_led:
+    value: 1000
+    keywords: ["matrix-led", "matrix led", "matrixscheinwerfer", "led matrix"]
+  pano_roof:
+    value: 1300
+    keywords: ["panoramadach", "glasdach", "schiebedach", "panorama"]
+  digital_mirrors:
+    value: 1500
+    keywords: ["digitale außenspiegel", "digitale aussenspiegel", "digital mirrors", "kamera spiegel", "spiegel kamera"]
+  premium_audio:
+    value: 1200
+    keywords: ["bose", "bang & olufsen", "b&o", "harman", "premium sound", "soundsystem"]
+  seat_heat_rear:
+    value: 450
+    keywords: ["sitzheizung hinten", "rückbank heizung", "ruecksitz heizung"]
+  seat_vent_front:
+    value: 600
+    keywords: ["sitzbelüftung", "sitzbelueftung", "belüftete sitze", "ventilierte sitze"]
+  swivel_row2:
+    value: 1800
+    keywords: ["2. sitzreihe drehbar", "drehbar", "drehbare sitze", "kapitänssitze", "kapitaenssitze"]
+  relaxation_seats_front:
+    value: 1200
+    keywords: ["relaxation seats", "entspannungssitze", "liegesitze", "komfortsitze"]
+  climate_3zone:
+    value: 500
+    keywords: ["3-zonen", "3 zonen", "dreizonen", "3-zone klima", "3-zone klimaautomatik"]
+  head_up_display:
+    value: 1200
+    keywords: ["head-up", "head up", "hud", "projektionsdisplay"]
+  hda2:
+    value: 1500
+    keywords: ["highway driving assist 2", "hda2", "autobahn assistent"]
+  v2l:
+    value: 0
+    keywords: ["v2l", "vehicle-to-load", "steckdose"]
+  wheels_20:
+    value: 700
+    keywords: ["20\"", "20 zoll", "20zoll"]
+  wheels_21:
+    value: 1500
+    keywords: ["21\"", "21 zoll", "21zoll"]
+
+# Automatic inclusion of features by trim (assumptions based on EU/Austria lineup)
+trim_includes:
+  Trend Line:
+    includes: ["v2l"]
+  Prestige Line:
+    includes: ["seat_heat_rear", "seat_vent_front", "climate_3zone", "head_up_display", "hda2", "v2l"]
+  Calligraphy:
+    includes: [
+      "matrix_led", "pano_roof", "digital_mirrors", "premium_audio",
+      "seat_heat_rear", "seat_vent_front", "relaxation_seats_front",
+      "climate_3zone", "head_up_display", "hda2", "v2l", "wheels_21"
+    ]
+
+# Default seat count per trim
+seat_defaults_by_trim:
+  Calligraphy: 7
+  Prestige Line: 7
+  Trend Line: 7
+
+# Trim name normalisation
+trim_aliases:
+  Calligraphy: ["calligraphy"]
+  Prestige Line: ["prestige", "prestige line"]
+  Trend Line: ["trend", "trend line"]
+
+# Optional free-form keywords still supported
+option_keywords:
+  vollausstattung: 2000
+  matt: 0

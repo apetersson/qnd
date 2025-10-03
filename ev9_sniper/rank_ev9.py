@@ -84,7 +84,7 @@ def determine_drivetrain(flat: Dict[str, Any]) -> str:
     if any(k in text for k in ("performance", "509ps", "509 ps")):
         # Treat explicit performance cues as performance AWD
         return "PERF_AWD"
-    if "awd" in text or "allrad" in text:
+    if "awd" in text or "4wd" in text or "allrad" in text:
         return "AWD"
     if "rwd" in text or "2wd" in text:
         return "RWD"
