@@ -1,0 +1,331 @@
+Title: Should You Buy a 2026 Hyundai Ioniq 9? Thorough Review
+Channel: The Car Care Nut Reviews
+Video ID: k7CUh9UR1MQ
+URL: https://www.youtube.com/watch?v=k7CUh9UR1MQ
+Published: 2025-10-04
+[00:00] Hello and welcome to the Car Reviews channel. And welcome to the 2026 Hyundai
+[00:07] Ionic 9. And in today's video, we're going to do a proper technical review under the hood, underneath the car,
+[00:12] inside and out. Some things we like, some things we do not like. right after this.
+[00:18] [Music]
+[00:29] Let's start our technical review under the hood. You may be wondering why are we starting under the hood? It's an extra car. There's a frunk here, some
+[00:36] storage. You'd be very mistaken as you can see here. Let's dive in because I
+[00:42] want to start by saying this car is a very special car on on the stuff behind
+[00:48] the scenes because in previous electric cars from Hyundai, we always said things are rudimentary initial. They're just
+[00:55] starting. Things are all over the place. Here though, this is a step in the right
+[01:00] direction. I mean, this is such a leap that puts this seriously on the map for
+[01:05] electric cars. Let's dive in and we'll talk about why the biggest problem with electric cars is thermal management.
+[01:12] That's really the biggest challenge because two problems. How do you heat and cool the lithium ion battery which
+[01:19] likes to operate at an exact temperature range for it to be happy? How do you cool and heat the cabin so you can keep
+[01:25] the passengers comfortable while maintaining an efficient range? That's
+[01:31] the challenge cuz you don't have an engine that generates heat. So extreme weather, extreme hots for extreme cold,
+[01:38] the system will suffer to cope. Here's the biggest single change here. They introduce something called a coolant hub
+[01:45] driver. So this is their attempt at combining things and making the system
+[01:51] smaller. See, the more coolant hoses and HVAC lines you have and all over the
+[01:57] place and frizz lines, the more losses you have. The more compact things are,
+[02:02] the less losses you have. Therefore, system would be more efficient. Let's start with the cooling system because
+[02:07] this is very interesting. You have two cooling systems in this car. Two radiators and the HV system kind of ties
+[02:15] into it. First system is for the battery itself. Coolant runs to the battery to
+[02:20] cool it. That coolant electric pump routes it to the one of the radiators and then it goes back and cools the
+[02:27] battery. If the weather is too hot and the battery is getting too hot, they will rely on on the HVAC system called
+[02:34] cold refrigerant which will cold the cool the coolant which will then cool the battery. That exchange is one of the
+[02:41] first exchanges between the refrigerant and the coolant. That happens in a component called the battery chiller.
+[02:48] That is pretty standard in electric cars. But then the second circuit is a circuit that cools the onboard charger,
+[02:56] the inverters, which are two inverters front and back. And in this particular one that has dual motor, this is the
+[03:02] unit that drives the motor, regenerates and kind of sends power where it needs to go. And then the motors themselves,
+[03:10] all the system is tied in with the larger radiator, the high temperature radiator. But then these two circuits
+[03:18] are able to exchange heat as well through the coolant hub driver, which is pretty cool. The reason these systems
+[03:24] are intermixed is when things get very cold. Well, you're going to scrape any source of heat to get heat so you can
+[03:32] heat up the battery. Cuz remember, if the battery is too cold, we also have a problem. But if things get very dire and
+[03:38] we cannot heat the battery effectively because we have no heat, single digit outside, we're trying to really heat
+[03:44] things up. There is a battery coolant heater. So, that's going to warm up the
+[03:50] coolant. Electrically, it's going to use electric power, then warm up the battery until things catch up. But things will
+[03:58] catch up quickly because this system does not have a lot of losses with miles and miles of hoses all over the place.
+[04:04] Things are compact. That is pretty cool. Now, very important in electric cars is
+[04:09] the HVAC system. This one has a state-of-the-art heat pump system.
+[04:16] Super sophisticated heat pump system. Very rapid and just cuts through a lot of the typical complication of heat pump
+[04:23] systems. Really impressive. Here's how this works. Heat pump system is basically an AC system that's able to
+[04:30] flip things around and now the hot side is inside which is going to cool the cabin. But they didn't do it like most
+[04:36] manufacturers do. This car has an evaporator inside the car, which that's the AC part. That's the part that gets
+[04:42] cold. It has a condenser on the outside, which is what's going to have the hot
+[04:49] refrigerant is going to get cooled. Very small airto-air condenser because there is a little twist here. It's very smart.
+[04:55] But when you want to heat the cabin, you have an inside condenser, which is the
+[05:01] way to do this, not coolant to a to a heater core. That is pretty cool. But
+[05:08] here's where it gets even better. In addition to the airto-air condenser that it has, it has a liquid toair condenser
+[05:17] for times that you do not want to
+[05:23] too much cooling for the condenser. They can actually use that other one. But the other time they can use it is because
+[05:30] the refrigerant will be flipped and you'll have the hot side inside, cold side, outside. You don't want to put it
+[05:35] in the front. you use the other one and the coolant once it comes up to operating temperature because the
+[05:42] battery is warming up, the motors are warming up and everything, you can actually use the coolant to to kind of
+[05:49] heat up the refrigerant and that aids in the operation of the heat pump. I mean,
+[05:54] this is a leap for Hyundai. And I I got to say one thing. We've always every
+[06:00] single electric call we we've reviewed, there's always a mess, hoses all over the place. And we always say Tesla's got
+[06:06] it right because they compacted everything. Now, this one does not take it to that level, but looking at a
+[06:12] previous system from Hyundai and now this is a big leap and a move in the right direction. Things are not a mess.
+[06:19] It may appear to be a mess. This is not, folks. Now, they're not as compact an
+[06:24] octo valve and that level of Tesla, but this is a lot closer to that. This has
+[06:29] two three-way valves. One of them is on the coolant driver, which can switch between systems. One of them is on the
+[06:34] side, but you notice the coolant hoses are congregated on the passenger side, a
+[06:40] little bit to the front. Nothing on the driver's side. Usually, that's not the case. You notice they're compacting
+[06:46] things. Now, the HAC system is a very sophisticated heat pump system. So component wise going to be all over the
+[06:52] place that there's no way around it but pretty smart. Now not to the level of
+[06:58] Tesla where they have only three lines going in but still this is a move in the
+[07:03] right direction. They have an inside condenser. Now with that there are a few observations here which are very interesting. Even though this has a
+[07:10] pretty big dash the HBAC unit inside only has the evaporator and inside condenser. The blower motor is actually
+[07:17] outside the car. That's a pretty cool thing which makes the cabin filter here in the front very easily accessible.
+[07:24] Other observations are which is not in the good side. Every single coolant hose and elbow is
+[07:31] plastic and there is a distinct plastic piece that feels so cheap on the
+[07:37] front inverter. Why are you using this style? I mean this system is so impressive.
+[07:44] Why all the plastic stuff? I the HAC system built quality is impeccable. But
+[07:49] the coolant plastic hoses, they just feel very cheap and I fear there will be
+[07:55] a problem that will affect reliability in the future with coolant leaks and stuff like that. Plastic is a terrible
+[08:00] idea with cooling systems, especially one that is this high-tech. Having said that, this of course has electric compressor. We're actually going to take
+[08:07] a quick peek at it when we're underneath the car. things are much better and the
+[08:12] byproduct of all this change and all this improvement. This car has three configurations. We're
+[08:19] going to talk about them here in a moment. They all share the same battery. 110.3 kowatth battery. All the three
+[08:25] configurations. Pretty interesting choice there. They all get over 300 miles. Folks, this is a massive car that
+[08:32] is as much aerodynamic as they tried to make it. It's a giant SUV. over 300 miles in all different configurations.
+[08:39] Speaking of the configurations, a little bit strange on the configurations because they're labeling them by the
+[08:46] output of the system. So you have the base model which is rear real drive 160
+[08:52] kW output. Then you have the second configuration which is 160 plus 75.
+[08:59] They're talking about the power of the motors themselves. And then the third configuration 160 kW plus 160 kW. But
+[09:08] here's the problem. That's the power of the motor alone. Put the drive train and
+[09:14] everything. Put like the axles and every there's some loss. So it turns out to be less except the rearwheel drive model
+[09:20] has 160 kowatt output. The next one has less than 160 + 75. And the third one
+[09:27] has definitely less than 160 + 160. That's just how they did this. So, there
+[09:33] is three configurations, but they all share the same battery. It's just the output of the motors themselves is what
+[09:39] changes it. Folks, the range on this car, although our testing, we are a little bit on the hotter side of things,
+[09:45] 80° up to 90°. We didn't test it in cold weather. It holds the range very
+[09:50] impressively and does get 300 miles. Now, some of the figures on charging. This does have an outboard charging, so
+[09:56] you can AC charge it from your out outlet at home or level two charging,
+[10:02] but we're more interested in fast charging. Fast charging, if you charge it at the proper charging station, it
+[10:08] can charge from 10% to 80% in 24 minutes. That is pretty impressive cuz
+[10:14] that's a big battery and this is a big car. I can live with that. That's actually a short time, folks. I really
+[10:20] commend Hyundai for moving in this direction. They're not kind of copying somebody else. They're innovating their
+[10:26] own design. And this this works. Third iteration of this and Tesla might have
+[10:31] to a serious problem on their hand because here's here's the reality. I'm just
+[10:37] going to sidetrack from this video a little bit. Everything about Tesla is great except the car. Their electric
+[10:44] system is top. There's nothing that comes close to it. But the rest of the car is kind of a problem. This on the
+[10:51] other hand, the rest of the car is impeccable. Electric system usually suffers, but this one it's catching up.
+[10:58] It's only a matter of time.
+[11:04] Let's take a look underneath the 2026 Ionic 9. Just like all electric cars,
+[11:10] everything is covered. Only thing I'm noticing here is uh softer covers and a
+[11:15] lot of openings. Especially when you come to the side here. Everything is kind of wide open. Same thing on this
+[11:23] side. You can see literally the compressor is right there. That's uh interesting. But could be
+[11:31] worse. Still got the front suspension. Interestingly enough, this is one of the few cars that has McFersonson's strut at
+[11:38] the top and a two-piece two ball joint control arms. They're both aluminum. Knuckle is aluminum. And now that's how
+[11:45] they went with this one. Interesting. Two piston caliper in the front. Kind of bigger brakes for electric car. Is a
+[11:51] bigger vehicle. I can understand that. Sway bar is steel, which I really like that.
+[11:58] Now we we walk back here. This is the battery.
+[12:03] Pretty well covered. I like how it goes all the way to the edge. It does leave a slight opening where debris can actually
+[12:10] go on top of it. Not the end of the world, but I wish that was covered a little bit more. But what I love about
+[12:16] this is electric cars are weird enough. Lift points are completely normal. Just
+[12:22] front one, rear one, pinch weld. Nothing crazy about this one. Now, as we make
+[12:28] our way back, if you look here, here are all the connections for the battery.
+[12:33] It's your high voltage cables, low voltage cables.
+[12:38] Everything is connected right here. You can see some of the coolant lines that
+[12:43] run. This is actually not the one for the battery, but this is the style that they're using here because this is where
+[12:50] the rear motor is. And these actually two coolant lines are going to the rear motor. Inverters on top of it. Uh it's
+[12:56] all covered. Same type of cover. It's not a strong cover. Let's look at the rear suspension here. You do have an
+[13:01] aluminum knuckle, aluminum lower control arm with a giant shock right here and
+[13:08] the spring separate. Three of the control arms, interesting enough, are steel. This one, this one, and this one.
+[13:15] That's how they went with this giant axle and this style where they don't have a big boot here. Single piston
+[13:22] caliper in the back with the integrated parking brake on it. If we go all the way in the back here, of course, being
+[13:27] an electric car, you don't have exhaust. Everything is fully covered. Here's the cool thing. You know the uh we're going
+[13:34] to look at the outside in a bit here. The squares that they use all over this car. It even made it here. How about
+[13:41] that? Let's take a look at the outside of the
+[13:47] Ionic 9. I just say one thing. Over the top is an understatement for this car.
+[13:54] It is over the top. A lot that's going on. Let's talk about it. First thing is
+[14:01] this panel here. If you really look at it under a certain reflection, you see a
+[14:08] series of squares. And I'm going to promise you one thing that is not the last time you see squares because the
+[14:14] the level of obsession with squares in this car, actually all Hyundai's electric cars is over the top. It's a
+[14:22] bit much on this one cuz this is a big car. For example, this little
+[14:28] strip of LED lights that are running lights, they're all squares all over. Then the actual headlights,
+[14:35] which are here, they're also squares. And then this little cornering light, that's also squares. What I love about
+[14:43] this though, this looks so sophisticated. Very cool because they have the lights inside and they have this glass on top
+[14:50] of them. It just looks very nice. That is very nice. Now, the radar sensor, if you notice the kind of the silhouette of
+[14:57] it, that's not a square. Very nice that that is not a square. And then the camera is right here, of course, a
+[15:04] square. Then these two are actually aerodynamic vents or
+[15:09] cooling vents that close when you don't need them, open when when you do, so you
+[15:15] can cool the radiators. They're u I mean, I'm imagining this is what the future is like. We're going to be so
+[15:22] fascinated by this stuff just like back in the ' 60s and '7s when cars had a hideaway headlight. That's how we used
+[15:28] to get fascinated by that, too. So, there is that. Moving away from that, actually, I'm I'm just going to say this
+[15:35] and I'm going to get in trouble for it. The hood is simple. You only have two two lines. That's about the only simple
+[15:42] panel in this car because everything else is over the top. Starting with here, let me let me just have you look
+[15:49] at this section initially. Oh, just just a section. There is so much going on
+[15:55] here. It is unbelievable. Let's dive into the details here. So, this is the
+[16:01] fender. Fender actually goes all the way down, but behind this cover. And then the
+[16:08] fender gets super skinny here visually, but it's actually all the way down and all the way down.
+[16:14] Then you have this panel which goes all the way around. Then watch the bumper.
+[16:20] The bumper actually does go down behind this as well cuz that's where this clips into. But watch this section of the
+[16:26] bumper is just this one. Then the fender has this interesting shape to it. There's a lot going on here. And I don't
+[16:33] even understand what is this. This is just this is the part that makes it too
+[16:38] much. Now the fender is raised a little bit. Not too much. Not like the back
+[16:44] one, which we'll get to in a moment. You do have this line. I actually really like this line. Except if you follow
+[16:50] this line, you see how the back comes out and it just disturbs that line in a way that I'm still trying to figure out
+[16:57] how I feel about it. Before we get to it though, the mirror, this is something with electric cars. We saw this actually
+[17:04] in the Cybert truck as well. They they curve this down, assuming something very
+[17:09] aerodynamic. It makes the mirror not very usable
+[17:14] cuz that's the part where you see blind spot or whatnot. I guess the car has blind spot monitor but still. Then the
+[17:20] door handles. So the front one you can lock unlock ones you can't. I understand
+[17:25] in this segment but these are hideaway handles
+[17:31] understandably so for aerodynamics but really dislike these because I like the
+[17:37] light. The light's pretty cool, but there are mechanical handles at least. So, there is that at least. But, uh,
+[17:44] just like these hiding handles because when they break, you're going to be struggling to open this door. That's the
+[17:50] problem. And they do tend to break from all the cars that have them. Let's go to the bisback section, though, because
+[17:56] there is interesting stuff here. First, this is significantly pushed out. You
+[18:02] notice where that curve starts? It just Yeah, it's a lot. And that's the starter
+[18:10] of this section. And there are very few cars out there that has this that
+[18:16] actually runs the entire length of the car. When we get to the back, you'll see it. We also have this little strange
+[18:21] thing which now goes into the door as well, just for good measure. I do like
+[18:28] this that this window is big. Could have been bigger if this was straight, but
+[18:33] it's a proper window. This panel is actually steel, which I really like that
+[18:40] part. Here's a charging door. Let's do the flimsy door test.
+[18:48] Half and half. Let's put it this way. So, the cool thing about this is also you
+[18:55] have some squares here showing you the overall level of charge. This door when you push it is actually
+[19:03] pushing one of these buttons. This one closes it. Pretty cool. You also have
+[19:09] four squares here for good measure. Let's look at the back cuz this is where we're divided on this. We are
+[19:17] having an argument about this one because on the one hand they started in
+[19:23] a good note and then things went south so badly. Let's talk about it. If you've
+[19:29] been around cars for a long time, forget about the rest. What does this this part of the tail light remind you of? I want
+[19:35] you to see it from this angle. The unmistakable Volvo tail light.
+[19:43] That's what that's what what we call that. Volvo is as far as I remember the only
+[19:48] company that has a curve like this that goes the length of the car. That's and that because of that the tail light have
+[19:55] that shape. Of course, taillight is full squares. The part that is much is when we wrapped
+[20:02] it around. It just feels too much. But I can understand why they did it that way
+[20:08] because if you don't do it that way, then you just copied Volvo. That's a problem. Then there are more interesting
+[20:15] stuff. I love this. You see how they they like kind of imprinted the letters
+[20:22] into the panel and then they put the silver to fill it. It just looks beautiful. There's no other way to say
+[20:28] it. And they had to leave the cameras outside. Guess they could have just
+[20:33] maybe put them down here and they're not as feels like the car is incomplete. And
+[20:38] then we have more lights and reflectors and um squares.
+[20:45] Then there's this. This is a copy paste. This is the problem when we copy and paste stuff.
+[20:52] This is just too for the logo. It takes up from your visibility in the back and there's nothing behind it. It's just
+[20:58] there to put the logo. Do have a problem with that. But what I don't have a problem with this has a bumper. It's not
+[21:05] big, but still newer cars are getting rid of their bumper. Like you have some leeway between you and the little thing
+[21:12] you may hit before you damage the back door. And that is pretty cool. Speaking of the back door, let's take a look.
+[21:18] This particular one has a power back door. pretty fast power back door.
+[21:24] They are both electric motors. Their wires are actually right here, which is
+[21:30] not the best place, but it's much better than going into a headliner. So, there is that. I got to say, for a three row
+[21:37] SUV, this is a decent space. This is actually a very good space. What makes it even better? This angle is almost
+[21:44] straight. So, you can load stuff up to here. We don't have a problem. It's not sloped where the top is useless. That is
+[21:51] pretty cool. You do have a little bit of storage here, folks. Electric cars usually will not have a lot of storage
+[21:56] here because that's where the motor and the sheet metal kind of curves up and the inverter. So, they can't put a lot.
+[22:03] There's few things here. I like these LED lights. They kind of light up both ways. There's a mysterious button here.
+[22:10] This one, it has a door. And all it does is if you press and hold
+[22:17] it, it closes the door. I'm assuming if you get trapped here, maybe you can use that to open the door. That's what the
+[22:24] intended purpose is. And then on this side, you do have some buttons to
+[22:29] release the third row. Now, the third row on this one is power. Once I can see
+[22:36] where it is. There it is. It's actually pretty fast and it's automatic. One, one button press and it
+[22:43] goes down. And look at the handle. Look at the headrest. Sorry. right dress comes down on its own. That is pretty
+[22:49] cool. Now, that is a lot of space. A little bit obstructed by the wheel well,
+[22:55] so it's narrow, but it's pretty deep and tall. And then you have two more buttons
+[23:01] to release the second row,
+[23:07] which is the best part about this is the second row is electric, which I was kind
+[23:13] of shocked to see. Not a lot of manufacturers have this. It is definitely slower than the third row,
+[23:19] but I can live with that because most manufacturers the second row in a three
+[23:25] their three row SUV is manual release. So, it'll just unlatch it and it'll close. But watch this one.
+[23:34] You can put them back up. That is actually pretty cool. And in this segment, this is kind of out of this
+[23:39] segment. You can put the third row up as well. I like I like that the nice touches. So,
+[23:46] this has a very this particular calligraphy trim has a very nice material on the headliner, but they
+[23:51] didn't continue it down here. And that's what you want because that material is not very strong.
+[23:57] This is a much better suitable material, but they didn't just put plastic and that's it. I like this piece of aluminum
+[24:05] just this car is very expensive. We'll talk about that, but it's the nice touches that I like.
+[24:14] Let's take a look at the inside of the Ionic 9. I got to say one thing. If you're shopping one of these cars, I'm
+[24:19] I'm very serious. Start with the inside, then walk your way outside, cuz the outside you just take one good look at
+[24:25] it like this is too strange for me. Make it here. Again, after a week or two, the
+[24:31] looks just another blob in the background. This is where things matter.
+[24:36] This particular one is a calligraphy trim. I just got to say one thing. Their color calligraphy trims at Hyundai, they
+[24:43] they just do them so well. The material choice and the execution here is
+[24:49] impeccable. I love it. I mean, look at you. You have some luxury cars that cost a lot more than this that doesn't have
+[24:56] this this very nice suede material all the way down the pillar. It's very nice.
+[25:02] The layout, this interior, I feel like it's very easy on the eyes. That's the
+[25:07] way I'm going to put it. It's so well laid out. I love it. Let's start with
+[25:12] the with the first thing you see when you open when you get inside the gauge and the infotainment. Usually, I don't
+[25:18] like gauges that are screen, but this one, this integration, this new style they're using these days, I love it. It
+[25:24] just looks like one continuous screen. Very aesthetically pleasing. Doesn't feel like you're just stuck an iPad
+[25:29] somewhere. Feels very nice. The gauge is a screen. It does does have decent
+[25:35] functionality. Infotainment is pretty quick, pretty featureful. Does have wireless Apple CarPlay and Android Auto.
+[25:42] I have no complaints there. Steering wheel, I love how they kept it simple. This is a car you expect them to go
+[25:47] overboard. They didn't. Very simple to operate steering wheel. Physical button,
+[25:52] everything won't take you more than 2 seconds to figure it out, honestly. Then what I love the most about this, see,
+[25:58] this is the type of electric car that you manufacturers usually get carried away and just change everything. Not
+[26:04] this one. You look at the center area. You have physical buttons for your radio controls. You have this dedicated
+[26:10] screen. All your HBAC controls are there. They're always there. I love that. Does just because it's an electric
+[26:17] car, it doesn't have to be strange. And then we go more than that. The center console, I love it. Has a wireless
+[26:23] charger in the right place, wide open. Some more controls here. Some storage.
+[26:28] But the best part about it is this is a movable center console. So you can push it all
+[26:34] the way back. If you have like a backpack or something, you can put it here or you can move it all the way
+[26:39] forward. And now you have your armrest back. I love that. Gives you options. And then you do have a lot of storage.
+[26:45] You have storage here. A storage shelf that's kind of low down. Glove box. The
+[26:51] only thing that I wish was not the case is the vents. The vents are way too small. And no matter where you point
+[26:58] them is it's always just you're almost constantly changing a direction. They're too small. That's part of the design,
+[27:04] unfortunately. That's one part where they because of the design, they had to cross into functionality and affect it.
+[27:10] The other thing is the shifter. This is Hyundai's been doing that with their electric cars. Shifter is backwards.
+[27:16] We're used to reverse being up, drive down. This one is the other way around. I can understand their theory like this
+[27:23] is forward and this is backward, but it just Why couldn't we make it like every other car? That would have been nice.
+[27:30] Start button is on the shifter stock. Initially, I looked at that, I'm like, that's strange. But as I started driving
+[27:36] it, I actually like it. I mean, it's not a big deal. It's as soon as you sit in a driver's seat, it's right in front of
+[27:41] you. Just push the button and then push the button. I actually like that. Smart driving this car. It's very comfortable,
+[27:49] very insulated. It just feels, you know, I don't know how to describe it, but you get in
+[27:55] certain cars, it just feels right. This feels right. Visibility is good. Ride is
+[28:02] refined. It's comfortable. It's not exhilarating or anything. It's pretty fast, but not that's not its ended
+[28:08] purpose. It works. And what makes me like it even more is not just a gimmicky electric car that feels nice, looks
+[28:15] nice, but it isn't functional. It's super functional, and I really like that. We just got to start here by
+[28:20] saying this is one of the biggest back doors I have seen in many cars.
+[28:28] very comfortable to enter into the second row. And there's something about the second row. I'm 5'7. This is my
+[28:33] driving position. I mean, yeah, super comfortable to a level where they
+[28:41] actually thought this might be chauffeur driven cuz this seat has controls on the side of it to move it forward. It's
+[28:48] pretty interesting. There's a lot of stuff here and this is the cool part. First, this seat is
+[28:56] power. Not only power, it has a little recliner.
+[29:03] That's actually pretty cool. In this calligraphy trim, you do have a manual shape, perfectly fine vents on the roof.
+[29:11] Here is the more interesting part. You have a giant storage bin that drawer
+[29:16] that comes out of the center console. That's actually pretty cool. And not only that, you can open this center
+[29:21] console from the back so you can have access to it as well. Do have your
+[29:27] independent climate zone here. Heated and cooled seats in the back. USBC on the seats. I really like this second
+[29:35] row. If you're going to do it and ask this kind of price, that's how you do it. Cuz I see a lot of luxury cars that
+[29:40] cost about the same this one decked out or even cost more. They didn't think of
+[29:46] everything like this one did. Let's take a look at the third row seat in the Ionic 9. I have to be honest, I didn't
+[29:51] fit here from the position we filmed in the second row seat. I had to move the seat a little bit forward. Still plenty
+[29:57] of space for the person in front. This is not a big third row seat, and this is to be expected in the segment. You only
+[30:03] have seating for two. Pretty tight here. Pretty steep angle for my thigh. However, you do have some amenities. You
+[30:10] have USBC outlets on both sides. The back of this seat is adjustable.
+[30:17] which is pretty cool. But uh entrance and exit is because of the electric
+[30:22] seat. There's a button here that just moves the seat. I got to say, you know, we we talked
+[30:29] about when we were in the outside that this was nice that you could fold the second row, but uh electric seats for
+[30:35] your kids might not be the best thing. But the coolest thing is this is a captain chair and they don't have any silly console in
+[30:42] the middle. So they can just go this way and sit in the back cuz really this third row is meant for kids. I I don't
+[30:47] think adults will sit here comfortably for a long time.
+[30:54] So the Ionic 9, it is safe to say that this is basically
+[31:00] a Hyundai Santa Fe electric down to the strange looks. This one
+[31:07] different but still strange. I got to say one thing. This is such an
+[31:12] impressive three row SUV. Truth have to be said, beyond the looks and all that, if you're shopping for a three row SUV,
+[31:19] electric, this should be at the top of your list for the following reasons. First,
+[31:24] unlike Tesla, for example, beyond the strange look and everything, it's a normal car inside. Shifter a little bit
+[31:31] strange, takes a second to get used to. Start button, I actually like the position of it, but everything else is normal. They're not shy of putting
+[31:38] physical buttons to keep your life simple. HVAC controls have a dedicated panel just for it. There's physical
+[31:44] buttons everywhere. Things are normal. It's just a normal car. Normal handles. Yeah, the outside has a strange handles,
+[31:49] but on the inside, everything is normal. It's a normal car. That's the best part about it. But it's not shy of modern
+[31:56] technology cuz it has a lot, but not gimmicks. I like that. This is This is
+[32:02] what people want. Nice modern touches, not gimmicks. This does not have a lot of them. and it has everything going for
+[32:09] it to have every single given in the planet. I really commend that. But more importantly than all that, the electric
+[32:15] system behind the scenes. I really like that Hyundai is moving in the right direction and it shows in this folks.
+[32:22] This is a giant behemoth. Might not look like it, but it is giant. This is a three row SUV with space in the back.
+[32:29] It's pretty big car, but because of the improvements of the electric system, all the three potential configurations you
+[32:35] can have this at, they get over 300 miles of range and they hold up their range pretty decent. That's pretty cool.
+[32:43] Now, the only two two downsides, nothing is perfect in life. First, the looks. I
+[32:49] feel like just like the Santa Fe, this is one of those cars when you go check one out if you're interested in it.
+[32:55] Close your eyes, walk inside of it, see the inside, then try to live with the outside. Cuz if you can get past the
+[33:01] strange looks, especially in the back, it's actually a pretty decent SUV. That's the truth. The second thing is
+[33:07] after you have gotten past the looks, especially in this particular color,
+[33:12] yeah, not my favorite color or favorite looking car, the price. There's a
+[33:18] problem there. At the lowest trim, you're just under $60,000. At the
+[33:24] highest trim with some options, you're almost at $80,000. Now, you are seriously in the territory
+[33:30] of some serious electric cars or cars in general. That's the only problem. I
+[33:37] mean, this calligraphy trim is beautiful. This is out of this segment. Hyundai's always done the calligraphy
+[33:43] trim well, but now the price. Usually we say, "But the price justifies it." Well,
+[33:49] this one is pretty expensive. There's pros, there's cons. I'll leave
+[33:54] the decision to you, but in my book, they're moving in the right direction. I would like to congratulate Hyundai for
+[34:00] taking the electric system in the right direction. I love it. The only thing is 100% of the buyers of this car would not
+[34:06] have cared if it didn't look that strange, especially in the back. Just small note, folks. I hope this video was
+[34:13] helpful, informative. I hope you learned something new. If you like it, consider giving it a thumbs up. If you're not a subscriber, consider subscribing to the
+[34:19] channel. Check out some my other videos. Until the next video, folks, may the Lord bless you and keep you.
