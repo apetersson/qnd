@@ -1,4 +1,3 @@
-# .github/workflows/deploy-pmp.yml
 name: Deploy Riot Calculator
 
 on:
