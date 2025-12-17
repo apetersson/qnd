@@ -57,6 +57,11 @@ const COUNTRY_MAP: Record<string, string> = {
   "Canada 2015": "CAN",
   "Singapore 2000s": "SGP",
   "Switzerland 2024": "CHE",
+  "Turkey 2025": "TUR",
+  "Egypt 2023": "EGY",
+  "Ghana 2023": "GHA",
+  "Poland 2023": "POL",
+  "United Kingdom 2025": "GBR",
 };
 
 const INDICATOR_LABELS: Record<Indicator, keyof Entry> = {

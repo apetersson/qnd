@@ -22,6 +22,7 @@ import TimelineIcon from "@mui/icons-material/Timeline";
 import BoltIcon from "@mui/icons-material/Bolt";
 import YAML from "yaml";
 import rawDataset from "../data/protests.yaml?raw";
+import { computeProbability } from "./lib/model";
 
 type Preset = { name: string; year: number; gini: number; inflation: number; unemployment: number; label: 0 | 1 };
 type DatasetFile = { positives: Omit<Preset, "label">[]; negatives: Omit<Preset, "label">[] };
@@ -80,6 +81,28 @@ const weightPresets: WeightPreset[] = [
     betaInflation: 1.298661,
     betaUnemployment: 0.62333,
   },
+  {
+    label: "Calibrated WB weights",
+    intercept: -9.909574,
+    betaGini: 0.159225,
+    betaInflation: 1.234946,
+    betaUnemployment: 0.578736,
+  },
+
+
+  /*{
+    label: "World Bank weights",
+    intercept: -0.928731,
+    betaGini: 0.442742,
+    betaInflation: -0.018174,
+    betaUnemployment: 0.289123,
+  },*/
+/*  Samples: 42 (30 positives / 12 negatives)
+β₀ (intercept): -0.928731
+β_gini:         0.442742
+β_inflation:    -0.018174
+β_unemployment: 0.289123*/
+
 ];
 
 const RiotProbabilityCalculator = () => {
@@ -113,21 +136,15 @@ const RiotProbabilityCalculator = () => {
   const [unemployment, setUnemployment] = useState(10);
   const [probability, setProbability] = useState<number>(0);
 
-  const computeProbability = (
-    g: number,
-    i: number,
-    u: number,
-    b0: number,
-    bG: number,
-    bI: number,
-    bU: number
-  ) => {
-    const logit = b0 + bG * g + bI * i + bU * u;
-    return 1 / (1 + Math.exp(-logit));
-  };
-
   useEffect(() => {
-    setProbability(computeProbability(gini, inflation, unemployment, intercept, betaGini, betaInflation, betaUnemployment));
+    setProbability(
+      computeProbability(gini, inflation, unemployment, {
+        intercept,
+        betaGini,
+        betaInflation,
+        betaUnemployment,
+      })
+    );
   }, [gini, inflation, unemployment, intercept, betaGini, betaInflation, betaUnemployment]);
 
   const risk = useMemo(() => pickRiskBand(probability), [probability]);
@@ -400,15 +417,12 @@ const RiotProbabilityCalculator = () => {
                       </Stack>
                       <Grid container spacing={1.2}>
                         {entries.map((example, idx) => {
-                          const prob = computeProbability(
-                            example.gini,
-                            example.inflation,
-                            example.unemployment,
+                          const prob = computeProbability(example.gini, example.inflation, example.unemployment, {
                             intercept,
                             betaGini,
                             betaInflation,
-                            betaUnemployment
-                          );
+                            betaUnemployment,
+                          });
                           const band = pickRiskBand(prob);
                           const labelChip =
                             example.label === 1

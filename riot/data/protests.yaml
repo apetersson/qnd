@@ -185,3 +185,28 @@ negatives:
     gini: 0.331
     inflation: 1.062
     unemployment: 4.11
+#  - name: Turkey 2025
+#    year: 2025
+#    gini: 0.41
+#    inflation: 58.506
+#    unemployment: 8.449
+#  - name: Egypt 2023
+#    year: 2023
+#    gini: 0.32
+#    inflation: 33.885
+#    unemployment: 7.334
+#  - name: Ghana 2023
+#    year: 2023
+#    gini: 0.43
+#    inflation: 38.107
+#    unemployment: 3.063
+#  - name: Poland 2023
+#    year: 2023
+#    gini: 0.285
+#    inflation: 11.529
+#    unemployment: 2.743
+#  - name: United Kingdom 2025
+#    year: 2025
+#    gini: 0.35
+#    inflation: 3.272
+#    unemployment: 4.111
