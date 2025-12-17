@@ -26,6 +26,14 @@ import rawDataset from "../data/protests.yaml?raw";
 type Preset = { name: string; year: number; gini: number; inflation: number; unemployment: number; label: 0 | 1 };
 type DatasetFile = { positives: Omit<Preset, "label">[]; negatives: Omit<Preset, "label">[] };
 
+type WeightPreset = {
+  label: string;
+  intercept: number;
+  betaGini: number;
+  betaInflation: number;
+  betaUnemployment: number;
+};
+
 type RiskBand = {
   label: string;
   max: number;
@@ -50,6 +58,30 @@ const pickRiskBand = (prob: number): RiskBand => {
   return match ?? riskBands[riskBands.length - 1];
 };
 
+const weightPresets: WeightPreset[] = [
+  {
+    label: "Original (core)",
+    intercept: -8.089,
+    betaGini: 0.071,
+    betaInflation: 0.421,
+    betaUnemployment: 1.212,
+  },
+  {
+    label: "Updated (full YAML)",
+    intercept: -6.961498,
+    betaGini: 0.167157,
+    betaInflation: 1.361028,
+    betaUnemployment: 0.880688,
+  },
+  {
+    label: "World Bank weights",
+    intercept: -5.311394,
+    betaGini: 0.203852,
+    betaInflation: 1.298661,
+    betaUnemployment: 0.62333,
+  },
+];
+
 const RiotProbabilityCalculator = () => {
   const dataset = useMemo<Preset[]>(() => {
     const parsed = YAML.parse(rawDataset) as DatasetFile;
@@ -70,10 +102,10 @@ const RiotProbabilityCalculator = () => {
   }, [dataset]);
 
   // Betas
-  const [intercept, setIntercept] = useState(-8.089);
-  const [betaGini, setBetaGini] = useState(0.071);
-  const [betaInflation, setBetaInflation] = useState(0.421);
-  const [betaUnemployment, setBetaUnemployment] = useState(1.212);
+  const [intercept, setIntercept] = useState(-5.311394);
+  const [betaGini, setBetaGini] = useState(0.203852);
+  const [betaInflation, setBetaInflation] = useState(1.298661);
+  const [betaUnemployment, setBetaUnemployment] = useState(0.62333);
 
   // Features
   const [gini, setGini] = useState(0.3);
@@ -104,6 +136,13 @@ const RiotProbabilityCalculator = () => {
     setGini(preset.gini);
     setInflation(preset.inflation);
     setUnemployment(preset.unemployment);
+  };
+
+  const applyWeightPreset = (wp: WeightPreset) => {
+    setIntercept(wp.intercept);
+    setBetaGini(wp.betaGini);
+    setBetaInflation(wp.betaInflation);
+    setBetaUnemployment(wp.betaUnemployment);
   };
 
   const inputField = (
@@ -196,9 +235,27 @@ const RiotProbabilityCalculator = () => {
                 <Stack direction="row" spacing={1.5} alignItems="center">
                   <CalculateIcon sx={{ color: "#38bdf8" }} />
                   <Typography variant="h5" fontWeight={700}>
-                    Configure Model Weights
+                    Binary Logistic Regression Model Weights
                   </Typography>
                   <Chip label="Logit" size="small" variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.2)", color: "#e2e8f0" }} />
+                </Stack>
+                <Stack direction="row" spacing={1} flexWrap="wrap">
+                  {weightPresets.map((wp) => (
+                    <Button
+                      key={wp.label}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => applyWeightPreset(wp)}
+                      sx={{
+                        textTransform: "none",
+                        borderColor: "rgba(255,255,255,0.2)",
+                        color: "#e2e8f0",
+                        "&:hover": { borderColor: "#38bdf8" },
+                      }}
+                    >
+                      {wp.label}
+                    </Button>
+                  ))}
                 </Stack>
                 <Grid container spacing={1.5}>
                   <Grid size={{ xs: 12, sm: 6 }}>

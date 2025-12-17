@@ -1,189 +1,187 @@
 positives:
-  - name: "Argentina Crisis 2001"
+  - name: Argentina Crisis 2001
     year: 2001
-    gini: 0.49
+    gini: 0.533
     inflation: 50
-    unemployment: 16
-  - name: "Hong Kong Protests 2019"
+    unemployment: 17.32
+  - name: Hong Kong Protests 2019
     year: 2019
     gini: 0.53
-    inflation: 3
-    unemployment: 8
-  - name: "Chile Protests 2019"
+    inflation: 2.883
+    unemployment: 2.917
+  - name: Chile Protests 2019
     year: 2019
     gini: 0.49
-    inflation: 3
-    unemployment: 7
-  - name: "Watts Riots 1965"
+    inflation: 2.558
+    unemployment: 7.493
+  - name: Watts Riots 1965
     year: 1965
-    gini: 0.356
-    inflation: 1.5
+    gini: 0.368
+    inflation: 1.585
     unemployment: 34
-  - name: "Detroit Riots 1967"
+  - name: Detroit Riots 1967
     year: 1967
-    gini: 0.348
-    inflation: 3
+    gini: 0.369
+    inflation: 2.773
     unemployment: 12
-  - name: "Newark Riots 1967"
+  - name: Newark Riots 1967
     year: 1967
-    gini: 0.348
-    inflation: 3
+    gini: 0.369
+    inflation: 2.773
     unemployment: 20
-  - name: "May 1968 Protests"
+  - name: May 1968 Protests
     year: 1968
     gini: 0.38
-    inflation: 5
+    inflation: 4.543
     unemployment: 2
-  - name: "NYC Blackout Riot 1977"
+  - name: NYC Blackout Riot 1977
     year: 1977
     gini: 0.355
-    inflation: 6.5
+    inflation: 6.502
     unemployment: 12
-  - name: "Brixton Uprising 1981"
+  - name: Brixton Uprising 1981
     year: 1981
-    gini: 0.33
-    inflation: 11
+    gini: 0.297
+    inflation: 11.877
     unemployment: 25
-  - name: "LA Riots 1992"
+  - name: LA Riots 1992
     year: 1992
-    gini: 0.40
-    inflation: 3
-    unemployment: 13
-  - name: "Banlieue Riots 2005"
+    gini: 0.384
+    inflation: 3.029
+    unemployment: 7.5
+  - name: Banlieue Riots 2005
     year: 2005
-    gini: 0.32
-    inflation: 2
-    unemployment: 20
-  - name: "Greek Riots 2008"
+    gini: 0.298
+    inflation: 1.746
+    unemployment: 8.882
+  - name: Greek Riots 2008
     year: 2008
-    gini: 0.33
-    inflation: 4
-    unemployment: 20
-  - name: "England Riots 2011"
+    gini: 0.336
+    inflation: 4.153
+    unemployment: 7.664
+  - name: England Riots 2011
     year: 2011
-    gini: 0.34
-    inflation: 5
-    unemployment: 20
-  - name: "Yellow Vests 2018"
+    gini: 0.332
+    inflation: 3.856
+    unemployment: 8.169
+  - name: Yellow Vests 2018
     year: 2018
-    gini: 0.29
-    inflation: 2
-    unemployment: 9
-  - name: "Chile Protests 2019 (alt)"
+    gini: 0.324
+    inflation: 1.851
+    unemployment: 9.018
+  - name: Chile Protests 2019 (alt)
     year: 2019
     gini: 0.47
-    inflation: 2.5
-    unemployment: 7
-  - name: "People Power Revolution 1986"
+    inflation: 2.558
+    unemployment: 7.493
+  - name: People Power Revolution 1986
     year: 1986
     gini: 0.459
-    inflation: 50
+    inflation: 1.148
     unemployment: 12.6
-  - name: "Occupy Wall Street 2011"
+  - name: Occupy Wall Street 2011
     year: 2011
-    gini: 0.41
-    inflation: 3
-    unemployment: 9
-  - name: "Euromaidan 2013-2014"
+    gini: 0.412
+    inflation: 3.157
+    unemployment: 8.949
+  - name: Euromaidan 2013-2014
     year: 2013
-    gini: 0.256
-    inflation: 0.5
-    unemployment: 7.5
-  - name: "Gezi Park Protests 2013"
+    gini: 0.246
+    inflation: -0.239
+    unemployment: 7.17
+  - name: Gezi Park Protests 2013
     year: 2013
-    gini: 0.40
-    inflation: 7.5
-    unemployment: 8.7
-  - name: "Umbrella Movement 2014"
+    gini: 0.402
+    inflation: 7.493
+    unemployment: 9.713
+  - name: Umbrella Movement 2014
     year: 2014
     gini: 0.537
-    inflation: 4.4
-    unemployment: 3.2
-  - name: "Black Lives Matter 2020"
+    inflation: 4.424
+    unemployment: 3.296
+  - name: Black Lives Matter 2020
     year: 2020
-    gini: 0.415
-    inflation: 1.2
-    unemployment: 14.7
-  - name: "Hong Kong Protests 2019-2020"
+    gini: 0.4
+    inflation: 1.234
+    unemployment: 8.055
+  - name: Hong Kong Protests 2019-2020
     year: 2019
     gini: 0.539
-    inflation: 2.9
-    unemployment: 2.9
-  - name: "Belarusian Protests 2020"
+    inflation: 2.883
+    unemployment: 2.917
+  - name: Belarusian Protests 2020
     year: 2020
-    gini: 0.275
-    inflation: 5.5
-    unemployment: 4.6
-  - name: "Myanmar Protests 2021"
+    gini: 0.244
+    inflation: 5.548
+    unemployment: 4.049
+  - name: Myanmar Protests 2021
     year: 2021
     gini: 0.307
     inflation: 6.1
-    unemployment: 1.6
-  - name: "Sri Lankan Protests 2022"
+    unemployment: 4.34
+  - name: Sri Lankan Protests 2022
     year: 2022
     gini: 0.398
-    inflation: 6
-    unemployment: 5.1
-  - name: "Kazakh Unrest 2022"
+    inflation: 49.721
+    unemployment: 4.528
+  - name: Kazakh Unrest 2022
     year: 2022
     gini: 0.275
-    inflation: 8.4
-    unemployment: 4.9
-  - name: "Sierra Leone Protests 2022"
+    inflation: 15.028
+    unemployment: 4.86
+  - name: Sierra Leone Protests 2022
     year: 2022
     gini: 0.357
-    inflation: 38.5
-    unemployment: 4.3
-  - name: "Malawi Protests 2025"
+    inflation: 27.208
+    unemployment: 3.175
+  - name: Malawi Protests 2025
     year: 2025
     gini: 0.447
-    inflation: 28.5
-    unemployment: 6.8
-  - name: "Lebanon Protests 2019"
+    inflation: 32.18
+    unemployment: 5.045
+  - name: Lebanon Protests 2019
     year: 2019
     gini: 0.318
-    inflation: 2.9
-    unemployment: 11.3
-  - name: "Tunisia Uprising 2010"
+    inflation: 3.005
+    unemployment: 11.301
+  - name: Tunisia Uprising 2010
     year: 2010
     gini: 0.385
-    inflation: 3.34
-    unemployment: 13.0
-  # Spain 2011 (Indignados) omitted until inflation value is verified
-
+    inflation: 3.339
+    unemployment: 13.049
 negatives:
-  - name: "Norway 2010s"
+  - name: Norway 2010s
     year: 2015
-    gini: 0.25
-    inflation: 2
-    unemployment: 3
-  - name: "Japan 1980s"
+    gini: 0.275
+    inflation: 2.171
+    unemployment: 4.296
+  - name: Japan 1980s
     year: 1985
     gini: 0.24
-    inflation: 2
+    inflation: 2.032
     unemployment: 2
-  - name: "Germany 2010s"
+  - name: Germany 2010s
     year: 2015
-    gini: 0.29
-    inflation: 1
-    unemployment: 4
-  - name: "Denmark 2015"
+    gini: 0.317
+    inflation: 0.514
+    unemployment: 4.612
+  - name: Denmark 2015
     year: 2015
-    gini: 0.28
-    inflation: 1.5
-    unemployment: 4
-  - name: "Canada 2015"
+    gini: 0.282
+    inflation: 0.452
+    unemployment: 6.278
+  - name: Canada 2015
     year: 2015
-    gini: 0.31
-    inflation: 1.8
-    unemployment: 5
-  - name: "Singapore 2000s"
+    gini: 0.337
+    inflation: 1.125
+    unemployment: 6.945
+  - name: Singapore 2000s
     year: 2005
-    gini: 0.40
-    inflation: 2.5
-    unemployment: 3
-  - name: "Switzerland 2024"
+    gini: 0.4
+    inflation: 0.425
+    unemployment: 5.59
+  - name: Switzerland 2024
     year: 2024
     gini: 0.331
-    inflation: 1.06
+    inflation: 1.062
     unemployment: 4.11
