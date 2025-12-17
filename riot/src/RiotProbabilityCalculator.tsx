@@ -20,8 +20,11 @@ import CalculateIcon from "@mui/icons-material/Calculate";
 import PublicIcon from "@mui/icons-material/Public";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import BoltIcon from "@mui/icons-material/Bolt";
+import YAML from "yaml";
+import rawDataset from "../data/protests.yaml?raw";
 
-type Preset = { name: string; gini: number; inflation: number; unemployment: number };
+type Preset = { name: string; year: number; gini: number; inflation: number; unemployment: number; label: 0 | 1 };
+type DatasetFile = { positives: Omit<Preset, "label">[]; negatives: Omit<Preset, "label">[] };
 
 type RiskBand = {
   label: string;
@@ -38,39 +41,6 @@ const riskBands: RiskBand[] = [
   { label: "Severe", max: 1, color: "#ef4444", glow: "rgba(239,68,68,0.18)", tone: "#fee2e2" },
 ];
 
-const presets: Preset[] = [
-  { name: "Watts Riots 1965", gini: 0.48, inflation: 1.5, unemployment: 34 },
-  { name: "Detroit Riots 1967", gini: 0.45, inflation: 2.8, unemployment: 12 },
-  { name: "Newark Riots 1967", gini: 0.45, inflation: 3.6, unemployment: 20 },
-  { name: "May 1968 Protests", gini: 0.27, inflation: 5, unemployment: 2 },
-  { name: "NYC Blackout Riot 1977", gini: 0.5, inflation: 6.5, unemployment: 65 },
-  { name: "Brixton Uprising 1981", gini: 0.35, inflation: 11, unemployment: 13 },
-  { name: "Poll Tax Riot 1990", gini: 0.33, inflation: 9.5, unemployment: 7 },
-  { name: "Los Angeles Riots 1992", gini: 0.45, inflation: 3, unemployment: 14 },
-  { name: "Argentine Crisis 2001", gini: 0.55, inflation: 0, unemployment: 20 },
-  { name: "Banlieue Riots 2005", gini: 0.29, inflation: 2, unemployment: 20 },
-  { name: "Greek Riots 2008", gini: 0.33, inflation: 4, unemployment: 20 },
-  { name: "England Riots 2011", gini: 0.34, inflation: 5, unemployment: 20 },
-  { name: "Yellow Vests 2018–19", gini: 0.29, inflation: 2, unemployment: 9 },
-  { name: "Chile Revolt 2019", gini: 0.47, inflation: 2, unemployment: 7 },
-  { name: "Stable - Norway 2010s", gini: 0.25, inflation: 2, unemployment: 3 },
-  { name: "Stable - Japan 1980s", gini: 0.24, inflation: 2, unemployment: 2 },
-  { name: "Stable - Germany 2010s", gini: 0.29, inflation: 1, unemployment: 4 },
-  { name: "People Power Revolution 1986", gini: 0.459, inflation: 50, unemployment: 12.6 },
-  { name: "Occupy Wall Street 2011", gini: 0.41, inflation: 3, unemployment: 9 },
-  { name: "Euromaidan 2013-2014", gini: 0.256, inflation: 0.5, unemployment: 7.5 },
-  { name: "Gezi Park Protests 2013", gini: 0.4, inflation: 7.5, unemployment: 8.7 },
-  { name: "Umbrella Movement 2014", gini: 0.537, inflation: 4.4, unemployment: 3.2 },
-  { name: "Black Lives Matter 2020", gini: 0.415, inflation: 1.2, unemployment: 14.7 },
-  { name: "Hong Kong Protests 2019-2020", gini: 0.539, inflation: 2.9, unemployment: 2.9 },
-  { name: "Belarusian Protests 2020", gini: 0.275, inflation: 5.5, unemployment: 4.6 },
-  { name: "Myanmar Protests 2021", gini: 0.307, inflation: 6.1, unemployment: 1.6 },
-  { name: "Sri Lankan Protests 2022", gini: 0.398, inflation: 6, unemployment: 5.1 },
-  { name: "Kazakh Unrest 2022", gini: 0.275, inflation: 8.4, unemployment: 4.9 },
-  { name: "Sierra Leone Protests 2022", gini: 0.357, inflation: 38.5, unemployment: 4.3 },
-  { name: "Malawi Protests 2025", gini: 0.447, inflation: 28.5, unemployment: 6.8 },
-];
-
 const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
 const clampNumber = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -81,6 +51,24 @@ const pickRiskBand = (prob: number): RiskBand => {
 };
 
 const RiotProbabilityCalculator = () => {
+  const dataset = useMemo<Preset[]>(() => {
+    const parsed = YAML.parse(rawDataset) as DatasetFile;
+    const combined: Preset[] = [
+      ...parsed.positives.map((p) => ({ ...p, label: 1 as const })),
+      ...parsed.negatives.map((n) => ({ ...n, label: 0 as const })),
+    ];
+    return combined.sort((a, b) => a.year - b.year);
+  }, []);
+
+  const groupedByYear = useMemo(() => {
+    const groups = new Map<number, Preset[]>();
+    dataset.forEach((p) => {
+      if (!groups.has(p.year)) groups.set(p.year, []);
+      groups.get(p.year)!.push(p);
+    });
+    return Array.from(groups.entries()).sort(([a], [b]) => b - a);
+  }, [dataset]);
+
   // Betas
   const [intercept, setIntercept] = useState(-8.089);
   const [betaGini, setBetaGini] = useState(0.071);
@@ -345,44 +333,64 @@ const RiotProbabilityCalculator = () => {
                     <Chip label="Tap to apply" size="small" variant="outlined" />
                   </Tooltip>
                 </Stack>
-                <Grid container spacing={1.2}>
-                  {presets.map((example, idx) => {
-                    const prob = computeProbability(
-                      example.gini,
-                      example.inflation,
-                      example.unemployment,
-                      intercept,
-                      betaGini,
-                      betaInflation,
-                      betaUnemployment
-                    );
-                    const band = pickRiskBand(prob);
-                    return (
-                      <Grid size={{ xs: 12, sm: 6, md: 6 }} key={idx}>
-                        <Button
-                          fullWidth
-                          onClick={() => handlePreset(example)}
-                          sx={{
-                            justifyContent: "space-between",
-                            color: "#e2e8f0",
-                            textTransform: "none",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            background: `linear-gradient(120deg, ${band.glow}, rgba(255,255,255,0.04))`,
-                            "&:hover": { borderColor: band.color, backgroundColor: "rgba(255,255,255,0.08)" },
-                          }}
-                        >
-                          <Stack alignItems="flex-start">
-                            <Typography fontWeight={700}>{example.name}</Typography>
-                            <Typography variant="body2" color="rgba(226,232,240,0.8)">
-                              {formatPercent(prob)}
-                            </Typography>
-                          </Stack>
-                          <Chip label={band.label} size="small" sx={{ backgroundColor: band.glow, color: band.color }} />
-                        </Button>
+                <Stack spacing={1.5}>
+                  {groupedByYear.map(([year, entries]) => (
+                    <Stack key={year} spacing={0.75}>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <Divider sx={{ flex: 1, borderColor: "rgba(255,255,255,0.08)" }} />
+                        <Chip label={year} size="small" sx={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#e2e8f0" }} />
+                        <Divider sx={{ flex: 1, borderColor: "rgba(255,255,255,0.08)" }} />
+                      </Stack>
+                      <Grid container spacing={1.2}>
+                        {entries.map((example, idx) => {
+                          const prob = computeProbability(
+                            example.gini,
+                            example.inflation,
+                            example.unemployment,
+                            intercept,
+                            betaGini,
+                            betaInflation,
+                            betaUnemployment
+                          );
+                          const band = pickRiskBand(prob);
+                          const labelChip =
+                            example.label === 1
+                              ? { text: "Protest", bg: band.glow, color: band.color }
+                              : { text: "Stable", bg: "rgba(255,255,255,0.06)", color: "#e2e8f0" };
+
+                          return (
+                            <Grid size={{ xs: 12, sm: 6, md: 6 }} key={`${year}-${idx}-${example.name}`}>
+                              <Button
+                                fullWidth
+                                onClick={() => handlePreset(example)}
+                                sx={{
+                                  justifyContent: "space-between",
+                                  color: "#e2e8f0",
+                                  textTransform: "none",
+                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  background: `linear-gradient(120deg, ${band.glow}, rgba(255,255,255,0.04))`,
+                                  "&:hover": { borderColor: band.color, backgroundColor: "rgba(255,255,255,0.08)" },
+                                }}
+                              >
+                                <Stack alignItems="flex-start">
+                                  <Typography fontWeight={700}>{example.name}</Typography>
+                                  <Typography variant="body2" color="rgba(226,232,240,0.8)">
+                                    {formatPercent(prob)}
+                                  </Typography>
+                                </Stack>
+                                <Chip
+                                  label={labelChip.text}
+                                  size="small"
+                                  sx={{ backgroundColor: labelChip.bg, color: labelChip.color }}
+                                />
+                              </Button>
+                            </Grid>
+                          );
+                        })}
                       </Grid>
-                    );
-                  })}
-                </Grid>
+                    </Stack>
+                  ))}
+                </Stack>
               </Paper>
             </Stack>
           </Grid>
