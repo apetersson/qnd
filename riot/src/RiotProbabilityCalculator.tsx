@@ -60,21 +60,7 @@ const pickRiskBand = (prob: number): RiskBand => {
 };
 
 const weightPresets: WeightPreset[] = [
-  {
-    label: "Original (core)",
-    intercept: -8.089,
-    betaGini: 0.071,
-    betaInflation: 0.421,
-    betaUnemployment: 1.212,
-  },
-  {
-    label: "Updated (full YAML)",
-    intercept: -6.961498,
-    betaGini: 0.167157,
-    betaInflation: 1.361028,
-    betaUnemployment: 0.880688,
-  },
-  {
+    {
     label: "World Bank weights",
     intercept: -5.311394,
     betaGini: 0.203852,
@@ -87,6 +73,13 @@ const weightPresets: WeightPreset[] = [
     betaGini: 0.159225,
     betaInflation: 1.234946,
     betaUnemployment: 0.578736,
+  },
+  {
+    label: "Calibrated Local weights",
+    intercept: -10.745083,
+    betaGini: 0.160592,
+    betaInflation: 1.207437,
+    betaUnemployment: 0.560887,
   },
 
 

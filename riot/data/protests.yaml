@@ -18,17 +18,17 @@ positives:
     year: 1965
     gini: 0.368
     inflation: 1.585
-    unemployment: 34
+    unemployment: 30 # local youth unemployment ~25-30%
   - name: Detroit Riots 1967
     year: 1967
     gini: 0.369
     inflation: 2.773
-    unemployment: 12
+    unemployment: 25 # youth unemployment ~25-30%
   - name: Newark Riots 1967
     year: 1967
     gini: 0.369
     inflation: 2.773
-    unemployment: 20
+    unemployment: 37.8 # youth unemployment (Hughes Commission)
   - name: May 1968 Protests
     year: 1968
     gini: 0.38
@@ -43,12 +43,12 @@ positives:
     year: 1981
     gini: 0.297
     inflation: 11.877
-    unemployment: 25
+    unemployment: 55 # black youth unemployment exceeded 50%
   - name: LA Riots 1992
     year: 1992
     gini: 0.384
     inflation: 3.029
-    unemployment: 7.5
+    unemployment: 21 # South Central LA unemployment ~20-21%
   - name: Banlieue Riots 2005
     year: 2005
     gini: 0.298
@@ -63,7 +63,7 @@ positives:
     year: 2011
     gini: 0.332
     inflation: 3.856
-    unemployment: 8.169
+    unemployment: 34 # Hackney youth unemployment ~34%
   - name: Yellow Vests 2018
     year: 2018
     gini: 0.324
@@ -103,7 +103,7 @@ positives:
     year: 2020
     gini: 0.4
     inflation: 1.234
-    unemployment: 8.055
+    unemployment: 13
   - name: Hong Kong Protests 2019-2020
     year: 2019
     gini: 0.539
