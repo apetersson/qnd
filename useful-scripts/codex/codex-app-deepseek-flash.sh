@@ -6,7 +6,7 @@ set -euo pipefail
 # and uses a separate proxy port (18088) so both Pro and Flash can run side by side.
 #
 # Env:
-#   DEEPSEEK_API_KEY or OPENAI_API_KEY (required)
+#   DEEPSEEK_API_KEY (required)
 
 # Wrapper that launches codex-app-deepseek.sh with deepseek-v4-flash
 export CODEX_DEEPSEEK_MODEL="deepseek-v4-flash"

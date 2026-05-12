@@ -5,16 +5,16 @@ set -euo pipefail
 # Starts the proxy automatically, fetches model catalog, writes config to /tmp/.
 #
 # Env:
-#   DEEPSEEK_API_KEY or OPENAI_API_KEY (required)
+#   DEEPSEEK_API_KEY (required)
 #   CODEX_DEEPSEEK_MODEL     (default: deepseek-v4-pro)
 #   CODEX_DEEPSEEK_PROXY_PORT (default: 18087)
 #   CODEX_DEEPSEEK_UPSTREAM_BASE_URL (default: https://api.deepseek.com/v1)
 
 # DeepSeek configuration
-# Uses DEEPSEEK_API_KEY from env, falls back to OPENAI_API_KEY.
-API_KEY="${DEEPSEEK_API_KEY:-${OPENAI_API_KEY:-}}"
+# Requires DEEPSEEK_API_KEY.
+API_KEY="${DEEPSEEK_API_KEY:-}"
 if [ -z "$API_KEY" ]; then
-  echo "ERROR: Neither DEEPSEEK_API_KEY nor OPENAI_API_KEY is set in the environment." >&2
+  echo "ERROR: DEEPSEEK_API_KEY is not set in the environment." >&2
   exit 1
 fi
 
