@@ -1,0 +1,27 @@
+#!/bin/bash
+# whisper.cpp wrapper for Apple Silicon with Core ML auto-detect
+# Generates txt, srt, vtt into a subdir next to the input file.
+
+MODEL="$HOME/Documents/code/whisper.cpp/models/ggml-large-v3.bin"
+BIN="$HOME/Documents/code/whisper.cpp/build/bin/whisper-cli"
+
+if [ $# -lt 1 ]; then
+  echo "Usage: whisper-ane <audiofile> [extra whisper-cli args]"
+  exit 1
+fi
+
+INPUT="$1"
+shift
+
+BASENAME="$(basename "$INPUT" | sed 's/\.[^.]*$//')"
+PARENTDIR="$(dirname "$INPUT")"
+OUTDIR="$PARENTDIR/$BASENAME"
+mkdir -p "$OUTDIR"
+
+exec "$BIN" \
+  -t 8 \
+  -m "$MODEL" \
+  -otxt -osrt -ovtt \
+  -of "$OUTDIR/$BASENAME" \
+  "$INPUT" "$@"
+
