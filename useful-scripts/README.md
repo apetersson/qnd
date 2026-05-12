@@ -25,7 +25,7 @@ These scripts launch [Codex](https://codex.ai) with different model backends.
 
 ### Environment Variables (Codex scripts)
 
-- **DeepSeek**: `DEEPSEEK_API_KEY` (falls back to `OPENAI_API_KEY`), `CODEX_DEEPSEEK_MODEL`, `CODEX_DEEPSEEK_PROXY_PORT`, `CODEX_DEEPSEEK_UPSTREAM_BASE_URL`
+- **DeepSeek**: `DEEPSEEK_API_KEY` (required), `CODEX_DEEPSEEK_MODEL`, `CODEX_DEEPSEEK_PROXY_PORT`, `CODEX_DEEPSEEK_UPSTREAM_BASE_URL`
 - **Local**: `CODEX_LOCAL_BASE_URL`, `CODEX_LOCAL_MODEL`, `OPENAI_API_KEY`
 - **Debug**: `CODEX_DEEPSEEK_DEBUG_TOOLS=1` logs tool names in the proxy
 
@@ -33,8 +33,7 @@ These scripts launch [Codex](https://codex.ai) with different model backends.
 
 | Script | Purpose |
 |---|---|
-| `pi-update.sh` | Update the old `@mariozechner/pi-coding-agent` npm package. Temporarily disables `min-release-age` so the latest version is fetched. |
-| `pi-update-new.sh` | Migrate from `@mariozechner/pi-coding-agent` to `@earendil-works/pi-coding-agent`. Uninstalls the old package, installs the new one. |
+| `pi-update.sh` | Migrate from `@mariozechner/pi-coding-agent` to `@earendil-works/pi-coding-agent`. Uninstalls the old package, installs the new one. Temporarily disables `min-release-age` to fetch the latest version. |
 
 ## ComfyUI (`comfyui/`)
 

@@ -9,7 +9,7 @@
  *   DEEPSEEK_API_KEY or OPENAI_API_KEY (required)
  *   DEEPSEEK_BASE_URL    (default: https://api.deepseek.com/v1)
  *   CODEX_DEEPSEEK_PROXY_HOST (default: 127.0.0.1)
- *   CODEX_DEEPSEEK_PROXY_PORT (default: 18087)
+ *   CODEX_DEEPSEEK_PROXY_PORT (default: 18087, scripts override to 18087/18088 via env)
  *   CODEX_DEEPSEEK_DEBUG_TOOLS=1  logs tool names for debugging
  */
 
@@ -19,7 +19,8 @@ const PROXY_VERSION = '2026-05-08-mcp-namespace-2';
 const apiKey = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY;
 const upstreamBaseUrl = (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1').replace(/\/$/, '');
 const host = process.env.CODEX_DEEPSEEK_PROXY_HOST || '127.0.0.1';
-const port = Number(process.env.CODEX_DEEPSEEK_PROXY_PORT || 18081);
+// Default matches codex-app-deepseek.sh (18087); flash variant overrides to 18088.
+const port = Number(process.env.CODEX_DEEPSEEK_PROXY_PORT || 18087);
 
 if (!apiKey) {
   console.error('Missing DEEPSEEK_API_KEY or OPENAI_API_KEY');

@@ -10,8 +10,6 @@ set -euo pipefail
 #   CODEX_DEEPSEEK_PROXY_PORT (default: 18087)
 #   CODEX_DEEPSEEK_UPSTREAM_BASE_URL (default: https://api.deepseek.com/v1)
 
-# DeepSeek configuration
-# Requires DEEPSEEK_API_KEY.
 API_KEY="${DEEPSEEK_API_KEY:-}"
 if [ -z "$API_KEY" ]; then
   echo "ERROR: DEEPSEEK_API_KEY is not set in the environment." >&2

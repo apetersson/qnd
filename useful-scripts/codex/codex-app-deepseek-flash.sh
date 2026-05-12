@@ -8,7 +8,6 @@ set -euo pipefail
 # Env:
 #   DEEPSEEK_API_KEY (required)
 
-# Wrapper that launches codex-app-deepseek.sh with deepseek-v4-flash
 export CODEX_DEEPSEEK_MODEL="deepseek-v4-flash"
 export CODEX_DEEPSEEK_HOME="${CODEX_DEEPSEEK_HOME:-/tmp/deepseek-flash-codex-gui-home}"
 export CODEX_DEEPSEEK_USER_DATA="${CODEX_DEEPSEEK_USER_DATA:-/tmp/deepseek-flash-codex-gui-user-data}"
