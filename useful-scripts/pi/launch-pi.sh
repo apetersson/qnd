@@ -15,7 +15,8 @@ HOST_CONTAINER_HOME_DIR="${HOME}/.pi-docker-home"
 CONTAINER_HOME="/pi-home"
 CONTAINER_LAUNCH_DIR="/pi-launch"
 HOST_DYNAMIC_MODELS_CONFIG="${SCRIPT_DIR}/dynamic-models.json"
-HOST_DYNAMIC_MODELS_EXAMPLE_CONFIG="${SCRIPT_DIR}/dynamic-models.example.json"
+HOST_DYNAMIC_MODELS_EXTENSION="${SCRIPT_DIR}/extensions/pi-dynamic-models"
+HOST_DYNAMIC_MODELS_EXAMPLE_CONFIG="${HOST_DYNAMIC_MODELS_EXTENSION}/dynamic-models.example.json"
 CONTAINER_DYNAMIC_MODELS_EXTENSION="${CONTAINER_LAUNCH_DIR}/extensions/pi-dynamic-models"
 CONTAINER_DYNAMIC_MODELS_CONFIG="${CONTAINER_LAUNCH_DIR}/dynamic-models.json"
 CONTAINER_NPM_PREFIX="${CONTAINER_HOME}/.npm-global"
@@ -58,6 +59,12 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 mkdir -p "${HOST_PI_DIR}/agent" "${HOST_CONTAINER_HOME_DIR}"
+
+if [[ ! -d "${HOST_DYNAMIC_MODELS_EXTENSION}" ]]; then
+  echo "Error: dynamic models extension is missing at ${HOST_DYNAMIC_MODELS_EXTENSION}." >&2
+  echo "Initialize it with: git submodule update --init --recursive useful-scripts/pi/extensions/pi-dynamic-models" >&2
+  exit 1
+fi
 
 if [[ ! -f "${HOST_DYNAMIC_MODELS_CONFIG}" && -f "${HOST_DYNAMIC_MODELS_EXAMPLE_CONFIG}" ]]; then
   cp "${HOST_DYNAMIC_MODELS_EXAMPLE_CONFIG}" "${HOST_DYNAMIC_MODELS_CONFIG}"

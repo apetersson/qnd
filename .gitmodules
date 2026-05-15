@@ -1,0 +1,3 @@
+[submodule "useful-scripts/pi/extensions/pi-dynamic-models"]
+	path = useful-scripts/pi/extensions/pi-dynamic-models
+	url = https://github.com/apetersson/pi-dynamic-models.git
