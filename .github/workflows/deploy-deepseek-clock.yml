@@ -1,0 +1,23 @@
+name: Deploy DeepSeek Clock
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "deepseek-clock/**"
+      - ".github/workflows/deploy-deepseek-clock.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: deepseek-clock
+          publish_branch: gh-pages
+          destination_dir: deepseek-clock
