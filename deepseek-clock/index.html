@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeepSeek Peak-Hour Clock</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7fbff;
+      --muted: #9dafc8;
+      --faint: #65748e;
+      --panel: rgba(10, 18, 33, 0.68);
+      --panel-strong: rgba(13, 24, 43, 0.86);
+      --line: rgba(255, 255, 255, 0.13);
+      --cyan: #22d3ee;
+      --cyan-soft: rgba(34, 211, 238, 0.16);
+      --orange: #ff6b4a;
+      --gold: #ffd166;
+      --green: #2ee59d;
+      --violet: #9b87ff;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-height: 100%; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: clamp(18px, 3vw, 40px);
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(34, 211, 238, 0.28), transparent 30rem),
+        radial-gradient(circle at 86% 16%, rgba(255, 107, 74, 0.25), transparent 28rem),
+        radial-gradient(circle at 54% 100%, rgba(155, 135, 255, 0.20), transparent 32rem),
+        linear-gradient(140deg, #050914 0%, #09111f 48%, #111827 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(circle at 50% 45%, black, transparent 76%);
+    }
+
+    .app {
+      width: min(1180px, 100%);
+      display: grid;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(8, 15, 28, 0.48);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      backdrop-filter: blur(22px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #08111f;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: conic-gradient(from 220deg, var(--cyan), #c4f1ff, var(--gold), var(--orange), var(--cyan));
+      box-shadow: 0 0 34px rgba(34, 211, 238, 0.26);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      font-weight: 650;
+      letter-spacing: -0.025em;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      flex: 0 0 auto;
+      padding: 10px 13px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 550;
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(46, 229, 157, 0.12), 0 0 24px rgba(46, 229, 157, 0.85);
+    }
+
+    .is-peak .pulse {
+      background: var(--orange);
+      box-shadow: 0 0 0 6px rgba(255, 107, 74, 0.13), 0 0 26px rgba(255, 107, 74, 0.9);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.08fr) minmax(340px, 0.92fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.025)),
+        var(--panel);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.09);
+      backdrop-filter: blur(26px);
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      pointer-events: none;
+      border-radius: inherit;
+      background: linear-gradient(140deg, rgba(255,255,255,0.12), transparent 28%, transparent 72%, rgba(255,255,255,0.05));
+      mask: linear-gradient(#000, transparent 42%);
+    }
+
+    .clock-panel {
+      padding: clamp(20px, 3vw, 34px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .clock-wrap {
+      position: relative;
+      width: min(580px, 100%);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .orbital-glow {
+      position: absolute;
+      inset: 5%;
+      border-radius: 50%;
+      background:
+        conic-gradient(from -90deg, rgba(34,211,238,0.20), rgba(34,211,238,0.05), rgba(255,107,74,0.18), rgba(255,209,102,0.16), rgba(34,211,238,0.20));
+      filter: blur(18px);
+      opacity: 0.95;
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      50% { transform: scale(1.025); opacity: 0.72; }
+    }
+
+    svg {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 22px 48px rgba(0,0,0,0.36));
+    }
+
+    .face-fill { fill: rgba(7, 14, 27, 0.76); stroke: rgba(255,255,255,0.13); stroke-width: 1; }
+    .base-ring { fill: none; stroke: rgba(255,255,255,0.09); stroke-width: 24; }
+    .quiet-ring { fill: none; stroke: rgba(34, 211, 238, 0.25); stroke-width: 15; stroke-linecap: round; }
+    .peak-arc { fill: none; stroke: url(#peakGradient); stroke-width: 25; stroke-linecap: round; filter: drop-shadow(0 0 14px rgba(255, 107, 74, 0.55)); }
+    .peak-arc.past { opacity: 0.26; filter: none; stroke-width: 21; }
+    .tick { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-linecap: round; }
+    .tick.major { stroke: rgba(255,255,255,0.66); stroke-width: 3; }
+    .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
+    .hour-hand { stroke: rgba(255,255,255,0.92); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(255,255,255,0.35)); }
+    .minute-hand { stroke: white; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(255,255,255,0.55)); }
+    .second-hand { stroke: var(--gold); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 9px rgba(255,209,102,0.65)); }
+    .hub { fill: white; filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)); }
+
+    .readout {
+      position: relative;
+      z-index: 1;
+      width: min(360px, 100%);
+      padding: 15px 20px 14px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)),
+        rgba(8, 15, 28, 0.70);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 18px 42px rgba(0,0,0,0.26);
+    }
+
+    .time {
+      font-size: clamp(1.55rem, 3.8vw, 2.85rem);
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .date {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 450;
+    }
+
+    .clock-legend {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .clock-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .clock-legend i {
+      width: 22px;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+      box-shadow: 0 0 12px rgba(255, 107, 74, 0.45);
+    }
+
+    .clock-legend .past i {
+      opacity: 0.28;
+      box-shadow: none;
+    }
+
+    .side-panel {
+      padding: clamp(22px, 3vw, 34px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .hero-card {
+      padding: 22px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at 88% 14%, rgba(34, 211, 238, 0.15), transparent 15rem),
+        linear-gradient(145deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035));
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 550;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      max-width: 10ch;
+      font-size: clamp(2.2rem, 5.5vw, 4.8rem);
+      line-height: 0.88;
+      font-weight: 650;
+      letter-spacing: -0.055em;
+    }
+
+    .hero-card p {
+      margin: 16px 0 0;
+      max-width: 42ch;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .status-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: end;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--panel-strong);
+    }
+
+    .status-card span,
+    .mini-card span,
+    .timeline-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .mode {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+
+    .badge {
+      padding: 10px 12px;
+      border-radius: 16px;
+      font-weight: 700;
+      color: #08111f;
+      background: linear-gradient(135deg, var(--green), #b8f7d8);
+      box-shadow: 0 0 24px rgba(46, 229, 157, 0.22);
+    }
+
+    .is-peak .badge {
+      background: linear-gradient(135deg, var(--orange), var(--gold));
+      box-shadow: 0 0 26px rgba(255, 107, 74, 0.28);
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-card {
+      min-height: 112px;
+      padding: 17px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.11);
+      background: rgba(255,255,255,0.055);
+    }
+
+    .mini-card b {
+      display: block;
+      font-size: 1.02rem;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .timeline {
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.11);
+      background: rgba(255,255,255,0.055);
+    }
+
+    .track {
+      position: relative;
+      height: 18px;
+      margin: 10px 0 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(34,211,238,0.22), rgba(34,211,238,0.09));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .segment {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+      box-shadow: 0 0 20px rgba(255, 107, 74, 0.45);
+    }
+
+    .now-marker {
+      position: absolute;
+      top: -5px;
+      width: 2px;
+      height: 28px;
+      border-radius: 99px;
+      background: white;
+      box-shadow: 0 0 12px white;
+      transform: translateX(-1px);
+    }
+
+    .timeline-hours {
+      display: flex;
+      justify-content: space-between;
+      color: var(--faint);
+      font-size: 0.76rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .windows {
+      display: grid;
+      gap: 10px;
+    }
+
+    .window {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.052);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .window em {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 13px;
+      background: rgba(255, 107, 74, 0.16);
+      color: #ffd5ca;
+      font-style: normal;
+      font-weight: 650;
+    }
+
+    .window strong { display: block; font-weight: 550; }
+    .window small { color: var(--muted); }
+    .multiplier { color: var(--gold); font-weight: 650; }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+      .side-panel { order: -1; }
+      .hero-card h2 { max-width: none; }
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 12px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .panel { border-radius: 26px; }
+      .clock-panel, .side-panel { padding: 18px; }
+      .clock-wrap { width: min(100%, 440px); }
+      .readout { width: min(330px, 100%); }
+      .mini-grid { grid-template-columns: 1fr; }
+      .window { grid-template-columns: auto 1fr; }
+      .multiplier { grid-column: 2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">DS</div>
+        <div>
+          <h1>DeepSeek peak-hour clock</h1>
+          <p>UTC peak pricing converted to your local time zone</p>
+        </div>
+      </div>
+      <div class="chip"><span class="pulse"></span><span id="topStatus">Checking current window…</span></div>
+    </header>
+
+    <main class="grid">
+      <section class="panel clock-panel" aria-label="12-hour local clock with peak hours highlighted">
+        <div class="clock-wrap">
+          <div class="orbital-glow" aria-hidden="true"></div>
+          <svg viewBox="0 0 420 420" role="img" aria-labelledby="clockTitle clockDesc">
+            <title id="clockTitle">DeepSeek peak-hour clock</title>
+            <desc id="clockDesc">A 12-hour local clock. Bright orange arcs show current or upcoming peak-price time; muted arcs show peak time already behind.</desc>
+            <defs>
+              <linearGradient id="peakGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+                <stop offset="0%" stop-color="#ff6b4a" />
+                <stop offset="100%" stop-color="#ffd166" />
+              </linearGradient>
+            </defs>
+            <circle class="face-fill" cx="210" cy="210" r="171" />
+            <circle class="base-ring" cx="210" cy="210" r="171" />
+            <circle class="quiet-ring" cx="210" cy="210" r="171" />
+            <g id="pastPeakArcs"></g>
+            <g id="ticks"></g>
+            <g id="futurePeakArcs"></g>
+            <line id="hourHand" class="hour-hand" x1="210" y1="210" x2="210" y2="108" />
+            <line id="minuteHand" class="minute-hand" x1="210" y1="210" x2="210" y2="62" />
+            <line id="secondHand" class="second-hand" x1="210" y1="210" x2="210" y2="52" />
+            <circle class="hub" cx="210" cy="210" r="6.5" />
+          </svg>
+        </div>
+        <div class="readout" aria-live="polite">
+          <div>
+            <div class="time" id="time">--:--:--</div>
+            <div class="date" id="date">Loading local time…</div>
+          </div>
+        </div>
+        <div class="clock-legend" aria-label="Clock arc legend">
+          <span><i></i>ahead / active peak</span>
+          <span class="past"><i></i>already behind</span>
+        </div>
+      </section>
+
+      <section class="panel side-panel">
+        <div class="hero-card">
+          <div class="kicker">Peak-valley pricing · 2× during peak</div>
+          <h2>Plan your API calls.</h2>
+          <p>The round dial is a regular 12-hour clock: bright peak arcs are ahead or active, while faded arcs sit behind for elapsed peak time.</p>
+        </div>
+
+        <div class="status-card">
+          <div>
+            <span>Current price window</span>
+            <div class="mode" id="mode">Loading…</div>
+          </div>
+          <div class="badge" id="badge">--</div>
+        </div>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <span>Your time zone</span>
+            <b id="timezone">Detecting…</b>
+          </div>
+          <div class="mini-card">
+            <span>Next change</span>
+            <b id="nextChange">Calculating…</b>
+          </div>
+          <div class="mini-card">
+            <span>Source schedule</span>
+            <b>01:00–04:00 UTC<br>06:00–10:00 UTC</b>
+          </div>
+          <div class="mini-card">
+            <span>Next 24h locally</span>
+            <b id="localSummary">Calculating…</b>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <span class="timeline-label">Next 24 hours</span>
+          <div class="track" id="track"></div>
+          <div class="timeline-hours"><span>now</span><span>+6h</span><span>+12h</span><span>+18h</span><span>+24h</span></div>
+        </div>
+
+        <div class="windows" id="windows"></div>
+
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const PEAK_WINDOWS_UTC = [
+      { start: 1 * 60, end: 4 * 60 },
+      { start: 6 * 60, end: 10 * 60 }
+    ];
+
+    const HOUR = 60 * 60 * 1000;
+    const DAY = 24 * HOUR;
+
+    const el = {
+      app: document.getElementById('app'),
+      pastPeakArcs: document.getElementById('pastPeakArcs'),
+      futurePeakArcs: document.getElementById('futurePeakArcs'),
+      ticks: document.getElementById('ticks'),
+      hourHand: document.getElementById('hourHand'),
+      minuteHand: document.getElementById('minuteHand'),
+      secondHand: document.getElementById('secondHand'),
+      time: document.getElementById('time'),
+      date: document.getElementById('date'),
+      topStatus: document.getElementById('topStatus'),
+      mode: document.getElementById('mode'),
+      badge: document.getElementById('badge'),
+      timezone: document.getElementById('timezone'),
+      nextChange: document.getElementById('nextChange'),
+      localSummary: document.getElementById('localSummary'),
+      track: document.getElementById('track'),
+      windows: document.getElementById('windows')
+    };
+
+    const fmtTime = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
+    const fmtTimeSeconds = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const fmtDate = new Intl.DateTimeFormat([], { weekday: 'long', month: 'short', day: 'numeric' });
+    const fmtShortDate = new Intl.DateTimeFormat([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
+
+    function minutesUtc(date) {
+      return date.getUTCHours() * 60 + date.getUTCMinutes() + date.getUTCSeconds() / 60;
+    }
+
+    function isPeak(date) {
+      const m = minutesUtc(date);
+      return PEAK_WINDOWS_UTC.some(w => m >= w.start && m < w.end);
+    }
+
+    function peakIntervalsBetween(rangeStart, rangeEnd, clip = true) {
+      const intervals = [];
+      const firstUtcMidnight = Date.UTC(
+        rangeStart.getUTCFullYear(),
+        rangeStart.getUTCMonth(),
+        rangeStart.getUTCDate() - 1
+      );
+      const days = Math.ceil((rangeEnd.getTime() - firstUtcMidnight) / DAY) + 2;
+
+      for (let d = 0; d < days; d++) {
+        const utcDay = firstUtcMidnight + d * DAY;
+        for (const win of PEAK_WINDOWS_UTC) {
+          const actualStart = new Date(utcDay + win.start * 60000);
+          const actualEnd = new Date(utcDay + win.end * 60000);
+          if (actualEnd <= rangeStart || actualStart >= rangeEnd) continue;
+
+          intervals.push({
+            start: clip ? new Date(Math.max(actualStart, rangeStart)) : actualStart,
+            end: clip ? new Date(Math.min(actualEnd, rangeEnd)) : actualEnd,
+            actualStart,
+            actualEnd
+          });
+        }
+      }
+
+      return intervals.sort((a, b) => a.start - b.start);
+    }
+
+    function point(cx, cy, r, angleDeg) {
+      const angle = (angleDeg - 90) * Math.PI / 180;
+      return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+    }
+
+    function arcPath12(startMinute, endMinute, r = 171) {
+      if (endMinute <= startMinute) return '';
+      const startAngle = startMinute / 720 * 360;
+      const endAngle = endMinute / 720 * 360;
+      const start = point(210, 210, r, startAngle);
+      const end = point(210, 210, r, endAngle);
+      const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+      return `M ${start.x.toFixed(3)} ${start.y.toFixed(3)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(3)} ${end.y.toFixed(3)}`;
+    }
+
+    function wallMinute(date) {
+      return date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60 + date.getMilliseconds() / 60000;
+    }
+
+    function minute12(date) {
+      return (wallMinute(date) % 720 + 720) % 720;
+    }
+
+    function sameLocalDate(a, b) {
+      return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    function formatWindow(start, end, reference = new Date()) {
+      const range = `${fmtTime.format(start)}–${fmtTime.format(end)}`;
+      if (sameLocalDate(start, end) && sameLocalDate(start, reference)) return range;
+      if (sameLocalDate(start, end)) return `${range}, ${fmtShortDate.format(start)}`;
+      return `${fmtTime.format(start)}, ${fmtShortDate.format(start)} – ${fmtTime.format(end)}, ${fmtShortDate.format(end)}`;
+    }
+
+    function arcFragments(start, end, className) {
+      const sm = minute12(start);
+      const em = minute12(end);
+      const parts = [];
+
+      if (Math.abs(end - start) >= 12 * HOUR) {
+        parts.push([0, 720]);
+      } else if (em > sm) {
+        parts.push([sm, em]);
+      } else {
+        parts.push([sm, 720], [0, em]);
+      }
+
+      return parts
+        .filter(([a, b]) => b - a > 0.35)
+        .map(([a, b]) => `<path class="peak-arc ${className}" d="${arcPath12(a, b)}" />`)
+        .join('');
+    }
+
+    function drawRoundClock(now) {
+      const intervals = peakIntervalsBetween(new Date(now - 12 * HOUR), new Date(now.getTime() + 12 * HOUR), true);
+      let past = '';
+      let future = '';
+
+      for (const interval of intervals) {
+        if (interval.end <= now) {
+          past += arcFragments(interval.start, interval.end, 'past');
+        } else if (interval.start < now) {
+          past += arcFragments(interval.start, now, 'past');
+          future += arcFragments(now, interval.end, 'future');
+        } else {
+          future += arcFragments(interval.start, interval.end, 'future');
+        }
+      }
+
+      el.pastPeakArcs.innerHTML = past;
+      el.futurePeakArcs.innerHTML = future;
+    }
+
+    function drawTicks() {
+      let html = '';
+      for (let i = 0; i < 60; i++) {
+        const angle = i / 60 * 360;
+        const major = i % 5 === 0;
+        const a = point(210, 210, major ? 139 : 151, angle);
+        const b = point(210, 210, 159, angle);
+        html += `<line class="tick${major ? ' major' : ''}" x1="${a.x.toFixed(2)}" y1="${a.y.toFixed(2)}" x2="${b.x.toFixed(2)}" y2="${b.y.toFixed(2)}" />`;
+        if (major) {
+          const hour = i / 5;
+          const label = point(210, 210, 119, angle);
+          html += `<text class="label" x="${label.x.toFixed(2)}" y="${label.y.toFixed(2)}">${hour === 0 ? '12' : hour}</text>`;
+        }
+      }
+      el.ticks.innerHTML = html;
+    }
+
+    function drawNext24(now) {
+      const end = new Date(now.getTime() + DAY);
+      const intervals = peakIntervalsBetween(now, end, true);
+
+      el.track.innerHTML = '<i class="now-marker" id="nowMarker" style="left:0%"></i>' + intervals.map(({ start, end }) => {
+        const left = Math.max(0, (start - now) / DAY * 100);
+        const width = Math.max(0.7, (end - start) / DAY * 100);
+        return `<i class="segment" style="left:${left}%;width:${width}%"></i>`;
+      }).join('');
+
+      const summary = intervals.map(i => formatWindow(i.start, i.end, now)).join(', ');
+      el.localSummary.textContent = summary || 'No peak windows in the next 24h';
+
+      el.windows.innerHTML = intervals.map((i, index) => {
+        const hours = ((i.end - i.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
+        const descriptor = i.actualStart < now ? `${hours}h remaining in ${tz}` : `${hours}h peak window in ${tz}`;
+        return `<div class="window"><em>${index + 1}</em><div><strong>${formatWindow(i.start, i.end, now)}</strong><small>${descriptor}</small></div><div class="multiplier">2×</div></div>`;
+      }).join('') || '<div class="window"><div>No peak windows in the next 24 hours.</div></div>';
+    }
+
+    function nextBoundary(now) {
+      const candidates = [];
+      const base = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1);
+      for (let d = 0; d < 4; d++) {
+        const day = base + d * DAY;
+        for (const w of PEAK_WINDOWS_UTC) {
+          candidates.push(new Date(day + w.start * 60000));
+          candidates.push(new Date(day + w.end * 60000));
+        }
+      }
+      return candidates.sort((a, b) => a - b).find(t => t > now);
+    }
+
+    function durationLabel(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      return `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+    }
+
+    let lastTimelineMinute = '';
+
+    function update() {
+      const now = new Date();
+      const timelineMinute = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}`;
+      if (timelineMinute !== lastTimelineMinute) {
+        drawNext24(now);
+        lastTimelineMinute = timelineMinute;
+      }
+      drawRoundClock(now);
+
+      const peak = isPeak(now);
+      const hourMinute = (now.getHours() % 12) * 60 + now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
+      const minute = now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
+      const second = now.getSeconds() + now.getMilliseconds() / 1000;
+      const hourEnd = point(210, 210, 96, hourMinute / 720 * 360);
+      const minuteEnd = point(210, 210, 145, minute / 60 * 360);
+      const secondEnd = point(210, 210, 158, second / 60 * 360);
+      el.hourHand.setAttribute('x2', hourEnd.x.toFixed(2));
+      el.hourHand.setAttribute('y2', hourEnd.y.toFixed(2));
+      el.minuteHand.setAttribute('x2', minuteEnd.x.toFixed(2));
+      el.minuteHand.setAttribute('y2', minuteEnd.y.toFixed(2));
+      el.secondHand.setAttribute('x2', secondEnd.x.toFixed(2));
+      el.secondHand.setAttribute('y2', secondEnd.y.toFixed(2));
+
+      el.time.textContent = fmtTimeSeconds.format(now);
+      el.date.textContent = fmtDate.format(now);
+      el.timezone.textContent = tz;
+      el.app.classList.toggle('is-peak', peak);
+      el.topStatus.textContent = peak ? 'Peak pricing is active now' : 'Regular pricing is active now';
+      el.mode.textContent = peak ? 'Peak price' : 'Regular price';
+      el.badge.textContent = peak ? '2×' : '1×';
+
+      const next = nextBoundary(now);
+      const nextMode = next && isPeak(new Date(next.getTime() + 1000)) ? 'Peak starts' : 'Peak ends';
+      el.nextChange.textContent = next ? `${nextMode} at ${fmtTime.format(next)} · ${durationLabel(next - now)}` : 'Unknown';
+    }
+
+    drawTicks();
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
