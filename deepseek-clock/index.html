@@ -210,7 +210,8 @@
     .tick { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-linecap: round; }
     .tick.major { stroke: rgba(255,255,255,0.66); stroke-width: 3; }
     .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
-    .hour-hand { stroke: rgba(255,255,255,0.92); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(255,255,255,0.35)); }
+    .hour-hand { stroke: var(--green); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(46,229,157,0.48)); }
+    .is-peak .hour-hand { stroke: var(--orange); filter: drop-shadow(0 0 10px rgba(255,107,74,0.58)); }
     .minute-hand { stroke: white; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(255,255,255,0.55)); }
     .second-hand { stroke: var(--gold); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 9px rgba(255,209,102,0.65)); }
     .hub { fill: white; filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)); }
@@ -509,8 +510,8 @@
             <g id="pastPeakArcs"></g>
             <g id="ticks"></g>
             <g id="futurePeakArcs"></g>
-            <line id="hourHand" class="hour-hand" x1="210" y1="210" x2="210" y2="108" />
-            <line id="minuteHand" class="minute-hand" x1="210" y1="210" x2="210" y2="62" />
+            <line id="hourHand" class="hour-hand" x1="210" y1="210" x2="210" y2="95" />
+            <line id="minuteHand" class="minute-hand" x1="210" y1="210" x2="210" y2="59" />
             <line id="secondHand" class="second-hand" x1="210" y1="210" x2="210" y2="52" />
             <circle class="hub" cx="210" cy="210" r="6.5" />
           </svg>
@@ -581,6 +582,14 @@
 
     const HOUR = 60 * 60 * 1000;
     const DAY = 24 * HOUR;
+    const CLOCK_CENTER = 210;
+    const CLOCK_RADIUS = 171;
+    const TICK_OUTER_RADIUS = 159;
+    const HAND_RADII = {
+      hour: 115,
+      minute: 151,
+      second: 158
+    };
 
     const el = {
       app: document.getElementById('app'),
@@ -650,12 +659,27 @@
       return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
     }
 
-    function arcPath12(startMinute, endMinute, r = 171) {
+    // Use one angle conversion for ticks, arcs, and hands so every element
+    // shares the same 12-hour dial geometry.
+    function angleForClockMinutes(minutes) {
+      // Keep 720 as 360° for arc endpoints at 12 o'clock.
+      return minutes / 720 * 360;
+    }
+
+    function angleForMinute(minute) {
+      return angleForClockMinutes(minute * 12);
+    }
+
+    function angleForSecond(second) {
+      return angleForMinute(second);
+    }
+
+    function arcPath12(startMinute, endMinute, r = CLOCK_RADIUS) {
       if (endMinute <= startMinute) return '';
-      const startAngle = startMinute / 720 * 360;
-      const endAngle = endMinute / 720 * 360;
-      const start = point(210, 210, r, startAngle);
-      const end = point(210, 210, r, endAngle);
+      const startAngle = angleForClockMinutes(startMinute);
+      const endAngle = angleForClockMinutes(endMinute);
+      const start = point(CLOCK_CENTER, CLOCK_CENTER, r, startAngle);
+      const end = point(CLOCK_CENTER, CLOCK_CENTER, r, endAngle);
       const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
       return `M ${start.x.toFixed(3)} ${start.y.toFixed(3)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(3)} ${end.y.toFixed(3)}`;
     }
@@ -721,10 +745,10 @@
     function drawTicks() {
       let html = '';
       for (let i = 0; i < 60; i++) {
-        const angle = i / 60 * 360;
+        const angle = angleForMinute(i);
         const major = i % 5 === 0;
-        const a = point(210, 210, major ? 139 : 151, angle);
-        const b = point(210, 210, 159, angle);
+        const a = point(CLOCK_CENTER, CLOCK_CENTER, major ? 139 : 151, angle);
+        const b = point(CLOCK_CENTER, CLOCK_CENTER, TICK_OUTER_RADIUS, angle);
         html += `<line class="tick${major ? ' major' : ''}" x1="${a.x.toFixed(2)}" y1="${a.y.toFixed(2)}" x2="${b.x.toFixed(2)}" y2="${b.y.toFixed(2)}" />`;
         if (major) {
           const hour = i / 5;
@@ -788,12 +812,16 @@
       drawRoundClock(now);
 
       const peak = isPeak(now);
+      // Interpolate the hour and minute hands between markings like a real
+      // analog clock; the second hand stays on its visible whole-second mark.
       const hourMinute = (now.getHours() % 12) * 60 + now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
       const minute = now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
-      const second = now.getSeconds() + now.getMilliseconds() / 1000;
-      const hourEnd = point(210, 210, 96, hourMinute / 720 * 360);
-      const minuteEnd = point(210, 210, 145, minute / 60 * 360);
-      const secondEnd = point(210, 210, 158, second / 60 * 360);
+      // Second markers are whole-second ticks, so keep this hand exactly on
+      // the visible second mark rather than drifting between two marks.
+      const second = now.getSeconds();
+      const hourEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.hour, angleForClockMinutes(hourMinute));
+      const minuteEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.minute, angleForMinute(minute));
+      const secondEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.second, angleForSecond(second));
       el.hourHand.setAttribute('x2', hourEnd.x.toFixed(2));
       el.hourHand.setAttribute('y2', hourEnd.y.toFixed(2));
       el.minuteHand.setAttribute('x2', minuteEnd.x.toFixed(2));
