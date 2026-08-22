@@ -133,6 +133,12 @@
       box-shadow: 0 0 0 6px rgba(255, 107, 74, 0.13), 0 0 26px rgba(255, 107, 74, 0.9);
     }
 
+    /* Weekend (Beijing): peak windows are suppressed, all-day off-peak. */
+    .is-weekend .pulse {
+      background: var(--violet);
+      box-shadow: 0 0 0 6px rgba(155, 135, 255, 0.14), 0 0 26px rgba(155, 135, 255, 0.85);
+    }
+
     .grid {
       display: grid;
       grid-template-columns: minmax(360px, 1.08fr) minmax(340px, 0.92fr);
@@ -212,6 +218,7 @@
     .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
     .hour-hand { stroke: var(--green); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(46,229,157,0.48)); }
     .is-peak .hour-hand { stroke: var(--orange); filter: drop-shadow(0 0 10px rgba(255,107,74,0.58)); }
+    .is-weekend .hour-hand { stroke: var(--violet); filter: drop-shadow(0 0 10px rgba(155,135,255,0.5)); }
     .minute-hand { stroke: white; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(255,255,255,0.55)); }
     .second-hand { stroke: var(--gold); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 9px rgba(255,209,102,0.65)); }
     .hub { fill: white; filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)); }
@@ -274,6 +281,8 @@
       opacity: 0.28;
       box-shadow: none;
     }
+
+    .clock-legend.is-empty { display: none; }
 
     .side-panel {
       padding: clamp(22px, 3vw, 34px);
@@ -358,6 +367,11 @@
     .is-peak .badge {
       background: linear-gradient(135deg, var(--orange), var(--gold));
       box-shadow: 0 0 26px rgba(255, 107, 74, 0.28);
+    }
+
+    .is-weekend .badge {
+      background: linear-gradient(135deg, var(--violet), #d9ccff);
+      box-shadow: 0 0 24px rgba(155, 135, 255, 0.26);
     }
 
     .mini-grid {
@@ -522,7 +536,7 @@
             <div class="date" id="date">Loading local time…</div>
           </div>
         </div>
-        <div class="clock-legend" aria-label="Clock arc legend">
+        <div class="clock-legend" id="clockLegend" aria-label="Clock arc legend">
           <span><i></i>ahead / active peak</span>
           <span class="past"><i></i>already behind</span>
         </div>
@@ -532,7 +546,7 @@
         <div class="hero-card">
           <div class="kicker">Peak-valley pricing · 2× during peak</div>
           <h2>Plan your API calls.</h2>
-          <p>The round dial is a regular 12-hour clock: bright peak arcs are ahead or active, while faded arcs sit behind for elapsed peak time.</p>
+          <p>The round dial is a regular 12-hour clock: bright peak arcs are ahead or active, while faded arcs sit behind for elapsed peak time. On weekends (Beijing time) the dial stays clear — every call is off-peak all day.</p>
         </div>
 
         <div class="status-card">
@@ -554,7 +568,8 @@
           </div>
           <div class="mini-card">
             <span>Source schedule</span>
-            <b>01:00–04:00 UTC<br>06:00–10:00 UTC</b>
+            <b>Peak windows (UTC):<br>01:00–04:00 · 06:00–10:00</b>
+            <small>Weekdays only (Beijing) · weekends all off-peak</small>
           </div>
           <div class="mini-card">
             <span>Next 24h locally</span>
@@ -579,6 +594,7 @@
       { start: 1 * 60, end: 4 * 60 },
       { start: 6 * 60, end: 10 * 60 }
     ];
+    const BEIJING_TIME_ZONE = 'Asia/Shanghai';
 
     const HOUR = 60 * 60 * 1000;
     const DAY = 24 * HOUR;
@@ -608,20 +624,30 @@
       nextChange: document.getElementById('nextChange'),
       localSummary: document.getElementById('localSummary'),
       track: document.getElementById('track'),
-      windows: document.getElementById('windows')
+      windows: document.getElementById('windows'),
+      clockLegend: document.getElementById('clockLegend')
     };
 
     const fmtTime = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
     const fmtTimeSeconds = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const fmtDate = new Intl.DateTimeFormat([], { weekday: 'long', month: 'short', day: 'numeric' });
     const fmtShortDate = new Intl.DateTimeFormat([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const fmtWeekdayLong = new Intl.DateTimeFormat([], { weekday: 'long' });
+    const fmtWeekdayShort = new Intl.DateTimeFormat([], { weekday: 'short' });
+    const fmtBeijingWeekday = new Intl.DateTimeFormat('en-US', { timeZone: BEIJING_TIME_ZONE, weekday: 'short' });
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
 
     function minutesUtc(date) {
       return date.getUTCHours() * 60 + date.getUTCMinutes() + date.getUTCSeconds() / 60;
     }
 
+    function isBeijingWeekend(date) {
+      const day = fmtBeijingWeekday.format(date);
+      return day === 'Sat' || day === 'Sun';
+    }
+
     function isPeak(date) {
+      if (isBeijingWeekend(date)) return false;
       const m = minutesUtc(date);
       return PEAK_WINDOWS_UTC.some(w => m >= w.start && m < w.end);
     }
@@ -640,11 +666,17 @@
         for (const win of PEAK_WINDOWS_UTC) {
           const actualStart = new Date(utcDay + win.start * 60000);
           const actualEnd = new Date(utcDay + win.end * 60000);
-          if (actualEnd <= rangeStart || actualStart >= rangeEnd) continue;
+          const midpoint = new Date((actualStart.getTime() + actualEnd.getTime()) / 2);
+
+          if (!isPeak(midpoint) || actualEnd <= rangeStart || actualStart >= rangeEnd) continue;
+
+          const clippedStart = clip ? new Date(Math.max(actualStart, rangeStart)) : actualStart;
+          const clippedEnd = clip ? new Date(Math.min(actualEnd, rangeEnd)) : actualEnd;
+          if (clippedEnd <= clippedStart) continue;
 
           intervals.push({
-            start: clip ? new Date(Math.max(actualStart, rangeStart)) : actualStart,
-            end: clip ? new Date(Math.min(actualEnd, rangeEnd)) : actualEnd,
+            start: clippedStart,
+            end: clippedEnd,
             actualStart,
             actualEnd
           });
@@ -740,6 +772,11 @@
 
       el.pastPeakArcs.innerHTML = past;
       el.futurePeakArcs.innerHTML = future;
+
+      // On a Beijing weekend no peak arcs are drawn, so the peak legend has
+      // nothing to describe — hide it rather than showing a legend for an
+      // all-day off-peak dial.
+      el.clockLegend.classList.toggle('is-empty', !past && !future);
     }
 
     function drawTicks() {
@@ -769,27 +806,63 @@
         return `<i class="segment" style="left:${left}%;width:${width}%"></i>`;
       }).join('');
 
-      const summary = intervals.map(i => formatWindow(i.start, i.end, now)).join(', ');
-      el.localSummary.textContent = summary || 'No peak windows in the next 24h';
+      if (intervals.length === 0) {
+        const next = nextPeakStart(now);
+        if (next) {
+          const when = `${fmtWeekdayLong.format(next)} ${fmtTime.format(next)}`;
+          const inDur = durationLabelShort(next - now);
+          el.localSummary.textContent = `Next peak ${when} · in ${inDur}`;
+          el.windows.innerHTML =
+            `<div class="window"><em>1</em><div><strong>Next peak: ${when} (${inDur})</strong><small>No peak within the next 24h in ${tz}</small></div><div class="multiplier">2×</div></div>`;
+        } else {
+          el.localSummary.textContent = 'No peak windows found';
+          el.windows.innerHTML = '<div class="window"><div>No peak windows found.</div></div>';
+        }
+      } else {
+        const summary = intervals.map(i => formatWindow(i.start, i.end, now)).join(', ');
+        el.localSummary.textContent = summary;
 
-      el.windows.innerHTML = intervals.map((i, index) => {
-        const hours = ((i.end - i.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
-        const descriptor = i.actualStart < now ? `${hours}h remaining in ${tz}` : `${hours}h peak window in ${tz}`;
-        return `<div class="window"><em>${index + 1}</em><div><strong>${formatWindow(i.start, i.end, now)}</strong><small>${descriptor}</small></div><div class="multiplier">2×</div></div>`;
-      }).join('') || '<div class="window"><div>No peak windows in the next 24 hours.</div></div>';
+        el.windows.innerHTML = intervals.map((i, index) => {
+          const hours = ((i.end - i.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
+          const descriptor = i.actualStart < now ? `${hours}h remaining in ${tz}` : `${hours}h peak window in ${tz}`;
+          return `<div class="window"><em>${index + 1}</em><div><strong>${formatWindow(i.start, i.end, now)}</strong><small>${descriptor}</small></div><div class="multiplier">2×</div></div>`;
+        }).join('');
+      }
     }
 
     function nextBoundary(now) {
-      const candidates = [];
-      const base = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1);
-      for (let d = 0; d < 4; d++) {
-        const day = base + d * DAY;
-        for (const w of PEAK_WINDOWS_UTC) {
-          candidates.push(new Date(day + w.start * 60000));
-          candidates.push(new Date(day + w.end * 60000));
-        }
+      // Scan far enough ahead to cross a full weekend (Sat+Sun). Peak windows are
+      // suppressed on weekends, so from a weekend the next boundary can be a weekday
+      // peak window more than 2 days away (worst case ~2.6 days after Friday's peak).
+      const scanUntil = new Date(now.getTime() + 4 * DAY);
+      const cursor = new Date(now.getTime());
+      cursor.setSeconds(0, 0);
+      cursor.setMinutes(cursor.getMinutes() + (cursor <= now ? 1 : 0));
+
+      for (let t = cursor.getTime(); t <= scanUntil.getTime(); t += 60000) {
+        const before = isPeak(new Date(t - 1));
+        const after = isPeak(new Date(t));
+        if (before !== after) return new Date(t);
       }
-      return candidates.sort((a, b) => a - b).find(t => t > now);
+
+      return null;
+    }
+
+    function nextPeakStart(now) {
+      // The next time peak pricing begins (off-peak -> peak transition). Scans far
+      // enough ahead to cross a full weekend, where peak windows are suppressed.
+      const scanUntil = new Date(now.getTime() + 4 * DAY);
+      const cursor = new Date(now.getTime());
+      cursor.setSeconds(0, 0);
+      cursor.setMinutes(cursor.getMinutes() + (cursor <= now ? 1 : 0));
+
+      for (let t = cursor.getTime(); t <= scanUntil.getTime(); t += 60000) {
+        const before = isPeak(new Date(t - 1));
+        const after = isPeak(new Date(t));
+        if (!before && after) return new Date(t);
+      }
+
+      return null;
     }
 
     function durationLabel(ms) {
@@ -800,18 +873,30 @@
       return `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
     }
 
+    function durationLabelShort(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      return `${h}h ${String(m).padStart(2, '0')}m`;
+    }
+
     let lastTimelineMinute = '';
+    let cachedNextBoundary = null;
 
     function update() {
       const now = new Date();
       const timelineMinute = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}`;
       if (timelineMinute !== lastTimelineMinute) {
         drawNext24(now);
+        // nextBoundary scans up to 4 days minute-by-minute, so only recompute it
+        // once per minute instead of on every 1s tick.
+        cachedNextBoundary = nextBoundary(now);
         lastTimelineMinute = timelineMinute;
       }
       drawRoundClock(now);
 
       const peak = isPeak(now);
+      const weekend = isBeijingWeekend(now);
       // Interpolate the hour and minute hands between markings like a real
       // analog clock; the second hand stays on its visible whole-second mark.
       const hourMinute = (now.getHours() % 12) * 60 + now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
@@ -833,13 +918,14 @@
       el.date.textContent = fmtDate.format(now);
       el.timezone.textContent = tz;
       el.app.classList.toggle('is-peak', peak);
-      el.topStatus.textContent = peak ? 'Peak pricing is active now' : 'Regular pricing is active now';
-      el.mode.textContent = peak ? 'Peak price' : 'Regular price';
+      el.app.classList.toggle('is-weekend', weekend);
+      el.topStatus.textContent = peak ? 'Peak pricing is active now' : (weekend ? 'Weekend — all-day off-peak' : 'Off-peak pricing is active now');
+      el.mode.textContent = peak ? 'Peak price' : (weekend ? 'Weekend · off-peak all day' : 'Off-peak');
       el.badge.textContent = peak ? '2×' : '1×';
 
-      const next = nextBoundary(now);
+      const next = cachedNextBoundary;
       const nextMode = next && isPeak(new Date(next.getTime() + 1000)) ? 'Peak starts' : 'Peak ends';
-      el.nextChange.textContent = next ? `${nextMode} at ${fmtTime.format(next)} · ${durationLabel(next - now)}` : 'Unknown';
+      el.nextChange.textContent = next ? `${nextMode} ${fmtWeekdayShort.format(next)} ${fmtTime.format(next)} · ${durationLabel(next - now)}` : 'Unknown';
     }
 
     drawTicks();
