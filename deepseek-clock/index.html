@@ -827,7 +827,11 @@
     }
 
     function drawRoundClock(now) {
-      const intervals = peakIntervalsBetween(new Date(now - 12 * HOUR), new Date(now.getTime() + 12 * HOUR), true);
+      // A 12h face can only express the current 12-hour cycle without wrapping
+      // tomorrow's windows onto misleading positions. A 24h face has room for
+      // the full next-day schedule, so show every peak in the next 24 hours.
+      const futureHorizon = dialHours === 24 ? 24 * HOUR : 12 * HOUR;
+      const intervals = peakIntervalsBetween(new Date(now - 12 * HOUR), new Date(now.getTime() + futureHorizon), true);
       let past = '';
       let future = '';
 
