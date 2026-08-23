@@ -120,6 +120,51 @@
       font-weight: 550;
     }
 
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .seg-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 550;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .seg-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .seg-btn {
+      padding: 7px 13px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .seg-btn.is-active {
+      background: var(--cyan-soft);
+      color: var(--ink);
+    }
+
     .pulse {
       width: 10px;
       height: 10px;
@@ -216,6 +261,7 @@
     .tick { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-linecap: round; }
     .tick.major { stroke: rgba(255,255,255,0.66); stroke-width: 3; }
     .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
+    .is-24h .label { font-size: 15px; }
     .hour-hand { stroke: var(--green); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(46,229,157,0.48)); }
     .is-peak .hour-hand { stroke: var(--orange); filter: drop-shadow(0 0 10px rgba(255,107,74,0.58)); }
     .is-weekend .hour-hand { stroke: var(--violet); filter: drop-shadow(0 0 10px rgba(155,135,255,0.5)); }
@@ -502,7 +548,14 @@
           <p>UTC peak pricing converted to your local time zone</p>
         </div>
       </div>
-      <div class="chip"><span class="pulse"></span><span id="topStatus">Checking current window…</span></div>
+      <div class="topbar-right">
+        <span class="seg-label">Analog clock style</span>
+        <div class="seg-toggle" id="hourToggle" role="group" aria-label="Clock dial mode">
+          <button type="button" class="seg-btn is-active" data-dial="12" aria-pressed="true">12h</button>
+          <button type="button" class="seg-btn" data-dial="24" aria-pressed="false">24h</button>
+        </div>
+        <div class="chip"><span class="pulse"></span><span id="topStatus">Checking current window…</span></div>
+      </div>
     </header>
 
     <main class="grid">
@@ -546,7 +599,7 @@
         <div class="hero-card">
           <div class="kicker">Peak-valley pricing · 2× during peak</div>
           <h2>Plan your API calls.</h2>
-          <p>The round dial is a regular 12-hour clock: bright peak arcs are ahead or active, while faded arcs sit behind for elapsed peak time. On weekends (Beijing time) the dial stays clear — every call is off-peak all day.</p>
+          <p>The round dial is a regular <span id="dialType">12-hour</span> clock: bright peak arcs are ahead or active, while faded arcs sit behind for elapsed peak time. On weekends (Beijing time) the dial stays clear — every call is off-peak all day.</p>
         </div>
 
         <div class="status-card">
@@ -625,7 +678,11 @@
       localSummary: document.getElementById('localSummary'),
       track: document.getElementById('track'),
       windows: document.getElementById('windows'),
-      clockLegend: document.getElementById('clockLegend')
+      clockLegend: document.getElementById('clockLegend'),
+      clockPanel: document.querySelector('.clock-panel'),
+      dialType: document.getElementById('dialType'),
+      hourToggle: document.getElementById('hourToggle'),
+      clockDesc: document.getElementById('clockDesc')
     };
 
     const fmtTime = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
@@ -691,37 +748,51 @@
       return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
     }
 
-    // Use one angle conversion for ticks, arcs, and hands so every element
-    // shares the same 12-hour dial geometry.
-    function angleForClockMinutes(minutes) {
-      // Keep 720 as 360° for arc endpoints at 12 o'clock.
-      return minutes / 720 * 360;
+    // Dial geometry. The active dial (12h or 24h) changes the hour-hand speed and
+    // hour labels; the minute and second hands always do one revolution per
+    // minute/hour regardless of dial type.
+    let dialHours = 12;
+
+    function dialRange() {
+      return dialHours * 60;
+    }
+
+    function angleForDialMinutes(minutes) {
+      // dialRange() minutes maps to 360° so arc endpoints land on the dial.
+      return minutes / dialRange() * 360;
     }
 
     function angleForMinute(minute) {
-      return angleForClockMinutes(minute * 12);
+      return minute / 60 * 360;
     }
 
     function angleForSecond(second) {
-      return angleForMinute(second);
-    }
-
-    function arcPath12(startMinute, endMinute, r = CLOCK_RADIUS) {
-      if (endMinute <= startMinute) return '';
-      const startAngle = angleForClockMinutes(startMinute);
-      const endAngle = angleForClockMinutes(endMinute);
-      const start = point(CLOCK_CENTER, CLOCK_CENTER, r, startAngle);
-      const end = point(CLOCK_CENTER, CLOCK_CENTER, r, endAngle);
-      const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
-      return `M ${start.x.toFixed(3)} ${start.y.toFixed(3)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(3)} ${end.y.toFixed(3)}`;
+      return second / 60 * 360;
     }
 
     function wallMinute(date) {
       return date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60 + date.getMilliseconds() / 60000;
     }
 
-    function minute12(date) {
-      return (wallMinute(date) % 720 + 720) % 720;
+    // Position of a moment on the active dial: the 12h dial wraps every 12h
+    // (hours % 12), the 24h dial wraps every 24h.
+    function dialMinutesOf(date) {
+      return (wallMinute(date) % dialRange() + dialRange()) % dialRange();
+    }
+
+    // Hour hand: one revolution per 12h (12h dial) or per 24h (24h dial = 2× slower).
+    function hourHandAngle(date) {
+      return angleForDialMinutes(dialMinutesOf(date));
+    }
+
+    function arcPath(startMinute, endMinute, r = CLOCK_RADIUS) {
+      if (endMinute <= startMinute) return '';
+      const startAngle = angleForDialMinutes(startMinute);
+      const endAngle = angleForDialMinutes(endMinute);
+      const start = point(CLOCK_CENTER, CLOCK_CENTER, r, startAngle);
+      const end = point(CLOCK_CENTER, CLOCK_CENTER, r, endAngle);
+      const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+      return `M ${start.x.toFixed(3)} ${start.y.toFixed(3)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(3)} ${end.y.toFixed(3)}`;
     }
 
     function sameLocalDate(a, b) {
@@ -736,21 +807,22 @@
     }
 
     function arcFragments(start, end, className) {
-      const sm = minute12(start);
-      const em = minute12(end);
+      const R = dialRange();
+      const sm = dialMinutesOf(start);
+      const em = dialMinutesOf(end);
       const parts = [];
 
-      if (Math.abs(end - start) >= 12 * HOUR) {
-        parts.push([0, 720]);
+      if (Math.abs(end - start) >= R * 60000) {
+        parts.push([0, R]);
       } else if (em > sm) {
         parts.push([sm, em]);
       } else {
-        parts.push([sm, 720], [0, em]);
+        parts.push([sm, R], [0, em]);
       }
 
       return parts
         .filter(([a, b]) => b - a > 0.35)
-        .map(([a, b]) => `<path class="peak-arc ${className}" d="${arcPath12(a, b)}" />`)
+        .map(([a, b]) => `<path class="peak-arc ${className}" d="${arcPath(a, b)}" />`)
         .join('');
     }
 
@@ -781,18 +853,28 @@
 
     function drawTicks() {
       let html = '';
+
+      // Minute ticks (60 around, 6° each) so the minute and second hands read
+      // correctly against the rim on either dial type.
       for (let i = 0; i < 60; i++) {
         const angle = angleForMinute(i);
         const major = i % 5 === 0;
         const a = point(CLOCK_CENTER, CLOCK_CENTER, major ? 139 : 151, angle);
         const b = point(CLOCK_CENTER, CLOCK_CENTER, TICK_OUTER_RADIUS, angle);
         html += `<line class="tick${major ? ' major' : ''}" x1="${a.x.toFixed(2)}" y1="${a.y.toFixed(2)}" x2="${b.x.toFixed(2)}" y2="${b.y.toFixed(2)}" />`;
-        if (major) {
-          const hour = i / 5;
-          const label = point(210, 210, 119, angle);
-          html += `<text class="label" x="${label.x.toFixed(2)}" y="${label.y.toFixed(2)}">${hour === 0 ? '12' : hour}</text>`;
-        }
       }
+
+      // Hour labels: 12 around (1–12) or 24 around (0–23, midnight at top).
+      const count = dialHours;
+      for (let h = 0; h < count; h++) {
+        const angle = (h / count) * 360;
+        const label = point(CLOCK_CENTER, CLOCK_CENTER, 119, angle);
+        const text = (dialHours === 12)
+          ? (h === 0 ? '12' : String(h))
+          : (h === 0 ? '0' : String(h));
+        html += `<text class="label" x="${label.x.toFixed(2)}" y="${label.y.toFixed(2)}">${text}</text>`;
+      }
+
       el.ticks.innerHTML = html;
     }
 
@@ -899,12 +981,11 @@
       const weekend = isBeijingWeekend(now);
       // Interpolate the hour and minute hands between markings like a real
       // analog clock; the second hand stays on its visible whole-second mark.
-      const hourMinute = (now.getHours() % 12) * 60 + now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
       const minute = now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
       // Second markers are whole-second ticks, so keep this hand exactly on
       // the visible second mark rather than drifting between two marks.
       const second = now.getSeconds();
-      const hourEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.hour, angleForClockMinutes(hourMinute));
+      const hourEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.hour, hourHandAngle(now));
       const minuteEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.minute, angleForMinute(minute));
       const secondEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.second, angleForSecond(second));
       el.hourHand.setAttribute('x2', hourEnd.x.toFixed(2));
@@ -928,7 +1009,54 @@
       el.nextChange.textContent = next ? `${nextMode} ${fmtWeekdayShort.format(next)} ${fmtTime.format(next)} · ${durationLabel(next - now)}` : 'Unknown';
     }
 
-    drawTicks();
+    const DIAL_STORAGE_KEY = 'deepseekClock.dial';
+
+    function loadDialMode() {
+      try {
+        return Number(localStorage.getItem(DIAL_STORAGE_KEY)) === 24 ? 24 : 12;
+      } catch (e) {
+        return 12;
+      }
+    }
+
+    function saveDialMode(mode) {
+      try {
+        localStorage.setItem(DIAL_STORAGE_KEY, String(mode));
+      } catch (e) {
+        /* storage unavailable — ignore */
+      }
+    }
+
+    function applyDialMode() {
+      const is24 = dialHours === 24;
+      el.app.classList.toggle('is-24h', is24);
+      el.dialType.textContent = is24 ? '24-hour' : '12-hour';
+      el.clockDesc.textContent = is24
+        ? 'A 24-hour local clock. Bright orange arcs show current or upcoming peak-price time; muted arcs show peak time already behind.'
+        : 'A 12-hour local clock. Bright orange arcs show current or upcoming peak-price time; muted arcs show peak time already behind.';
+      el.clockPanel.setAttribute('aria-label', is24 ? '24-hour local clock with peak hours highlighted' : '12-hour local clock with peak hours highlighted');
+      for (const btn of el.hourToggle.querySelectorAll('.seg-btn')) {
+        const active = Number(btn.dataset.dial) === dialHours;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      }
+      drawTicks();
+      drawRoundClock(new Date());
+    }
+
+    el.hourToggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      const mode = Number(btn.dataset.dial);
+      if (mode === dialHours) return;
+      dialHours = mode;
+      saveDialMode(mode);
+      applyDialMode();
+    });
+
+    // Restore the preferred dial (12h default), then draw and start ticking.
+    dialHours = loadDialMode();
+    applyDialMode();
     update();
     setInterval(update, 1000);
   </script>
