@@ -165,6 +165,11 @@
       color: var(--ink);
     }
 
+    .seg-btn:disabled {
+      cursor: default;
+      opacity: 0.72;
+    }
+
     .pulse {
       width: 10px;
       height: 10px;
@@ -222,6 +227,17 @@
       gap: 18px;
     }
 
+    .clock-controls {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: -8px;
+    }
+
     .clock-wrap {
       position: relative;
       width: min(580px, 100%);
@@ -261,7 +277,10 @@
     .tick { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-linecap: round; }
     .tick.major { stroke: rgba(255,255,255,0.66); stroke-width: 3; }
     .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
-    .is-24h .label { font-size: 15px; }
+    .hour-scale[data-mode="24"] .label { font-size: 15px; }
+    /* Opaque so two coincident markers look like one before they split/merge. */
+    .hour-mark { stroke: #8d97a7; stroke-width: 2.4; stroke-linecap: round; }
+    .hour-scale { pointer-events: none; }
     .hour-hand { stroke: var(--green); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(46,229,157,0.48)); }
     .is-peak .hour-hand { stroke: var(--orange); filter: drop-shadow(0 0 10px rgba(255,107,74,0.58)); }
     .is-weekend .hour-hand { stroke: var(--violet); filter: drop-shadow(0 0 10px rgba(155,135,255,0.5)); }
@@ -549,20 +568,22 @@
         </div>
       </div>
       <div class="topbar-right">
-        <span class="seg-label">Analog clock style</span>
-        <div class="seg-toggle" id="hourToggle" role="group" aria-label="Clock dial mode">
-          <button type="button" class="seg-btn is-active" data-dial="12" aria-pressed="true">12h</button>
-          <button type="button" class="seg-btn" data-dial="24" aria-pressed="false">24h</button>
-        </div>
         <div class="chip"><span class="pulse"></span><span id="topStatus">Checking current window…</span></div>
       </div>
     </header>
 
     <main class="grid">
       <section class="panel clock-panel" aria-label="12-hour local clock with peak hours highlighted">
+        <div class="clock-controls">
+          <span class="seg-label">Analog clock style</span>
+          <div class="seg-toggle" id="hourToggle" role="group" aria-label="Clock dial mode">
+            <button type="button" class="seg-btn is-active" data-dial="12" aria-pressed="true">12h</button>
+            <button type="button" class="seg-btn" data-dial="24" aria-pressed="false">24h</button>
+          </div>
+        </div>
         <div class="clock-wrap">
           <div class="orbital-glow" aria-hidden="true"></div>
-          <svg viewBox="0 0 420 420" role="img" aria-labelledby="clockTitle clockDesc">
+          <svg id="clockSvg" viewBox="0 0 420 420" role="img" aria-labelledby="clockTitle clockDesc">
             <title id="clockTitle">DeepSeek peak-hour clock</title>
             <desc id="clockDesc">A 12-hour local clock. Bright orange arcs show current or upcoming peak-price time; muted arcs show peak time already behind.</desc>
             <defs>
@@ -659,9 +680,12 @@
       minute: 151,
       second: 158
     };
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const DIAL_TRANSITION_MS = 720;
 
     const el = {
       app: document.getElementById('app'),
+      clockSvg: document.getElementById('clockSvg'),
       pastPeakArcs: document.getElementById('pastPeakArcs'),
       futurePeakArcs: document.getElementById('futurePeakArcs'),
       ticks: document.getElementById('ticks'),
@@ -752,14 +776,15 @@
     // hour labels; the minute and second hands always do one revolution per
     // minute/hour regardless of dial type.
     let dialHours = 12;
+    let dialTransitioning = false;
 
-    function dialRange() {
-      return dialHours * 60;
+    function dialRange(hours = dialHours) {
+      return hours * 60;
     }
 
-    function angleForDialMinutes(minutes) {
+    function angleForDialMinutes(minutes, hours = dialHours) {
       // dialRange() minutes maps to 360° so arc endpoints land on the dial.
-      return minutes / dialRange() * 360;
+      return minutes / dialRange(hours) * 360;
     }
 
     function angleForMinute(minute) {
@@ -776,13 +801,20 @@
 
     // Position of a moment on the active dial: the 12h dial wraps every 12h
     // (hours % 12), the 24h dial wraps every 24h.
-    function dialMinutesOf(date) {
-      return (wallMinute(date) % dialRange() + dialRange()) % dialRange();
+    function dialMinutesOf(date, hours = dialHours) {
+      const range = dialRange(hours);
+      return (wallMinute(date) % range + range) % range;
     }
 
     // Hour hand: one revolution per 12h (12h dial) or per 24h (24h dial = 2× slower).
-    function hourHandAngle(date) {
-      return angleForDialMinutes(dialMinutesOf(date));
+    function hourHandAngle(date, hours = dialHours) {
+      return angleForDialMinutes(dialMinutesOf(date, hours), hours);
+    }
+
+    function setHourHandAngle(angle) {
+      const end = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.hour, angle);
+      el.hourHand.setAttribute('x2', end.x.toFixed(2));
+      el.hourHand.setAttribute('y2', end.y.toFixed(2));
     }
 
     function arcPath(startMinute, endMinute, r = CLOCK_RADIUS) {
@@ -806,43 +838,102 @@
       return `${fmtTime.format(start)}, ${fmtShortDate.format(start)} – ${fmtTime.format(end)}, ${fmtShortDate.format(end)}`;
     }
 
-    function arcFragments(start, end, className) {
-      const R = dialRange();
-      const sm = dialMinutesOf(start);
-      const em = dialMinutesOf(end);
+    function dialMinuteFragments(start, end) {
+      const range = dialRange();
+      const startMinute = dialMinutesOf(start);
+      const endMinute = dialMinutesOf(end);
       const parts = [];
 
-      if (Math.abs(end - start) >= R * 60000) {
-        parts.push([0, R]);
-      } else if (em > sm) {
-        parts.push([sm, em]);
+      if (Math.abs(end - start) >= range * 60000) {
+        parts.push([0, range]);
+      } else if (endMinute > startMinute) {
+        parts.push([startMinute, endMinute]);
       } else {
-        parts.push([sm, R], [0, em]);
+        parts.push([startMinute, range], [0, endMinute]);
       }
 
-      return parts
+      return parts.filter(([a, b]) => b - a > 0.35);
+    }
+
+    function mergeMinuteFragments(fragments) {
+      const sorted = fragments
         .filter(([a, b]) => b - a > 0.35)
-        .map(([a, b]) => `<path class="peak-arc ${className}" d="${arcPath(a, b)}" />`)
+        .sort((a, b) => a[0] - b[0]);
+      const merged = [];
+      for (const fragment of sorted) {
+        const previous = merged[merged.length - 1];
+        if (!previous || fragment[0] > previous[1] + 0.35) {
+          merged.push([...fragment]);
+        } else {
+          previous[1] = Math.max(previous[1], fragment[1]);
+        }
+      }
+      return merged;
+    }
+
+    function subtractMinuteFragments(fragments, exclusions) {
+      let result = fragments.map(fragment => [...fragment]);
+      for (const [excludeStart, excludeEnd] of exclusions) {
+        result = result.flatMap(([start, end]) => {
+          if (excludeEnd <= start || excludeStart >= end) return [[start, end]];
+          const remainder = [];
+          if (excludeStart - start > 0.35) remainder.push([start, excludeStart]);
+          if (end - excludeEnd > 0.35) remainder.push([excludeEnd, end]);
+          return remainder;
+        });
+      }
+      return result;
+    }
+
+    function fragmentPaths(fragments, className) {
+      return fragments
+        .map(([start, end]) => `<path class="peak-arc ${className}" d="${arcPath(start, end)}" />`)
         .join('');
     }
 
+    function arcFragments(start, end, className) {
+      return fragmentPaths(dialMinuteFragments(start, end), className);
+    }
+
     function drawRoundClock(now) {
-      // A 12h face can only express the current 12-hour cycle without wrapping
-      // tomorrow's windows onto misleading positions. A 24h face has room for
-      // the full next-day schedule, so show every peak in the next 24 hours.
-      const futureHorizon = dialHours === 24 ? 24 * HOUR : 12 * HOUR;
-      const intervals = peakIntervalsBetween(new Date(now - 12 * HOUR), new Date(now.getTime() + futureHorizon), true);
       let past = '';
       let future = '';
 
-      for (const interval of intervals) {
-        if (interval.end <= now) {
-          past += arcFragments(interval.start, interval.end, 'past');
-        } else if (interval.start < now) {
-          past += arcFragments(interval.start, now, 'past');
-          future += arcFragments(now, interval.end, 'future');
-        } else {
-          future += arcFragments(interval.start, interval.end, 'future');
+      if (dialHours === 24) {
+        // A rolling next-24h range wraps back to the hand's current position.
+        // Merge those mapped fragments before drawing so adjacent occurrences
+        // form one arc instead of stacking round line caps at the hour hand.
+        const futureIntervals = peakIntervalsBetween(now, new Date(now.getTime() + DAY), true);
+        const futureFragments = mergeMinuteFragments(futureIntervals.flatMap(interval => {
+          // If peak pricing is active, show that complete active window as one
+          // bright arc rather than splitting it into elapsed/upcoming pieces.
+          const start = interval.actualStart < now && interval.actualEnd > now
+            ? interval.actualStart
+            : interval.start;
+          return dialMinuteFragments(start, interval.end);
+        }));
+
+        const pastIntervals = peakIntervalsBetween(new Date(now - 12 * HOUR), now, true);
+        const pastFragments = mergeMinuteFragments(
+          pastIntervals.flatMap(interval => dialMinuteFragments(interval.start, interval.end))
+        );
+        const visiblePastFragments = subtractMinuteFragments(pastFragments, futureFragments);
+
+        past = fragmentPaths(visiblePastFragments, 'past');
+        future = fragmentPaths(futureFragments, 'future');
+      } else {
+        // A 12h face only expresses its current cycle without wrapping future
+        // windows onto misleading positions.
+        const intervals = peakIntervalsBetween(new Date(now - 12 * HOUR), new Date(now.getTime() + 12 * HOUR), true);
+        for (const interval of intervals) {
+          if (interval.end <= now) {
+            past += arcFragments(interval.start, interval.end, 'past');
+          } else if (interval.start < now) {
+            past += arcFragments(interval.start, now, 'past');
+            future += arcFragments(now, interval.end, 'future');
+          } else {
+            future += arcFragments(interval.start, interval.end, 'future');
+          }
         }
       }
 
@@ -855,31 +946,127 @@
       el.clockLegend.classList.toggle('is-empty', !past && !future);
     }
 
-    function drawTicks() {
-      let html = '';
+    function createSvgElement(tag, className) {
+      const node = document.createElementNS(SVG_NS, tag);
+      if (className) node.setAttribute('class', className);
+      return node;
+    }
 
-      // Minute ticks (60 around, 6° each) so the minute and second hands read
-      // correctly against the rim on either dial type.
+    function appendMinuteTicks() {
+      const group = createSvgElement('g', 'minute-ticks');
+      // Minute ticks remain fixed: the minute and second hands have the same
+      // geometry in both dial styles.
       for (let i = 0; i < 60; i++) {
         const angle = angleForMinute(i);
         const major = i % 5 === 0;
         const a = point(CLOCK_CENTER, CLOCK_CENTER, major ? 139 : 151, angle);
         const b = point(CLOCK_CENTER, CLOCK_CENTER, TICK_OUTER_RADIUS, angle);
-        html += `<line class="tick${major ? ' major' : ''}" x1="${a.x.toFixed(2)}" y1="${a.y.toFixed(2)}" x2="${b.x.toFixed(2)}" y2="${b.y.toFixed(2)}" />`;
+        const tick = createSvgElement('line', `tick${major ? ' major' : ''}`);
+        tick.setAttribute('x1', a.x.toFixed(2));
+        tick.setAttribute('y1', a.y.toFixed(2));
+        tick.setAttribute('x2', b.x.toFixed(2));
+        tick.setAttribute('y2', b.y.toFixed(2));
+        group.appendChild(tick);
+      }
+      el.ticks.appendChild(group);
+    }
+
+    function positionHourScaleItem(item, angle) {
+      const mark = item.querySelector('.hour-mark');
+      const label = item.querySelector('.label');
+      if (mark) {
+        const markStart = point(CLOCK_CENTER, CLOCK_CENTER, 132, angle);
+        const markEnd = point(CLOCK_CENTER, CLOCK_CENTER, 143, angle);
+        mark.setAttribute('x1', markStart.x.toFixed(2));
+        mark.setAttribute('y1', markStart.y.toFixed(2));
+        mark.setAttribute('x2', markEnd.x.toFixed(2));
+        mark.setAttribute('y2', markEnd.y.toFixed(2));
+      }
+      if (label) {
+        const labelPoint = point(CLOCK_CENTER, CLOCK_CENTER, 119, angle);
+        label.setAttribute('x', labelPoint.x.toFixed(2));
+        label.setAttribute('y', labelPoint.y.toFixed(2));
+      }
+    }
+
+    function createHourScaleLayer(mode, angleForHour, { marks = true, labels = true } = {}) {
+      const layer = createSvgElement('g', 'hour-scale');
+      layer.dataset.mode = String(mode);
+      for (let h = 0; h < mode; h++) {
+        const item = createSvgElement('g', 'hour-scale-item');
+        item.dataset.hour = String(h);
+        if (marks) item.appendChild(createSvgElement('line', 'hour-mark'));
+        if (labels) {
+          const label = createSvgElement('text', 'label');
+          label.textContent = mode === 12 && h === 0 ? '12' : String(h);
+          item.appendChild(label);
+        }
+        positionHourScaleItem(item, angleForHour(h));
+        layer.appendChild(item);
+      }
+      return layer;
+    }
+
+    function setHourScaleLabelOpacity(layer, opacity) {
+      for (const label of layer.querySelectorAll('.label')) {
+        label.setAttribute('opacity', opacity.toFixed(3));
+      }
+    }
+
+    function updateHourScaleAngles(layer, fromAngle, toAngle, progress) {
+      for (const item of layer.querySelectorAll('.hour-scale-item')) {
+        const hour = Number(item.dataset.hour);
+        // Deliberately interpolate the signed angle directly. On 12→24 the
+        // 0–11 half travels anti-clockwise while 12–23 travels clockwise; the
+        // reverse transition swaps those directions and merges both halves.
+        const from = fromAngle(hour);
+        const angle = from + (toAngle(hour) - from) * progress;
+        positionHourScaleItem(item, angle);
+      }
+    }
+
+    function drawTicks() {
+      el.ticks.replaceChildren();
+      appendMinuteTicks();
+      el.ticks.appendChild(createHourScaleLayer(dialHours, h => h / dialHours * 360));
+    }
+
+    function prepareDialScaleTransition(fromMode, toMode) {
+      el.ticks.replaceChildren();
+      appendMinuteTicks();
+
+      if (fromMode === 12 && toMode === 24) {
+        // The old layer contributes labels only. The 24-marker layer starts as
+        // 12 opaque pairs at identical positions, so each visible marker truly
+        // splits and travels into its AM/PM destination without fading.
+        const outgoing = createHourScaleLayer(12, h => h * 30, { marks: false });
+        const moving = createHourScaleLayer(24, h => (h % 12) * 30);
+        setHourScaleLabelOpacity(moving, 0);
+        el.ticks.append(outgoing, moving);
+        return progress => {
+          const blend = Math.min(1, progress * 1.8);
+          setHourScaleLabelOpacity(outgoing, 1 - blend);
+          setHourScaleLabelOpacity(moving, blend);
+          updateHourScaleAngles(moving, h => (h % 12) * 30, h => h * 15, progress);
+        };
       }
 
-      // Hour labels: 12 around (1–12) or 24 around (0–23, midnight at top).
-      const count = dialHours;
-      for (let h = 0; h < count; h++) {
-        const angle = (h / count) * 360;
-        const label = point(CLOCK_CENTER, CLOCK_CENTER, 119, angle);
-        const text = (dialHours === 12)
-          ? (h === 0 ? '12' : String(h))
-          : (h === 0 ? '0' : String(h));
-        html += `<text class="label" x="${label.x.toFixed(2)}" y="${label.y.toFixed(2)}">${text}</text>`;
-      }
+      // In reverse, all 24 opaque markers physically converge into 12 pairs.
+      // Only their numbers fade while a single 12h label set appears.
+      const moving = createHourScaleLayer(24, h => h * 15);
+      const incoming = createHourScaleLayer(12, h => h * 30, { marks: false });
+      setHourScaleLabelOpacity(incoming, 0);
+      el.ticks.append(moving, incoming);
+      return progress => {
+        const blend = Math.min(1, progress * 1.8);
+        setHourScaleLabelOpacity(moving, 1 - blend);
+        setHourScaleLabelOpacity(incoming, blend);
+        updateHourScaleAngles(moving, h => h * 15, h => (h % 12) * 30, progress);
+      };
+    }
 
-      el.ticks.innerHTML = html;
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
     function drawNext24(now) {
@@ -979,7 +1166,7 @@
         cachedNextBoundary = nextBoundary(now);
         lastTimelineMinute = timelineMinute;
       }
-      drawRoundClock(now);
+      if (!dialTransitioning) drawRoundClock(now);
 
       const peak = isPeak(now);
       const weekend = isBeijingWeekend(now);
@@ -989,11 +1176,9 @@
       // Second markers are whole-second ticks, so keep this hand exactly on
       // the visible second mark rather than drifting between two marks.
       const second = now.getSeconds();
-      const hourEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.hour, hourHandAngle(now));
+      if (!dialTransitioning) setHourHandAngle(hourHandAngle(now));
       const minuteEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.minute, angleForMinute(minute));
       const secondEnd = point(CLOCK_CENTER, CLOCK_CENTER, HAND_RADII.second, angleForSecond(second));
-      el.hourHand.setAttribute('x2', hourEnd.x.toFixed(2));
-      el.hourHand.setAttribute('y2', hourEnd.y.toFixed(2));
       el.minuteHand.setAttribute('x2', minuteEnd.x.toFixed(2));
       el.minuteHand.setAttribute('y2', minuteEnd.y.toFixed(2));
       el.secondHand.setAttribute('x2', secondEnd.x.toFixed(2));
@@ -1031,7 +1216,7 @@
       }
     }
 
-    function applyDialMode() {
+    function updateDialModeUi() {
       const is24 = dialHours === 24;
       el.app.classList.toggle('is-24h', is24);
       el.dialType.textContent = is24 ? '24-hour' : '12-hour';
@@ -1039,23 +1224,99 @@
         ? 'A 24-hour local clock. Bright orange arcs show current or upcoming peak-price time; muted arcs show peak time already behind.'
         : 'A 12-hour local clock. Bright orange arcs show current or upcoming peak-price time; muted arcs show peak time already behind.';
       el.clockPanel.setAttribute('aria-label', is24 ? '24-hour local clock with peak hours highlighted' : '12-hour local clock with peak hours highlighted');
+      el.clockSvg.setAttribute('aria-busy', dialTransitioning ? 'true' : 'false');
       for (const btn of el.hourToggle.querySelectorAll('.seg-btn')) {
         const active = Number(btn.dataset.dial) === dialHours;
         btn.classList.toggle('is-active', active);
         btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.disabled = dialTransitioning;
       }
+    }
+
+    function setPeakArcOpacity(opacity) {
+      const value = opacity === null ? '' : String(opacity);
+      el.pastPeakArcs.style.opacity = value;
+      el.futurePeakArcs.style.opacity = value;
+    }
+
+    function applyDialMode() {
+      updateDialModeUi();
       drawTicks();
-      drawRoundClock(new Date());
+      const now = new Date();
+      drawRoundClock(now);
+      setHourHandAngle(hourHandAngle(now));
+    }
+
+    function animateDialMode(mode) {
+      if (dialTransitioning || mode === dialHours) return;
+
+      const fromMode = dialHours;
+      const startedAt = new Date();
+      const fromHourAngle = hourHandAngle(startedAt, fromMode);
+      const toHourAngle = hourHandAngle(startedAt, mode);
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion) {
+        dialHours = mode;
+        saveDialMode(mode);
+        applyDialMode();
+        return;
+      }
+
+      // Build both 12-hour halves at their shared source positions before the
+      // target mode becomes active. Their signed angle interpolation makes one
+      // half move clockwise and the other anti-clockwise at the same time.
+      const updateScale = prepareDialScaleTransition(fromMode, mode);
+      dialTransitioning = true;
+      dialHours = mode;
+      saveDialMode(mode);
+      updateDialModeUi();
+
+      let animationStart = null;
+      let arcsSwapped = false;
+      const arcSwapPoint = 0.42;
+
+      function frame(timestamp) {
+        if (animationStart === null) animationStart = timestamp;
+        const progress = Math.min(1, (timestamp - animationStart) / DIAL_TRANSITION_MS);
+        const eased = easeInOutCubic(progress);
+        updateScale(eased);
+
+        // Direct signed interpolation preserves the natural mapping: AM and PM
+        // rotate in opposite directions, and switching back reverses the path.
+        setHourHandAngle(fromHourAngle + (toHourAngle - fromHourAngle) * eased);
+
+        if (progress < arcSwapPoint) {
+          setPeakArcOpacity(1 - easeInOutCubic(progress / arcSwapPoint));
+        } else {
+          if (!arcsSwapped) {
+            drawRoundClock(new Date());
+            arcsSwapped = true;
+          }
+          setPeakArcOpacity(easeInOutCubic((progress - arcSwapPoint) / (1 - arcSwapPoint)));
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+
+        dialTransitioning = false;
+        drawTicks();
+        const now = new Date();
+        drawRoundClock(now);
+        setPeakArcOpacity(null);
+        setHourHandAngle(hourHandAngle(now));
+        updateDialModeUi();
+      }
+
+      requestAnimationFrame(frame);
     }
 
     el.hourToggle.addEventListener('click', (e) => {
       const btn = e.target.closest('.seg-btn');
-      if (!btn) return;
-      const mode = Number(btn.dataset.dial);
-      if (mode === dialHours) return;
-      dialHours = mode;
-      saveDialMode(mode);
-      applyDialMode();
+      if (!btn || dialTransitioning) return;
+      animateDialMode(Number(btn.dataset.dial));
     });
 
     // Restore the preferred dial (12h default), then draw and start ticking.
