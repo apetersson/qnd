@@ -128,14 +128,6 @@
       flex-wrap: wrap;
     }
 
-    .seg-label {
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 550;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-
     .seg-toggle {
       display: inline-flex;
       align-items: center;
@@ -575,7 +567,6 @@
     <main class="grid">
       <section class="panel clock-panel" aria-label="12-hour local clock with peak hours highlighted">
         <div class="clock-controls">
-          <span class="seg-label">Analog clock style</span>
           <div class="seg-toggle" id="hourToggle" role="group" aria-label="Clock dial mode">
             <button type="button" class="seg-btn is-active" data-dial="12" aria-pressed="true">12h</button>
             <button type="button" class="seg-btn" data-dial="24" aria-pressed="false">24h</button>
