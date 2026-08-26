@@ -5,6 +5,7 @@
   "profiles": [
     {
       "id": "deepseek-v4-flash",
+      "slug": "deepseek",
       "provider": "DeepSeek",
       "model": "V4 Flash",
       "product": "API",
@@ -42,6 +43,7 @@
     },
     {
       "id": "zai-glm-5-3",
+      "slug": "zai",
       "provider": "Z.ai",
       "model": "GLM-5.3",
       "product": "Coding Plan",
@@ -78,6 +80,7 @@
     },
     {
       "id": "qoder-qwen3-7-max",
+      "slug": "qoder",
       "provider": "Qoder",
       "model": "Qwen3.7 Max",
       "product": "Credits promotion",
