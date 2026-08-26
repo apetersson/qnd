@@ -733,9 +733,15 @@
       font-weight: 650;
     }
 
+    .window.is-off-peak em {
+      background: rgba(34, 211, 238, 0.13);
+      color: #b9f6ff;
+    }
+
     .window strong { display: block; font-weight: 550; }
     .window small { color: var(--muted); }
     .multiplier { color: var(--gold); font-weight: 650; }
+    .window.is-off-peak .multiplier { color: var(--cyan); }
 
     @media (max-width: 920px) {
       .grid { grid-template-columns: 1fr; }
@@ -1413,9 +1419,45 @@
       return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
+    function pricingPeriodsBetween(rangeStart, rangeEnd, peakIntervals) {
+      const periods = [];
+      let cursor = new Date(rangeStart);
+
+      // Include every period that intersects the next-24h horizon, but end it
+      // at its real schedule boundary. The final row may therefore extend past
+      // +24h instead of presenting the viewport edge as a pricing change.
+      for (const interval of peakIntervals) {
+        const peakStart = new Date(Math.max(interval.actualStart, rangeStart));
+        if (peakStart > cursor) {
+          periods.push({ start: new Date(cursor), end: peakStart, peak: false });
+        }
+
+        periods.push({ start: peakStart, end: interval.actualEnd, peak: true });
+        cursor = interval.actualEnd;
+        if (cursor >= rangeEnd) break;
+      }
+
+      if (cursor < rangeEnd) {
+        const nextPeak = nextPeakStart(cursor);
+        periods.push({
+          start: new Date(cursor),
+          end: nextPeak || new Date(rangeEnd),
+          peak: false
+        });
+      }
+
+      return periods.filter(period => period.end > period.start);
+    }
+
     function drawNext24(now) {
       const end = new Date(now.getTime() + DAY);
-      const intervals = peakIntervalsBetween(now, end, true);
+      const actualIntervals = peakIntervalsBetween(now, end, false);
+      const intervals = actualIntervals.map(interval => ({
+        ...interval,
+        start: new Date(Math.max(interval.actualStart, now)),
+        end: new Date(Math.min(interval.actualEnd, end))
+      })).filter(interval => interval.end > interval.start);
+      const pricingPeriods = pricingPeriodsBetween(now, end, actualIntervals);
 
       el.track.innerHTML = '<i class="now-marker" id="nowMarker" style="left:0%"></i>' + intervals.map(({ start, end }) => {
         const left = Math.max(0, (start - now) / DAY * 100);
@@ -1429,24 +1471,27 @@
           const when = `${fmtWeekdayLong.format(next)} ${fmtTime.format(next)}`;
           const inDur = durationLabelShort(next - now);
           el.localSummary.textContent = `Next ${activeProfile.schedule.windowName} window ${when} · in ${inDur}`;
-          el.windows.innerHTML =
-            `<div class="window"><em>1</em><div><strong>Next ${activeProfile.schedule.windowName}: ${when} (${inDur})</strong><small>No higher-rate window within the next 24h in ${tz}</small></div><div class="multiplier">${activeProfile.periods.peak.badge}</div></div>`;
         } else {
           el.localSummary.textContent = 'No higher-rate windows found';
-          el.windows.innerHTML = '<div class="window"><div>No higher-rate windows found.</div></div>';
         }
       } else {
-        const summary = intervals.map(i => formatWindow(i.start, i.end, now)).join(', ');
+        const summary = pricingPeriods
+          .filter(pricingPeriod => pricingPeriod.peak)
+          .map(pricingPeriod => formatWindow(pricingPeriod.start, pricingPeriod.end, now))
+          .join(', ');
         el.localSummary.textContent = summary;
-
-        el.windows.innerHTML = intervals.map((i, index) => {
-          const hours = ((i.end - i.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
-          const descriptor = i.actualStart < now
-            ? `${hours}h remaining in ${tz}`
-            : `${hours}h ${activeProfile.schedule.windowName} window in ${tz}`;
-          return `<div class="window"><em>${index + 1}</em><div><strong>${formatWindow(i.start, i.end, now)}</strong><small>${descriptor}</small></div><div class="multiplier">${activeProfile.periods.peak.badge}</div></div>`;
-        }).join('');
       }
+
+      el.windows.innerHTML = pricingPeriods.map((pricingPeriod, index) => {
+        const period = pricingPeriod.peak ? activeProfile.periods.peak : activeProfile.periods.offPeak;
+        const hours = ((pricingPeriod.end - pricingPeriod.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
+        const current = pricingPeriod.start.getTime() === now.getTime();
+        const descriptor = current
+          ? `${hours}h remaining · ${period.name}`
+          : `${hours}h · ${period.name}`;
+        const rowClass = pricingPeriod.peak ? 'window' : 'window is-off-peak';
+        return `<div class="${rowClass}"><em>${index + 1}</em><div><strong>${formatWindow(pricingPeriod.start, pricingPeriod.end, now)}</strong><small>${descriptor} in ${tz}</small></div><div class="multiplier">${period.badge}</div></div>`;
+      }).join('');
     }
 
     function nextBoundary(now) {
