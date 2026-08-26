@@ -4,6 +4,7 @@ title: Implement the authoritative game session
 status: To Do
 assignee: []
 created_date: '2026-08-26 10:40'
+updated_date: '2026-08-26 10:46'
 labels:
   - server
   - realtime
@@ -27,11 +28,11 @@ Implement the in-memory rules engine and WebSocket command handling behind the s
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 The first two distinct joiners receive cryptographically random resume tokens and Red/Yellow seats; a third join is rejected as game full, while a valid stored token restores its original seat
+- [ ] #1 The server validates a trimmed 1-to-20-character display name; the first two distinct joiners receive cryptographically random resume tokens and Red/Yellow seats, while a third join is rejected as game full and a valid stored token restores its original seat. The second successful seat claim atomically starts round one with Red, turn generation 1, and a deadline exactly five seconds after that server transition
 - [ ] #2 A drop is accepted only for the seated token, current color, current turn generation, non-full column, playing phase, and server receipt before the five-second deadline
 - [ ] #3 At each deadline the server atomically increments that color’s round-local strike count, changes turn, increments turn generation, and starts a new five-second deadline without placing a piece; disconnection never pauses the clock or releases the seat
 - [ ] #4 Four-in-a-row is detected horizontally, vertically, and on both diagonals; a win increments only the winner score, a draw increments no score, and the winning cells and five-second next-round deadline are broadcast
 - [ ] #5 Automatic rounds clear board and strikes, preserve players and scores, alternate the starting color, and cannot be affected by stale move or timer callbacks
-- [ ] #6 Presenter-token commands can reset the current round while preserving scores or clear players and all match state; player tokens cannot invoke them
-- [ ] #7 Focused logic checks cover the four win directions, full-column rejection, a five-second timeout transition, stale-turn rejection, and automatic round restart; no broad test suite is introduced
+- [ ] #6 Presenter-token reset restarts the current round immediately with its existing starting color while preserving players and scores; clear players removes seats and scores and makes the next game start with Red. Player tokens cannot invoke either command
+- [ ] #7 Focused logic checks cover the four win directions, full-column rejection, the second-seat start transition, a five-second timeout transition, stale-turn rejection, and automatic round restart; no broad test suite is introduced
 <!-- AC:END -->
