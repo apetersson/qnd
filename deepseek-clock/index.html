@@ -1081,7 +1081,19 @@
       if (endAngle <= startAngle) return '';
       const start = point(CLOCK_CENTER, CLOCK_CENTER, r, startAngle);
       const end = point(CLOCK_CENTER, CLOCK_CENTER, r, endAngle);
-      const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+      const span = endAngle - startAngle;
+
+      // An SVG arc whose endpoints are identical renders nothing. Split a
+      // complete dial into two semicircles so windows lasting at least one
+      // whole 12h/24h cycle remain visible.
+      if (span >= 359.999) {
+        const midpoint = point(CLOCK_CENTER, CLOCK_CENTER, r, startAngle + 180);
+        return `M ${start.x.toFixed(3)} ${start.y.toFixed(3)} ` +
+          `A ${r} ${r} 0 0 1 ${midpoint.x.toFixed(3)} ${midpoint.y.toFixed(3)} ` +
+          `A ${r} ${r} 0 0 1 ${start.x.toFixed(3)} ${start.y.toFixed(3)}`;
+      }
+
+      const largeArc = span <= 180 ? 0 : 1;
       return `M ${start.x.toFixed(3)} ${start.y.toFixed(3)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(3)} ${end.y.toFixed(3)}`;
     }
 
@@ -1163,10 +1175,13 @@
       const nearIntervals = peakIntervalsBetween(now, horizonEnd, true);
       const laterIntervals = peakIntervalsBetween(horizonEnd, followingEnd, true);
 
-      // Keep the complete active window bright, then include every upcoming
-      // fragment in the selected 12h/24h planning horizon.
+      // Keep the complete active window bright when it fits unambiguously on
+      // the selected dial. Longer windows wrap a 12h dial, so show only their
+      // remaining planning-horizon portion instead of implying a full-day rate.
       const near = mergeMinuteFragments(nearIntervals.flatMap(interval => {
-        const start = interval.actualStart < now && interval.actualEnd > now
+        const activeNow = interval.actualStart < now && interval.actualEnd > now;
+        const completeWindowFits = interval.actualEnd - interval.actualStart <= hours * HOUR;
+        const start = activeNow && completeWindowFits
           ? interval.actualStart
           : interval.start;
         return dialMinuteFragments(start, interval.end, hours);
