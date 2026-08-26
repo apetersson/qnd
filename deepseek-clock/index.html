@@ -902,7 +902,6 @@
     };
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const DIAL_TRANSITION_MS = 720;
-    const PROFILE_STORAGE_KEY = 'peakPricingClock.profile';
     const scheduleFormatterCache = new Map();
     let pricingConfig = null;
     let activeProfile = null;
@@ -1594,22 +1593,6 @@
 
     const DIAL_STORAGE_KEY = 'deepseekClock.dial';
 
-    function savedProfileId() {
-      try {
-        return localStorage.getItem(PROFILE_STORAGE_KEY);
-      } catch (e) {
-        return null;
-      }
-    }
-
-    function saveProfileId(profileId) {
-      try {
-        localStorage.setItem(PROFILE_STORAGE_KEY, profileId);
-      } catch (e) {
-        /* storage unavailable — ignore */
-      }
-    }
-
     function normalizedProviderKey(value) {
       return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
     }
@@ -1742,15 +1725,12 @@
       updateProfileMenuState();
     }
 
-    function selectProfile(profileId, persist = true) {
+    function selectProfile(profileId, updateHash = true) {
       const profile = pricingConfig.profiles.find(candidate => candidate.id === profileId) ||
         pricingConfig.profiles.find(candidate => candidate.id === pricingConfig.defaultProfile) ||
         pricingConfig.profiles[0];
       activeProfile = profile;
-      if (persist) {
-        saveProfileId(profile.id);
-        syncProfileHash(profile);
-      }
+      if (updateHash) syncProfileHash(profile);
       applyProfileUi();
       lastTimelineMinute = '';
       cachedNextBoundary = null;
@@ -1921,7 +1901,7 @@
         populateProfileMenu();
 
         dialHours = loadDialMode();
-        selectProfile(profileIdFromHash() || savedProfileId() || pricingConfig.defaultProfile, false);
+        selectProfile(profileIdFromHash() || pricingConfig.defaultProfile, false);
         applyDialMode();
         update();
         setInterval(update, 1000);
