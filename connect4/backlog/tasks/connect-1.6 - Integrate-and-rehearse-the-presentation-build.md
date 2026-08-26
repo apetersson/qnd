@@ -4,7 +4,7 @@ title: Integrate and rehearse the presentation build
 status: To Do
 assignee: []
 created_date: '2026-08-26 10:40'
-updated_date: '2026-08-26 10:46'
+updated_date: '2026-08-26 10:50'
 labels:
   - integration
   - presentation
@@ -31,7 +31,7 @@ Connect the independently implemented tracks, resolve only integration gaps, and
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 The client composition entrypoint registers the finished player and presenter route exports, and the server composition entrypoint instantiates the finished game session and host runtime without changing feature internals
+- [ ] #1 The client composition entrypoint registers the finished player and presenter route exports. The server composition entrypoint passes the finished createGameSession factory into the host runtime; it does not instantiate either feature or generate secrets itself
 - [ ] #2 npm install, npm run typecheck, the focused game/launcher checks, and npm run build complete successfully
 - [ ] #3 A concise README gives prerequisites and the single host/stop workflow, states that the URL changes per run and is temporary, and documents presenter reset/clear controls
 - [ ] #4 A local three-session smoke run confirms first-two seat assignment, third-visitor rejection, synchronized moves, at least one skipped five-second timeout, a completed win, score update, and automatic next round
