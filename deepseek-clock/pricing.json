@@ -117,7 +117,7 @@
     },
     {
       "id": "qoder-qwen3-7-max",
-      "slug": "qoder",
+      "slug": "qoder-qwen37-max",
       "provider": "Qoder",
       "model": "Qwen3.7 Max",
       "product": "Credits promotion",
@@ -154,7 +154,7 @@
     },
     {
       "id": "qoder-qwen3-8-max",
-      "slug": "qoder-qwen38",
+      "slug": "qoder-qwen38-max",
       "provider": "Qoder",
       "model": "Qwen3.8 Max",
       "product": "Credits promotion",
