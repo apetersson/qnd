@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-29",
+  "updatedAt": "2026-08-30",
   "defaultProfile": "deepseek-v4-flash",
   "profiles": [
     {
@@ -39,7 +39,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
-      "verifiedAt": "2026-08-26"
+      "verifiedAt": "2026-08-30"
     },
     {
       "id": "zai-glm-5-3",
@@ -75,8 +75,8 @@
           "badge": "0.5×"
         }
       },
-      "source": "https://z.ai/blog/glm-5.3",
-      "verifiedAt": "2026-08-26"
+      "source": "https://docs.z.ai/devpack/overview",
+      "verifiedAt": "2026-08-30"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -98,7 +98,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Coding/agent tools only · limited-time 50% discount from 22:00–08:00"
+        "sourceNote": "Coding/agent tools only · 50% discount 22:00–08:00 · no published end date"
       },
       "periods": {
         "peak": {
@@ -113,7 +113,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-08-29"
+      "verifiedAt": "2026-08-30"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -135,7 +135,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily · temporary off-peak promotion 22:00–08:00"
+        "sourceNote": "Daily · promotion effective Jun 23, 2026 · end date TBA"
       },
       "periods": {
         "peak": {
@@ -149,8 +149,82 @@
           "badge": "0.1× credits"
         }
       },
-      "source": "https://help.aliyun.com/en/lingma/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-08-26"
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-08-30"
+    },
+    {
+      "id": "qoder-qwen3-8-max",
+      "slug": "qoder-qwen38",
+      "provider": "Qoder",
+      "model": "Qwen3.8 Max",
+      "product": "Credits promotion",
+      "shortName": "Q",
+      "temporary": true,
+      "title": "Qoder Qwen3.8 pricing clock",
+      "subtitle": "Temporary Qwen credit rates in your local time zone",
+      "kicker": "Temporary promotion · standard 0.5× → off-peak 0.25×",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "22:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Daily · promotion effective Aug 3, 2026 · end date TBA"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard model rate",
+          "status": "Standard 0.5× credit rate is active now",
+          "badge": "0.5× credits"
+        },
+        "offPeak": {
+          "name": "Promo off-peak rate",
+          "status": "Discounted 0.25× credit rate is active now",
+          "badge": "0.25× credits"
+        }
+      },
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-08-30"
+    },
+    {
+      "id": "qoder-qwen3-7-plus",
+      "slug": "qoder-qwen37-plus",
+      "provider": "Qoder",
+      "model": "Qwen3.7 Plus",
+      "product": "Credits promotion",
+      "shortName": "Q",
+      "temporary": true,
+      "title": "Qoder Qwen3.7 Plus pricing clock",
+      "subtitle": "Temporary Qwen credit rates in your local time zone",
+      "kicker": "Temporary promotion · standard 0.1× → off-peak 0.04×",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "22:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Daily · promotion effective Jun 23, 2026 · end date TBA"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard model rate",
+          "status": "Standard 0.1× credit rate is active now",
+          "badge": "0.1× credits"
+        },
+        "offPeak": {
+          "name": "Promo off-peak rate",
+          "status": "Discounted 0.04× credit rate is active now",
+          "badge": "0.04× credits"
+        }
+      },
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-08-30"
     }
   ]
 }
