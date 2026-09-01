@@ -710,6 +710,11 @@
       gap: 10px;
     }
 
+    .site-footer {
+      display: grid;
+      gap: 10px;
+    }
+
     .sponsor-card {
       display: grid;
       grid-template-columns: auto minmax(0, 1fr) auto;
@@ -787,6 +792,60 @@
       font-size: 0.72rem;
     }
 
+    .about-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(8, 15, 28, 0.4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+      backdrop-filter: blur(22px);
+    }
+
+    .about-heading {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .about-title {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .about-operator { margin-left: auto; }
+
+    .about-card a {
+      color: #b9f6ff;
+      text-decoration-color: rgba(185, 246, 255, 0.38);
+      text-underline-offset: 3px;
+    }
+
+    .about-card a:hover,
+    .about-card a:focus-visible {
+      color: var(--ink);
+      text-decoration-color: currentColor;
+    }
+
+    .about-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      gap: 20px;
+      padding: 14px 16px 16px;
+      border-top: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .about-content p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.79rem;
+      line-height: 1.55;
+    }
+
+    .about-content strong { color: var(--ink); }
+
     .window {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -847,6 +906,9 @@
       .multiplier { grid-column: 2; }
       .sponsor-card { grid-template-columns: auto 1fr; }
       .sponsor-inquiry { grid-column: 1 / -1; width: 100%; justify-items: center; }
+      .about-operator { margin-left: 0; }
+      .about-heading { flex-wrap: wrap; }
+      .about-content { grid-template-columns: 1fr; gap: 12px; }
     }
   </style>
 </head>
@@ -966,16 +1028,29 @@
       </section>
     </main>
 
-    <footer class="sponsor-card" aria-label="Sponsorship">
-      <div class="sponsor-mark" aria-hidden="true">1×</div>
-      <div class="sponsor-copy">
-        <span class="sponsor-label">Sponsorship available · exclusive placement</span>
-        <p>One developer-focused company can exclusively support ongoing pricing-data verification. No display ads, animation, tracking pixels, or competing banners.</p>
-      </div>
-      <a class="sponsor-inquiry" href="mailto:clock-sponsoring@capacity.at?subject=Peak-hour%20clock%20sponsorship">
-        <strong>Sponsorship inquiries</strong>
-        <span>clock-sponsoring@capacity.at</span>
-      </a>
+    <footer class="site-footer" aria-label="Site information">
+      <section class="sponsor-card" aria-label="Sponsorship">
+        <div class="sponsor-mark" aria-hidden="true">1×</div>
+        <div class="sponsor-copy">
+          <span class="sponsor-label">Sponsorship available · exclusive placement</span>
+          <p>One developer-focused company can exclusively support ongoing pricing-data verification. No display ads, animation, tracking pixels, or competing banners.</p>
+        </div>
+        <a class="sponsor-inquiry" href="mailto:clock-sponsoring@capacity.at?subject=Peak-hour%20clock%20sponsorship">
+          <strong>Sponsorship inquiries</strong>
+          <span>clock-sponsoring@capacity.at</span>
+        </a>
+      </section>
+
+      <section class="about-card" aria-labelledby="aboutTitle">
+        <div class="about-heading">
+          <span class="about-title" id="aboutTitle">About</span>
+          <span class="about-operator">Offpeak Clock is operated by <a href="https://capacity.at/">capacity.at</a></span>
+        </div>
+        <div class="about-content">
+          <p>Offpeak Clock converts published time-of-day API pricing schedules into your local time. It is an independent project and is not affiliated with the providers listed.</p>
+          <p><strong>Estimate only: verify before use.</strong> Pricing information may be delayed, incomplete, or incorrect. Provider pricing pages, terms, and billing systems are authoritative. Verify current prices, schedules, eligibility, time zones, and promotion dates before incurring costs. Use of this site is at your own risk.</p>
+        </div>
+      </section>
     </footer>
   </div>
 
@@ -1840,7 +1915,7 @@
       try {
         localStorage.setItem(DIAL_STORAGE_KEY, String(mode));
       } catch (e) {
-        /* storage unavailable — ignore */
+        /* Storage unavailable; ignore. */
       }
     }
 
