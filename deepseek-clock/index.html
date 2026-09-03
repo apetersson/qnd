@@ -365,6 +365,11 @@
       box-shadow: 0 0 0 6px rgba(155, 135, 255, 0.14), 0 0 26px rgba(155, 135, 255, 0.85);
     }
 
+    .is-special .pulse {
+      background: var(--cyan);
+      box-shadow: 0 0 0 6px rgba(34, 211, 238, 0.14), 0 0 26px rgba(34, 211, 238, 0.85);
+    }
+
     .grid {
       display: grid;
       grid-template-columns: minmax(360px, 1.08fr) minmax(340px, 0.92fr);
@@ -450,6 +455,8 @@
     .quiet-ring { fill: none; stroke: rgba(34, 211, 238, 0.25); stroke-width: 15; stroke-linecap: round; }
     .peak-arc { fill: none; stroke: url(#peakGradient); stroke-width: 25; stroke-linecap: round; filter: drop-shadow(0 0 14px rgba(255, 107, 74, 0.55)); }
     .peak-arc.later { opacity: 0.26; filter: none; stroke-width: 21; }
+    .campaign-arc { fill: none; stroke: url(#campaignGradient); stroke-width: 25; stroke-linecap: round; filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.48)); }
+    .campaign-arc.later { opacity: 0.26; filter: none; stroke-width: 21; }
     .tick { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-linecap: round; }
     .tick.major { stroke: rgba(255,255,255,0.66); stroke-width: 3; }
     .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
@@ -460,6 +467,7 @@
     .hour-hand { stroke: var(--green); stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(46,229,157,0.48)); }
     .is-peak .hour-hand { stroke: var(--orange); filter: drop-shadow(0 0 10px rgba(255,107,74,0.58)); }
     .is-weekend .hour-hand { stroke: var(--violet); filter: drop-shadow(0 0 10px rgba(155,135,255,0.5)); }
+    .is-special .hour-hand { stroke: var(--cyan); filter: drop-shadow(0 0 10px rgba(34,211,238,0.52)); }
     .minute-hand { stroke: white; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 10px rgba(255,255,255,0.55)); }
     .second-hand { stroke: var(--gold); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 9px rgba(255,209,102,0.65)); }
     .hub { fill: white; filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)); }
@@ -522,6 +530,13 @@
       opacity: 0.28;
       box-shadow: none;
     }
+
+    .clock-legend .campaign i {
+      background: linear-gradient(90deg, var(--cyan), #8bf5dc);
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+    }
+
+    .clock-legend [hidden] { display: none; }
 
     .clock-legend b { font-weight: 500; }
 
@@ -617,6 +632,11 @@
       box-shadow: 0 0 24px rgba(155, 135, 255, 0.26);
     }
 
+    .is-special .badge {
+      background: linear-gradient(135deg, var(--cyan), #b9f6ff);
+      box-shadow: 0 0 24px rgba(34, 211, 238, 0.27);
+    }
+
     .mini-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -683,6 +703,11 @@
       border-radius: 999px;
       background: linear-gradient(90deg, var(--orange), var(--gold));
       box-shadow: 0 0 20px rgba(255, 107, 74, 0.45);
+    }
+
+    .segment.is-special {
+      background: linear-gradient(90deg, var(--cyan), #8bf5dc);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
     }
 
     .now-marker {
@@ -878,6 +903,11 @@
     .window small { color: var(--muted); }
     .multiplier { color: var(--gold); font-weight: 650; }
     .window.is-off-peak .multiplier { color: var(--cyan); }
+    .window.is-special em {
+      background: rgba(34, 211, 238, 0.15);
+      color: #b9f6ff;
+    }
+    .window.is-special .multiplier { color: var(--cyan); }
 
     @media (max-width: 920px) {
       .grid { grid-template-columns: 1fr; }
@@ -937,7 +967,7 @@
     </header>
 
     <main class="grid">
-      <section class="panel clock-panel" aria-label="12-hour local clock with peak hours highlighted">
+      <section class="panel clock-panel" aria-label="12-hour local clock with variable-rate windows highlighted">
         <div class="clock-controls">
           <div class="seg-toggle" id="hourToggle" role="group" aria-label="Clock dial mode">
             <button type="button" class="seg-btn is-active" data-dial="12" aria-pressed="true">12h</button>
@@ -948,19 +978,25 @@
           <div class="orbital-glow" aria-hidden="true"></div>
           <svg id="clockSvg" viewBox="0 0 420 420" role="img" aria-labelledby="clockTitle clockDesc">
             <title id="clockTitle">DeepSeek peak-hour clock</title>
-            <desc id="clockDesc">A 12-hour local clock. Bright orange arcs show active or upcoming peaks within 12 hours; muted arcs show peaks 12 to 24 hours from now.</desc>
+            <desc id="clockDesc">A 12-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 12 hours; muted arcs preview the following 12 hours.</desc>
             <defs>
               <linearGradient id="peakGradient" x1="0%" x2="100%" y1="0%" y2="100%">
                 <stop offset="0%" stop-color="#ff6b4a" />
                 <stop offset="100%" stop-color="#ffd166" />
+              </linearGradient>
+              <linearGradient id="campaignGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+                <stop offset="0%" stop-color="#22d3ee" />
+                <stop offset="100%" stop-color="#8bf5dc" />
               </linearGradient>
             </defs>
             <circle class="face-fill" cx="210" cy="210" r="171" />
             <circle class="base-ring" cx="210" cy="210" r="171" />
             <circle class="quiet-ring" cx="210" cy="210" r="171" />
             <g id="laterPeakArcs"></g>
+            <g id="laterCampaignArcs"></g>
             <g id="ticks"></g>
             <g id="futurePeakArcs"></g>
+            <g id="futureCampaignArcs"></g>
             <line id="hourHand" class="hour-hand" x1="210" y1="210" x2="210" y2="95" />
             <line id="minuteHand" class="minute-hand" x1="210" y1="210" x2="210" y2="59" />
             <line id="secondHand" class="second-hand" x1="210" y1="210" x2="210" y2="52" />
@@ -976,6 +1012,7 @@
         <div class="clock-legend" id="clockLegend" aria-label="Clock arc legend">
           <span><i></i><b id="nearPeakLegend">active / next 12h</b></span>
           <span class="later"><i></i><b id="laterPeakLegend">12–24h from now</b></span>
+          <span class="campaign" id="campaignLegend" hidden><i></i><b>campaign window</b></span>
         </div>
       </section>
 
@@ -983,7 +1020,7 @@
         <div class="hero-card">
           <div class="kicker" id="pricingKicker">Peak-valley pricing · 2× during peak</div>
           <h2>Plan your API calls.</h2>
-          <p>The round dial is a regular <span id="dialType">12-hour</span> clock: bright arcs show higher-rate windows within its selected horizon, while muted arcs preview the following horizon.</p>
+          <p>The round dial is a regular <span id="dialType">12-hour</span> clock: bright arcs show variable-rate or promotional windows within its selected horizon, while muted arcs preview the following horizon.</p>
         </div>
 
         <div class="status-card">
@@ -1083,7 +1120,9 @@
       profileMenu: document.getElementById('profileMenu'),
       clockSvg: document.getElementById('clockSvg'),
       laterPeakArcs: document.getElementById('laterPeakArcs'),
+      laterCampaignArcs: document.getElementById('laterCampaignArcs'),
       futurePeakArcs: document.getElementById('futurePeakArcs'),
+      futureCampaignArcs: document.getElementById('futureCampaignArcs'),
       ticks: document.getElementById('ticks'),
       hourHand: document.getElementById('hourHand'),
       minuteHand: document.getElementById('minuteHand'),
@@ -1108,6 +1147,7 @@
       clockDesc: document.getElementById('clockDesc'),
       nearPeakLegend: document.getElementById('nearPeakLegend'),
       laterPeakLegend: document.getElementById('laterPeakLegend'),
+      campaignLegend: document.getElementById('campaignLegend'),
       pricingKicker: document.getElementById('pricingKicker'),
       sourceTitle: document.getElementById('sourceTitle'),
       sourceWindows: document.getElementById('sourceWindows'),
@@ -1118,7 +1158,6 @@
     const fmtTimeSeconds = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const fmtDate = new Intl.DateTimeFormat([], { weekday: 'long', month: 'short', day: 'numeric' });
     const fmtShortDate = new Intl.DateTimeFormat([], { weekday: 'short', month: 'short', day: 'numeric' });
-    const fmtWeekdayLong = new Intl.DateTimeFormat([], { weekday: 'long' });
     const fmtWeekdayShort = new Intl.DateTimeFormat([], { weekday: 'short' });
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
     const WEEKDAY_INDEX = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
@@ -1127,6 +1166,9 @@
       if (!scheduleFormatterCache.has(timeZone)) {
         scheduleFormatterCache.set(timeZone, new Intl.DateTimeFormat('en-US', {
           timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
           weekday: 'short',
           hour: '2-digit',
           minute: '2-digit',
@@ -1144,6 +1186,9 @@
       }
       const hour = Number(values.hour) % 24;
       return {
+        year: Number(values.year),
+        month: Number(values.month),
+        day: Number(values.day),
         weekday: WEEKDAY_INDEX[values.weekday],
         minute: hour * 60 + Number(values.minute) + Number(values.second) / 60
       };
@@ -1158,30 +1203,75 @@
       return activeProfile.schedule.peakDays.includes(weekday);
     }
 
+    function calendarDateNumber({ year, month, day }) {
+      return Math.floor(Date.UTC(year, month - 1, day) / DAY);
+    }
+
+    function isoDateNumber(value) {
+      const [year, month, day] = value.split('-').map(Number);
+      return calendarDateNumber({ year, month, day });
+    }
+
+    function matchesScheduleWindow(date, days, window, startDate = null, endDate = null) {
+      const parts = scheduleParts(date);
+      const start = parseClockMinutes(window.start);
+      const end = parseClockMinutes(window.end);
+      let anchorWeekday = parts.weekday;
+      let anchorDate = calendarDateNumber(parts);
+      let matchesTime = false;
+
+      if (start < end) {
+        matchesTime = parts.minute >= start && parts.minute < end;
+      } else if (parts.minute >= start) {
+        matchesTime = true;
+      } else if (parts.minute < end) {
+        matchesTime = true;
+        anchorWeekday = (anchorWeekday + 6) % 7;
+        anchorDate -= 1;
+      }
+
+      if (!matchesTime || !days.includes(anchorWeekday)) return false;
+      if (startDate && anchorDate < isoDateNumber(startDate)) return false;
+      if (endDate && anchorDate > isoDateNumber(endDate)) return false;
+      return true;
+    }
+
     function isScheduleOffDay(date) {
       return !scheduleHasDay(scheduleParts(date).weekday);
     }
 
     function isPeak(date) {
-      const { weekday, minute } = scheduleParts(date);
-      return activeProfile.schedule.peakWindows.some(window => {
-        const start = parseClockMinutes(window.start);
-        const end = parseClockMinutes(window.end);
-        if (start < end) return scheduleHasDay(weekday) && minute >= start && minute < end;
-        return (scheduleHasDay(weekday) && minute >= start) ||
-          (scheduleHasDay((weekday + 6) % 7) && minute < end);
-      });
+      return activeProfile.schedule.peakWindows.some(window =>
+        matchesScheduleWindow(date, activeProfile.schedule.peakDays, window)
+      );
     }
 
-    function peakIntervalsBetween(rangeStart, rangeEnd, clip = true) {
+    function overridePeriodKey(date) {
+      for (const override of activeProfile.schedule.overrides || []) {
+        if (override.windows.some(window =>
+          matchesScheduleWindow(date, override.days, window, override.startDate, override.endDate)
+        )) return override.period;
+      }
+      return null;
+    }
+
+    function periodKeyAt(date) {
+      return overridePeriodKey(date) || (isPeak(date) ? 'peak' : 'offPeak');
+    }
+
+    function isSpecialPeriodKey(periodKey) {
+      return activeProfile.periods[periodKey]?.tone === 'special';
+    }
+
+    function intervalsBetween(rangeStart, rangeEnd, predicate, clip = true) {
       const intervals = [];
       const scanStart = Math.floor((rangeStart.getTime() - DAY) / MINUTE) * MINUTE;
       const scanEnd = Math.ceil((rangeEnd.getTime() + DAY) / MINUTE) * MINUTE;
-      let active = isPeak(new Date(scanStart));
+      let active = predicate(new Date(scanStart));
       let actualStart = active ? new Date(scanStart) : null;
 
       for (let t = scanStart + MINUTE; t <= scanEnd; t += MINUTE) {
-        const nextActive = isPeak(new Date(t));
+        const nextActive = predicate(new Date(t));
         if (!active && nextActive) actualStart = new Date(t);
         if (active && !nextActive && actualStart) {
           const actualEnd = new Date(t);
@@ -1196,6 +1286,14 @@
       }
 
       return intervals.sort((a, b) => a.start - b.start);
+    }
+
+    function peakIntervalsBetween(rangeStart, rangeEnd, clip = true) {
+      return intervalsBetween(rangeStart, rangeEnd, date => periodKeyAt(date) === 'peak', clip);
+    }
+
+    function specialIntervalsBetween(rangeStart, rangeEnd, clip = true) {
+      return intervalsBetween(rangeStart, rangeEnd, date => isSpecialPeriodKey(periodKeyAt(date)), clip);
     }
 
     function point(cx, cy, r, angleDeg) {
@@ -1334,17 +1432,17 @@
       return result;
     }
 
-    function fragmentPaths(fragments, className, hours = dialHours) {
+    function fragmentPaths(fragments, arcClass, horizonClass, hours = dialHours) {
       return fragments
-        .map(([start, end]) => `<path class="peak-arc ${className}" d="${arcPath(start, end, CLOCK_RADIUS, hours)}" />`)
+        .map(([start, end]) => `<path class="${arcClass} ${horizonClass}" d="${arcPath(start, end, CLOCK_RADIUS, hours)}" />`)
         .join('');
     }
 
-    function roundClockFragments(now, hours = dialHours) {
+    function roundClockFragments(now, intervalFinder, hours = dialHours) {
       const horizonEnd = new Date(now.getTime() + hours * HOUR);
       const followingEnd = new Date(now.getTime() + hours * 2 * HOUR);
-      const nearIntervals = peakIntervalsBetween(now, horizonEnd, true);
-      const laterIntervals = peakIntervalsBetween(horizonEnd, followingEnd, true);
+      const nearIntervals = intervalFinder(now, horizonEnd, true);
+      const laterIntervals = intervalFinder(horizonEnd, followingEnd, true);
 
       // Keep the complete active window bright when it fits unambiguously on
       // the selected dial. Longer windows wrap a 12h dial, so show only their
@@ -1367,14 +1465,19 @@
     }
 
     function drawRoundClock(now) {
-      const fragments = roundClockFragments(now);
-      const near = fragmentPaths(fragments.near, 'future');
-      const later = fragmentPaths(fragments.later, 'later');
-      el.futurePeakArcs.innerHTML = near;
-      el.laterPeakArcs.innerHTML = later;
+      const peakFragments = roundClockFragments(now, peakIntervalsBetween);
+      const campaignFragments = roundClockFragments(now, specialIntervalsBetween);
+      const nearPeak = fragmentPaths(peakFragments.near, 'peak-arc', 'future');
+      const laterPeak = fragmentPaths(peakFragments.later, 'peak-arc', 'later');
+      const nearCampaign = fragmentPaths(campaignFragments.near, 'campaign-arc', 'future');
+      const laterCampaign = fragmentPaths(campaignFragments.later, 'campaign-arc', 'later');
+      el.futurePeakArcs.innerHTML = nearPeak;
+      el.laterPeakArcs.innerHTML = laterPeak;
+      el.futureCampaignArcs.innerHTML = nearCampaign;
+      el.laterCampaignArcs.innerHTML = laterCampaign;
 
-      // Hide the legend when neither planning cycle contains a peak.
-      el.clockLegend.classList.toggle('is-empty', !near && !later);
+      // Hide the legend when neither planning cycle contains a variable-rate window.
+      el.clockLegend.classList.toggle('is-empty', !nearPeak && !laterPeak && !nearCampaign && !laterCampaign);
     }
 
     function splitArcFragmentsAtHalf(fragments, mode) {
@@ -1400,10 +1503,10 @@
       return targetAngle;
     }
 
-    function createArcTweenLayer(parent, fragments, modelMode, className, layerName) {
+    function createArcTweenLayer(parent, fragments, modelMode, arcClass, horizonClass, layerName) {
       const layer = createSvgElement('g', `arc-tween-layer ${layerName}`);
       const paths = splitArcFragmentsAtHalf(fragments, modelMode).map(([start, end]) => {
-        const path = createSvgElement('path', `peak-arc ${className}`);
+        const path = createSvgElement('path', `${arcClass} ${horizonClass}`);
         layer.appendChild(path);
         return { path, start, end };
       });
@@ -1428,18 +1531,26 @@
     }
 
     function preparePeakArcTransition(now, fromMode, toMode) {
-      const outgoingFragments = roundClockFragments(now, fromMode);
-      const incomingFragments = roundClockFragments(now, toMode);
+      const outgoingPeak = roundClockFragments(now, peakIntervalsBetween, fromMode);
+      const incomingPeak = roundClockFragments(now, peakIntervalsBetween, toMode);
+      const outgoingCampaign = roundClockFragments(now, specialIntervalsBetween, fromMode);
+      const incomingCampaign = roundClockFragments(now, specialIntervalsBetween, toMode);
       el.laterPeakArcs.replaceChildren();
       el.futurePeakArcs.replaceChildren();
+      el.laterCampaignArcs.replaceChildren();
+      el.futureCampaignArcs.replaceChildren();
 
       const outgoing = [
-        createArcTweenLayer(el.laterPeakArcs, outgoingFragments.later, fromMode, 'later', 'outgoing'),
-        createArcTweenLayer(el.futurePeakArcs, outgoingFragments.near, fromMode, 'future', 'outgoing')
+        createArcTweenLayer(el.laterPeakArcs, outgoingPeak.later, fromMode, 'peak-arc', 'later', 'outgoing'),
+        createArcTweenLayer(el.futurePeakArcs, outgoingPeak.near, fromMode, 'peak-arc', 'future', 'outgoing'),
+        createArcTweenLayer(el.laterCampaignArcs, outgoingCampaign.later, fromMode, 'campaign-arc', 'later', 'outgoing'),
+        createArcTweenLayer(el.futureCampaignArcs, outgoingCampaign.near, fromMode, 'campaign-arc', 'future', 'outgoing')
       ];
       const incoming = [
-        createArcTweenLayer(el.laterPeakArcs, incomingFragments.later, toMode, 'later', 'incoming'),
-        createArcTweenLayer(el.futurePeakArcs, incomingFragments.near, toMode, 'future', 'incoming')
+        createArcTweenLayer(el.laterPeakArcs, incomingPeak.later, toMode, 'peak-arc', 'later', 'incoming'),
+        createArcTweenLayer(el.futurePeakArcs, incomingPeak.near, toMode, 'peak-arc', 'future', 'incoming'),
+        createArcTweenLayer(el.laterCampaignArcs, incomingCampaign.later, toMode, 'campaign-arc', 'later', 'incoming'),
+        createArcTweenLayer(el.futureCampaignArcs, incomingCampaign.near, toMode, 'campaign-arc', 'future', 'incoming')
       ];
       for (const record of incoming) record.layer.setAttribute('opacity', '0');
 
@@ -1584,31 +1695,24 @@
       return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
-    function pricingPeriodsBetween(rangeStart, rangeEnd, peakIntervals) {
+    function pricingPeriodsBetween(rangeStart, rangeEnd) {
       const periods = [];
       let cursor = new Date(rangeStart);
 
       // Include every period that intersects the next-24h horizon, but end it
       // at its real schedule boundary. The final row may therefore extend past
       // +24h instead of presenting the viewport edge as a pricing change.
-      for (const interval of peakIntervals) {
-        const peakStart = new Date(Math.max(interval.actualStart, rangeStart));
-        if (peakStart > cursor) {
-          periods.push({ start: new Date(cursor), end: peakStart, peak: false });
-        }
-
-        periods.push({ start: peakStart, end: interval.actualEnd, peak: true });
-        cursor = interval.actualEnd;
-        if (cursor >= rangeEnd) break;
-      }
-
-      if (cursor < rangeEnd) {
-        const nextPeak = nextPeakStart(cursor);
+      while (cursor < rangeEnd) {
+        const periodKey = periodKeyAt(cursor);
+        const boundary = nextBoundary(cursor);
+        const periodEnd = boundary || new Date(rangeEnd);
         periods.push({
           start: new Date(cursor),
-          end: nextPeak || new Date(rangeEnd),
-          peak: false
+          end: periodEnd,
+          periodKey
         });
+        if (periodEnd <= cursor) break;
+        cursor = periodEnd;
       }
 
       return periods.filter(period => period.end > period.start);
@@ -1616,45 +1720,44 @@
 
     function drawNext24(now) {
       const end = new Date(now.getTime() + DAY);
-      const actualIntervals = peakIntervalsBetween(now, end, false);
-      const intervals = actualIntervals.map(interval => ({
-        ...interval,
-        start: new Date(Math.max(interval.actualStart, now)),
-        end: new Date(Math.min(interval.actualEnd, end))
-      })).filter(interval => interval.end > interval.start);
-      const pricingPeriods = pricingPeriodsBetween(now, end, actualIntervals);
+      const pricingPeriods = pricingPeriodsBetween(now, end);
+      const intervals = pricingPeriods.map(period => ({
+        ...period,
+        start: new Date(Math.max(period.start, now)),
+        end: new Date(Math.min(period.end, end))
+      })).filter(period => period.end > period.start && period.periodKey !== 'offPeak');
 
-      el.track.innerHTML = '<i class="now-marker" id="nowMarker" style="left:0%"></i>' + intervals.map(({ start, end }) => {
+      el.track.innerHTML = '<i class="now-marker" id="nowMarker" style="left:0%"></i>' + intervals.map(({ start, end, periodKey }) => {
         const left = Math.max(0, (start - now) / DAY * 100);
         const width = Math.max(0.7, (end - start) / DAY * 100);
-        return `<i class="segment" style="left:${left}%;width:${width}%"></i>`;
+        const specialClass = isSpecialPeriodKey(periodKey) ? ' is-special' : '';
+        return `<i class="segment${specialClass}" style="left:${left}%;width:${width}%"></i>`;
       }).join('');
 
       if (intervals.length === 0) {
-        const next = nextPeakStart(now);
-        if (next) {
-          const when = `${fmtWeekdayLong.format(next)} ${fmtTime.format(next)}`;
-          const inDur = durationLabelShort(next - now);
-          el.localSummary.textContent = `Next ${activeProfile.schedule.windowName} window ${when} · in ${inDur}`;
-        } else {
-          el.localSummary.textContent = 'No higher-rate windows found';
-        }
+        el.localSummary.textContent = 'No variable-rate windows in the next 24 hours';
       } else {
-        const summary = pricingPeriods
-          .filter(pricingPeriod => pricingPeriod.peak)
-          .map(pricingPeriod => formatWindow(pricingPeriod.start, pricingPeriod.end, now))
+        const hasOverrides = (activeProfile.schedule.overrides || []).length > 0;
+        const summary = intervals
+          .map(pricingPeriod => {
+            const label = isSpecialPeriodKey(pricingPeriod.periodKey) ? 'Campaign' : 'Peak';
+            const window = formatWindow(pricingPeriod.start, pricingPeriod.end, now);
+            return hasOverrides ? `${label} ${window}` : window;
+          })
           .join(', ');
         el.localSummary.textContent = summary;
       }
 
       el.windows.innerHTML = pricingPeriods.map((pricingPeriod, index) => {
-        const period = pricingPeriod.peak ? activeProfile.periods.peak : activeProfile.periods.offPeak;
+        const period = activeProfile.periods[pricingPeriod.periodKey];
         const hours = ((pricingPeriod.end - pricingPeriod.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
         const current = pricingPeriod.start.getTime() === now.getTime();
         const descriptor = current
           ? `${hours}h remaining · ${period.name}`
           : `${hours}h · ${period.name}`;
-        const rowClass = pricingPeriod.peak ? 'window' : 'window is-off-peak';
+        const rowClass = pricingPeriod.periodKey === 'offPeak'
+          ? 'window is-off-peak'
+          : `window${isSpecialPeriodKey(pricingPeriod.periodKey) ? ' is-special' : ''}`;
         return `<div class="${rowClass}"><em>${index + 1}</em><div><strong>${formatWindow(pricingPeriod.start, pricingPeriod.end, now)}</strong><small>${descriptor} in ${tz}</small></div><div class="multiplier">${period.badge}</div></div>`;
       }).join('');
     }
@@ -1667,24 +1770,9 @@
       cursor.setMinutes(cursor.getMinutes() + (cursor <= now ? 1 : 0));
 
       for (let t = cursor.getTime(); t <= scanUntil.getTime(); t += 60000) {
-        const before = isPeak(new Date(t - 1));
-        const after = isPeak(new Date(t));
+        const before = periodKeyAt(new Date(t - 1));
+        const after = periodKeyAt(new Date(t));
         if (before !== after) return new Date(t);
-      }
-
-      return null;
-    }
-
-    function nextPeakStart(now) {
-      const scanUntil = new Date(now.getTime() + 8 * DAY);
-      const cursor = new Date(now.getTime());
-      cursor.setSeconds(0, 0);
-      cursor.setMinutes(cursor.getMinutes() + (cursor <= now ? 1 : 0));
-
-      for (let t = cursor.getTime(); t <= scanUntil.getTime(); t += 60000) {
-        const before = isPeak(new Date(t - 1));
-        const after = isPeak(new Date(t));
-        if (!before && after) return new Date(t);
       }
 
       return null;
@@ -1696,13 +1784,6 @@
       const m = Math.floor((total % 3600) / 60);
       const s = total % 60;
       return `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
-    }
-
-    function durationLabelShort(ms) {
-      const total = Math.max(0, Math.floor(ms / 1000));
-      const h = Math.floor(total / 3600);
-      const m = Math.floor((total % 3600) / 60);
-      return `${h}h ${String(m).padStart(2, '0')}m`;
     }
 
     let lastTimelineMinute = '';
@@ -1720,7 +1801,9 @@
         lastTimelineMinute = timelineMinute;
       }
 
-      const peak = isPeak(now);
+      const periodKey = periodKeyAt(now);
+      const peak = periodKey === 'peak';
+      const special = isSpecialPeriodKey(periodKey);
       const offDay = isScheduleOffDay(now);
       // Interpolate the hour and minute hands between markings like a real
       // analog clock; the second hand stays on its visible whole-second mark.
@@ -1741,18 +1824,20 @@
       el.timezone.textContent = tz;
       el.app.classList.toggle('is-peak', peak);
       el.app.classList.toggle('is-weekend', offDay);
-      const period = peak ? activeProfile.periods.peak : activeProfile.periods.offPeak;
+      el.app.classList.toggle('is-special', special);
+      const period = activeProfile.periods[periodKey];
       el.topStatus.textContent = period.status;
-      el.mode.textContent = !peak && offDay && activeProfile.schedule.offDayName
+      el.mode.textContent = periodKey === 'offPeak' && offDay && activeProfile.schedule.offDayName
         ? `${activeProfile.schedule.offDayName} · ${period.name}`
         : period.name;
       el.badge.textContent = period.badge;
 
       const next = cachedNextBoundary;
-      const windowName = activeProfile.schedule.windowName;
-      const nextMode = next && isPeak(new Date(next.getTime() + 1000))
-        ? `${windowName} starts`
-        : `${windowName} ends`;
+      const nextPeriodKey = next ? periodKeyAt(new Date(next.getTime() + 1000)) : null;
+      const nextPeriod = nextPeriodKey ? activeProfile.periods[nextPeriodKey] : null;
+      const nextMode = nextPeriodKey === 'offPeak'
+        ? `${period.name} ends`
+        : `${nextPeriod?.name || 'Next window'} starts`;
       el.nextChangeEvent.textContent = next ? `${nextMode} ${fmtWeekdayShort.format(next)}` : 'Unknown';
       el.nextChangeTime.textContent = next ? `${fmtTime.format(next)} · ${durationLabel(next - now)}` : '';
     }
@@ -1795,6 +1880,21 @@
           if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(window.start) ||
               !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) || window.start === window.end) {
             throw new Error(`Invalid pricing window in ${profile.id}`);
+          }
+        }
+        for (const override of profile.schedule.overrides || []) {
+          if (!profile.periods[override.period] || !Array.isArray(override.days) ||
+              !Array.isArray(override.windows) || override.windows.length === 0 ||
+              !/^\d{4}-\d{2}-\d{2}$/.test(override.startDate) ||
+              !/^\d{4}-\d{2}-\d{2}$/.test(override.endDate) ||
+              isoDateNumber(override.startDate) > isoDateNumber(override.endDate)) {
+            throw new Error(`Invalid pricing override in ${profile.id}`);
+          }
+          for (const window of override.windows) {
+            if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(window.start) ||
+                !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) || window.start === window.end) {
+              throw new Error(`Invalid override window in ${profile.id}`);
+            }
           }
         }
       }
@@ -1888,6 +1988,7 @@
       el.sourceNote.textContent = activeProfile.schedule.sourceNote;
       el.clockTitle.textContent = activeProfile.title;
       el.profileValue.textContent = profileOptionLabel(activeProfile);
+      el.campaignLegend.hidden = !(activeProfile.schedule.overrides || []).length;
       updateProfileMenuState();
     }
 
@@ -1924,11 +2025,12 @@
       el.app.classList.toggle('is-24h', is24);
       el.dialType.textContent = is24 ? '24-hour' : '12-hour';
       el.clockDesc.textContent = is24
-        ? 'A 24-hour local clock. Bright orange arcs show active or upcoming higher-rate windows within 24 hours; muted arcs show windows 24 to 48 hours from now.'
-        : 'A 12-hour local clock. Bright orange arcs show active or upcoming higher-rate windows within 12 hours; muted arcs show windows 12 to 24 hours from now.';
-      el.nearPeakLegend.textContent = `active / next ${dialHours}h`;
-      el.laterPeakLegend.textContent = `${dialHours}–${dialHours * 2}h from now`;
-      el.clockPanel.setAttribute('aria-label', is24 ? '24-hour local clock with higher-rate hours highlighted' : '12-hour local clock with higher-rate hours highlighted');
+        ? 'A 24-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 24 hours; muted arcs show windows 24 to 48 hours from now.'
+        : 'A 12-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 12 hours; muted arcs show windows 12 to 24 hours from now.';
+      const hasOverrides = (activeProfile.schedule.overrides || []).length > 0;
+      el.nearPeakLegend.textContent = hasOverrides ? `peak · next ${dialHours}h` : `active / next ${dialHours}h`;
+      el.laterPeakLegend.textContent = hasOverrides ? `peak · ${dialHours}–${dialHours * 2}h` : `${dialHours}–${dialHours * 2}h from now`;
+      el.clockPanel.setAttribute('aria-label', is24 ? '24-hour local clock with variable-rate windows highlighted' : '12-hour local clock with variable-rate windows highlighted');
       el.clockSvg.setAttribute('aria-busy', dialTransitioning ? 'true' : 'false');
       el.profileTrigger.disabled = dialTransitioning || !activeProfile;
       if (dialTransitioning) setProfileMenuOpen(false);

@@ -79,6 +79,61 @@
       "verifiedAt": "2026-09-03"
     },
     {
+      "id": "zai-glm-5-3-flash",
+      "slug": "zai-glm53-flash",
+      "provider": "Z.ai",
+      "model": "GLM-5.3-Flash",
+      "product": "Coding Plan usage campaign",
+      "shortName": "GLM",
+      "temporary": true,
+      "title": "GLM-5.3-Flash campaign clock",
+      "subtitle": "Coding Plan usage windows converted to your local time zone",
+      "kicker": "Usage campaign · September 3–20, 2026",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [1, 2, 3, 4, 5],
+        "peakWindows": [
+          { "start": "14:00", "end": "18:00" }
+        ],
+        "overrides": [
+          {
+            "period": "campaign",
+            "startDate": "2026-09-03",
+            "endDate": "2026-09-20",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "23:00", "end": "09:00" }
+            ]
+          }
+        ],
+        "windowName": "peak",
+        "offDayName": "Weekend",
+        "sourceTitle": "Peak / campaign (Singapore):",
+        "sourceWindows": "Peak 14:00–18:00 weekdays · campaign 23:00–09:00 daily",
+        "sourceNote": "Campaign Sep 3–20, 2026 · paid plans · ZCode free, other supported agents receive 2× quota"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard points",
+          "status": "Standard point usage is active now",
+          "badge": "1×"
+        },
+        "offPeak": {
+          "name": "50% points",
+          "status": "Off-peak point savings are active now",
+          "badge": "0.5×"
+        },
+        "campaign": {
+          "name": "Flash usage campaign",
+          "status": "GLM-5.3-Flash campaign is active now",
+          "badge": "Free / 2× quota",
+          "tone": "special"
+        }
+      },
+      "source": "https://docs.z.ai/devpack/notice/event-glm-5.3-flash",
+      "verifiedAt": "2026-09-03"
+    },
+    {
       "id": "alibaba-qwen3-8-max",
       "slug": "alibaba",
       "provider": "Alibaba Cloud",
