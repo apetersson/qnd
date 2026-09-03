@@ -50,7 +50,7 @@
       "shortName": "GLM",
       "title": "GLM-5.3 peak-hour clock",
       "subtitle": "Coding Plan points converted to your local time zone",
-      "kicker": "Coding Plan points · 50% less off-peak",
+      "kicker": "Coding Plan quota · half usage off-peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [1, 2, 3, 4, 5],
@@ -61,18 +61,20 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak window (Beijing):",
         "sourceWindows": "14:00–18:00",
-        "sourceNote": "Monday–Friday · all other hours use 50% points"
+        "sourceNote": "Monday–Friday · all other hours use half the standard quota"
       },
       "periods": {
         "peak": {
-          "name": "Standard points",
-          "status": "Standard point usage is active now",
-          "badge": "1×"
+          "name": "Standard usage",
+          "status": "Standard quota usage is active now",
+          "badge": "Standard",
+          "detail": "Uses the standard quota"
         },
         "offPeak": {
-          "name": "50% points",
-          "status": "Off-peak point savings are active now",
-          "badge": "0.5×"
+          "name": "Off-peak savings",
+          "status": "Off-peak quota savings are active now",
+          "badge": "Half usage",
+          "detail": "Uses half the standard quota"
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
@@ -110,23 +112,26 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak / campaign (Singapore):",
         "sourceWindows": "Peak 14:00–18:00 weekdays · campaign 23:00–09:00 daily",
-        "sourceNote": "Campaign Sep 3–20, 2026 · paid plans · ZCode free, other supported agents receive 2× quota"
+        "sourceNote": "Campaign Sep 3–20, 2026 · paid plans · ZCode uses no quota, other supported agents receive double quota"
       },
       "periods": {
         "peak": {
-          "name": "Standard points",
-          "status": "Standard point usage is active now",
-          "badge": "1×"
+          "name": "Standard usage",
+          "status": "Standard quota usage is active now",
+          "badge": "Standard",
+          "detail": "Uses the standard quota"
         },
         "offPeak": {
-          "name": "50% points",
-          "status": "Off-peak point savings are active now",
-          "badge": "0.5×"
+          "name": "Off-peak savings",
+          "status": "Off-peak quota savings are active now",
+          "badge": "Half usage",
+          "detail": "Uses half the standard quota"
         },
         "campaign": {
-          "name": "Flash usage campaign",
+          "name": "Campaign benefit",
           "status": "GLM-5.3-Flash campaign is active now",
-          "badge": "Free / 2× quota",
+          "badge": "Campaign",
+          "detail": "ZCode: no quota · Other agents: double quota",
           "tone": "special"
         }
       },
