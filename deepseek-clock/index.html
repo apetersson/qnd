@@ -455,8 +455,8 @@
     .quiet-ring { fill: none; stroke: rgba(34, 211, 238, 0.25); stroke-width: 15; stroke-linecap: round; }
     .peak-arc { fill: none; stroke: url(#peakGradient); stroke-width: 25; stroke-linecap: round; filter: drop-shadow(0 0 14px rgba(255, 107, 74, 0.55)); }
     .peak-arc.later { opacity: 0.26; filter: none; stroke-width: 21; }
-    .campaign-arc { fill: none; stroke: url(#campaignGradient); stroke-width: 25; stroke-linecap: round; filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.48)); }
-    .campaign-arc.later { opacity: 0.26; filter: none; stroke-width: 21; }
+    .campaign-arc { fill: none; stroke: url(#campaignGradient); stroke-width: 25; stroke-linecap: round; opacity: 0.62; filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.3)); }
+    .campaign-arc.later { opacity: 0.16; filter: none; stroke-width: 21; }
     .tick { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-linecap: round; }
     .tick.major { stroke: rgba(255,255,255,0.66); stroke-width: 3; }
     .label { fill: rgba(247,251,255,0.88); font-size: 19px; font-weight: 550; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0; }
@@ -1025,7 +1025,7 @@
 
         <div class="status-card">
           <div>
-            <span>Current price window</span>
+            <span>Current window</span>
             <div class="mode" id="mode">Loading…</div>
           </div>
           <div class="badge" id="badge">--</div>
@@ -1432,8 +1432,20 @@
       return result;
     }
 
+    function joinWrappedFragments(fragments, hours = dialHours) {
+      const range = dialRange(hours);
+      const sorted = fragments.map(fragment => [...fragment]).sort((a, b) => a[0] - b[0]);
+      if (sorted.length < 2) return sorted;
+
+      const first = sorted[0];
+      const last = sorted[sorted.length - 1];
+      if (first[0] > 0.35 || range - last[1] > 0.35) return sorted;
+
+      return [[last[0], first[1] + range], ...sorted.slice(1, -1)];
+    }
+
     function fragmentPaths(fragments, arcClass, horizonClass, hours = dialHours) {
-      return fragments
+      return joinWrappedFragments(fragments, hours)
         .map(([start, end]) => `<path class="${arcClass} ${horizonClass}" d="${arcPath(start, end, CLOCK_RADIUS, hours)}" />`)
         .join('');
     }
@@ -1505,7 +1517,8 @@
 
     function createArcTweenLayer(parent, fragments, modelMode, arcClass, horizonClass, layerName) {
       const layer = createSvgElement('g', `arc-tween-layer ${layerName}`);
-      const paths = splitArcFragmentsAtHalf(fragments, modelMode).map(([start, end]) => {
+      const joinedFragments = joinWrappedFragments(fragments, modelMode);
+      const paths = splitArcFragmentsAtHalf(joinedFragments, modelMode).map(([start, end]) => {
         const path = createSvgElement('path', `${arcClass} ${horizonClass}`);
         layer.appendChild(path);
         return { path, start, end };
@@ -1752,9 +1765,10 @@
         const period = activeProfile.periods[pricingPeriod.periodKey];
         const hours = ((pricingPeriod.end - pricingPeriod.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
         const current = pricingPeriod.start.getTime() === now.getTime();
+        const detail = period.detail || period.name;
         const descriptor = current
-          ? `${hours}h remaining · ${period.name}`
-          : `${hours}h · ${period.name}`;
+          ? `${hours}h remaining · ${detail}`
+          : `${hours}h · ${detail}`;
         const rowClass = pricingPeriod.periodKey === 'offPeak'
           ? 'window is-off-peak'
           : `window${isSpecialPeriodKey(pricingPeriod.periodKey) ? ' is-special' : ''}`;
