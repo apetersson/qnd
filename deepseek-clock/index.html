@@ -588,7 +588,7 @@
 
     .status-card {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 14px;
       align-items: end;
       padding: 18px;
@@ -596,6 +596,8 @@
       border: 1px solid rgba(255,255,255,0.12);
       background: var(--panel-strong);
     }
+
+    .status-card > div { min-width: 0; }
 
     .status-card span,
     .mini-card span,
@@ -610,7 +612,9 @@
     .mode {
       font-size: clamp(1.5rem, 3vw, 2.25rem);
       font-weight: 650;
+      line-height: 1.08;
       letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
     }
 
     .badge {
@@ -639,11 +643,12 @@
 
     .mini-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
     .mini-card {
+      min-width: 0;
       min-height: 112px;
       padding: 17px;
       border-radius: 22px;
@@ -660,6 +665,7 @@
 
     .mini-card b.next-change {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       min-height: 2.5em;
       align-content: start;
       gap: 2px;
@@ -671,12 +677,28 @@
       font-size: inherit;
       font-weight: inherit;
       line-height: 1.2;
-      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .mini-card .next-change-event {
+      overflow-wrap: anywhere;
+      white-space: normal;
     }
 
     .mini-card .next-change-time {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 6px;
+      font-size: clamp(0.82rem, 1.4vw, 1rem);
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.015em;
+    }
+
+    .mini-card .next-change-time span {
+      margin: 0;
+      color: inherit;
+      font: inherit;
+      white-space: nowrap;
     }
 
     .timeline {
@@ -1040,7 +1062,10 @@
             <span>Next change</span>
             <b id="nextChange" class="next-change">
               <span class="next-change-line" id="nextChangeEvent">Calculating…</span>
-              <span class="next-change-line next-change-time" id="nextChangeTime"></span>
+              <span class="next-change-line next-change-time">
+                <span id="nextChangeClock"></span>
+                <span id="nextChangeCountdown"></span>
+              </span>
             </b>
           </div>
           <div class="mini-card">
@@ -1135,7 +1160,8 @@
       timezone: document.getElementById('timezone'),
       nextChange: document.getElementById('nextChange'),
       nextChangeEvent: document.getElementById('nextChangeEvent'),
-      nextChangeTime: document.getElementById('nextChangeTime'),
+      nextChangeClock: document.getElementById('nextChangeClock'),
+      nextChangeCountdown: document.getElementById('nextChangeCountdown'),
       localSummary: document.getElementById('localSummary'),
       track: document.getElementById('track'),
       windows: document.getElementById('windows'),
@@ -1853,7 +1879,8 @@
         ? `${period.name} ends`
         : `${nextPeriod?.name || 'Next window'} starts`;
       el.nextChangeEvent.textContent = next ? `${nextMode} ${fmtWeekdayShort.format(next)}` : 'Unknown';
-      el.nextChangeTime.textContent = next ? `${fmtTime.format(next)} · ${durationLabel(next - now)}` : '';
+      el.nextChangeClock.textContent = next ? fmtTime.format(next) : '';
+      el.nextChangeCountdown.textContent = next ? `in ${durationLabel(next - now)}` : '';
     }
 
     const DIAL_STORAGE_KEY = 'deepseekClock.dial';
