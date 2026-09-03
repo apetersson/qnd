@@ -558,16 +558,42 @@
         linear-gradient(145deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035));
     }
 
+    .hero-meta {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
     .kicker {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 14px;
+      min-width: 0;
       color: var(--muted);
       font-size: 0.82rem;
       font-weight: 550;
       letter-spacing: 0.09em;
       text-transform: uppercase;
+    }
+
+    .source-link {
+      flex: 0 0 auto;
+      color: #b9f6ff;
+      font-size: 0.76rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      text-decoration-color: rgba(185, 246, 255, 0.4);
+      text-underline-offset: 3px;
+      white-space: nowrap;
+    }
+
+    .source-link:hover,
+    .source-link:focus-visible {
+      color: var(--ink);
+      outline: none;
+      text-decoration-color: currentColor;
     }
 
     .hero-card h2 {
@@ -1040,7 +1066,10 @@
 
       <section class="panel side-panel">
         <div class="hero-card">
-          <div class="kicker" id="pricingKicker">Peak-valley pricing · 2× during peak</div>
+          <div class="hero-meta">
+            <div class="kicker" id="pricingKicker">Peak-valley pricing · 2× during peak</div>
+            <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noopener noreferrer">[Source]</a>
+          </div>
           <h2>Plan your API calls.</h2>
           <p>The round dial is a regular <span id="dialType">12-hour</span> clock: bright arcs show variable-rate or promotional windows within its selected horizon, while muted arcs preview the following horizon.</p>
         </div>
@@ -1175,6 +1204,7 @@
       laterPeakLegend: document.getElementById('laterPeakLegend'),
       campaignLegend: document.getElementById('campaignLegend'),
       pricingKicker: document.getElementById('pricingKicker'),
+      sourceLink: document.getElementById('sourceLink'),
       sourceTitle: document.getElementById('sourceTitle'),
       sourceWindows: document.getElementById('sourceWindows'),
       sourceNote: document.getElementById('sourceNote')
@@ -1913,7 +1943,8 @@
         throw new Error('pricing.json must contain at least one schema-version-1 profile');
       }
       for (const profile of config.profiles) {
-        if (!profile.id || !profile.slug || !profile.schedule?.timeZone || !Array.isArray(profile.schedule.peakDays) ||
+        if (!profile.id || !profile.slug || !/^https:\/\//.test(profile.source || '') ||
+            !profile.schedule?.timeZone || !Array.isArray(profile.schedule.peakDays) ||
             !Array.isArray(profile.schedule.peakWindows) || !profile.periods?.peak || !profile.periods?.offPeak) {
           throw new Error(`Invalid pricing profile: ${profile.id || 'unknown'}`);
         }
@@ -2024,6 +2055,8 @@
       el.brandTitle.textContent = activeProfile.title;
       el.brandSubtitle.textContent = activeProfile.subtitle;
       el.pricingKicker.textContent = activeProfile.kicker;
+      el.sourceLink.href = activeProfile.source;
+      el.sourceLink.setAttribute('aria-label', `Open official pricing source for ${activeProfile.provider} ${activeProfile.model}`);
       el.sourceTitle.textContent = activeProfile.schedule.sourceTitle;
       el.sourceWindows.textContent = activeProfile.schedule.sourceWindows;
       el.sourceNote.textContent = activeProfile.schedule.sourceNote;
