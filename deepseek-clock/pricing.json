@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-30",
+  "updatedAt": "2026-09-03",
   "defaultProfile": "deepseek-v4-flash",
   "profiles": [
     {
@@ -39,7 +39,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
-      "verifiedAt": "2026-08-30"
+      "verifiedAt": "2026-09-03"
     },
     {
       "id": "zai-glm-5-3",
@@ -76,7 +76,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-08-30"
+      "verifiedAt": "2026-09-03"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -113,7 +113,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-08-30"
+      "verifiedAt": "2026-09-03"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -150,7 +150,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-08-30"
+      "verifiedAt": "2026-09-03"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -187,7 +187,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-08-30"
+      "verifiedAt": "2026-09-03"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -224,7 +224,44 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-08-30"
+      "verifiedAt": "2026-09-03"
+    },
+    {
+      "id": "tencent-deepseek-v4-flash-0731",
+      "slug": "tencent",
+      "provider": "Tencent Cloud",
+      "model": "DeepSeek V4 Flash 0731",
+      "product": "TokenHub Enterprise Pro Plan",
+      "shortName": "TC",
+      "title": "Tencent TokenHub peak-hour clock",
+      "subtitle": "DeepSeek credit rates converted to your local time zone",
+      "kicker": "TokenHub credits · 2× during peak",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "09:00", "end": "12:00" },
+          { "start": "14:00", "end": "18:00" }
+        ],
+        "windowName": "peak",
+        "sourceTitle": "Peak windows (Beijing):",
+        "sourceWindows": "09:00–12:00 · 14:00–18:00",
+        "sourceNote": "Daily · request start time sets the rate · effective Aug 17, 2026 · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Peak credits",
+          "status": "Peak credit rate is active now",
+          "badge": "2× credits"
+        },
+        "offPeak": {
+          "name": "Off-peak credits",
+          "status": "Off-peak credit rate is active now",
+          "badge": "1× credits"
+        }
+      },
+      "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
+      "verifiedAt": "2026-09-03"
     }
   ]
 }
