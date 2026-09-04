@@ -11,7 +11,7 @@
       "product": "API",
       "shortName": "DS",
       "title": "DeepSeek peak-hour clock",
-      "subtitle": "API pricing converted to your local time zone",
+      "subtitle": "API pricing converted to your local time",
       "kicker": "Peak-valley pricing · 2× during peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -49,7 +49,7 @@
       "product": "Coding Plan",
       "shortName": "GLM",
       "title": "GLM-5.3 peak-hour clock",
-      "subtitle": "Coding Plan points converted to your local time zone",
+      "subtitle": "Coding Plan points converted to your local time",
       "kicker": "Coding Plan quota · half usage off-peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -73,7 +73,7 @@
         "offPeak": {
           "name": "Off-peak savings",
           "status": "Off-peak quota savings are active now",
-          "badge": "Half usage",
+          "badge": "0.5×",
           "detail": "Uses half the standard quota"
         }
       },
@@ -89,7 +89,7 @@
       "shortName": "GLM",
       "temporary": true,
       "title": "GLM-5.3-Flash campaign clock",
-      "subtitle": "Coding Plan usage windows converted to your local time zone",
+      "subtitle": "Coding Plan usage windows converted to your local time",
       "kicker": "Usage campaign · September 3–20, 2026",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -124,14 +124,14 @@
         "offPeak": {
           "name": "Off-peak savings",
           "status": "Off-peak quota savings are active now",
-          "badge": "Half usage",
+          "badge": "0.5×",
           "detail": "Uses half the standard quota"
         },
         "campaign": {
           "name": "Campaign benefit",
           "status": "GLM-5.3-Flash campaign is active now",
           "badge": "Campaign",
-          "detail": "ZCode: no quota · Other agents: double quota",
+          "detail": "ZCode: no quota · Other agents: half the standard quota",
           "tone": "special"
         }
       },
@@ -147,7 +147,7 @@
       "shortName": "QW",
       "temporary": true,
       "title": "Qwen 3.8 night-rate clock",
-      "subtitle": "Personal Token Plan credits converted to your local time zone",
+      "subtitle": "Personal Token Plan credits converted to your local time",
       "kicker": "Limited-time night pricing · 50% fewer credits off-peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -184,7 +184,7 @@
       "shortName": "Q",
       "temporary": true,
       "title": "Qoder pricing clock",
-      "subtitle": "Temporary Qwen credit rates in your local time zone",
+      "subtitle": "Temporary Qwen credit rates in your local time",
       "kicker": "Temporary promotion · standard 0.5× → off-peak 0.1×",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -221,7 +221,7 @@
       "shortName": "Q",
       "temporary": true,
       "title": "Qoder Qwen3.8 pricing clock",
-      "subtitle": "Temporary Qwen credit rates in your local time zone",
+      "subtitle": "Temporary Qwen credit rates in your local time",
       "kicker": "Temporary promotion · standard 0.5× → off-peak 0.25×",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -258,7 +258,7 @@
       "shortName": "Q",
       "temporary": true,
       "title": "Qoder Qwen3.7 Plus pricing clock",
-      "subtitle": "Temporary Qwen credit rates in your local time zone",
+      "subtitle": "Temporary Qwen credit rates in your local time",
       "kicker": "Temporary promotion · standard 0.1× → off-peak 0.04×",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -294,7 +294,7 @@
       "product": "TokenHub Enterprise Pro Plan",
       "shortName": "TC",
       "title": "Tencent TokenHub peak-hour clock",
-      "subtitle": "DeepSeek credit rates converted to your local time zone",
+      "subtitle": "DeepSeek credit rates converted to your local time",
       "kicker": "TokenHub credits · 2× during peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
