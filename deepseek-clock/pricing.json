@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-03",
+  "updatedAt": "2026-09-05",
   "defaultProfile": "deepseek-v4-flash",
   "profiles": [
     {
@@ -39,7 +39,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "zai-glm-5-3",
@@ -78,7 +78,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -136,7 +136,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/notice/event-glm-5.3-flash",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -173,7 +173,43 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
+    },
+    {
+      "id": "xiaomi-mimo-v2-5-token-plan",
+      "slug": "mimo",
+      "provider": "Xiaomi MiMo",
+      "model": "MiMo-V2.5 / Pro",
+      "product": "Token Plan",
+      "shortName": "MI",
+      "title": "MiMo night-rate clock",
+      "subtitle": "Token Plan Credits converted to your local time",
+      "kicker": "Night discount · 20% fewer Credits off-peak",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "00:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "08:00–00:00",
+        "sourceNote": "Token Plan language models · 20% fewer Credits 00:00–08:00 · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard credits",
+          "status": "Standard credit usage is active now",
+          "badge": "1× credits"
+        },
+        "offPeak": {
+          "name": "Night discount",
+          "status": "Nightly 20% credit discount is active now",
+          "badge": "0.8× credits"
+        }
+      },
+      "source": "https://mimo.mi.com/token-plan",
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -210,7 +246,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -222,7 +258,7 @@
       "temporary": true,
       "title": "Qoder Qwen3.8 pricing clock",
       "subtitle": "Temporary Qwen credit rates in your local time",
-      "kicker": "Temporary promotion · standard 0.5× → off-peak 0.25×",
+      "kicker": "Temporary promotion · standard 0.5× → off-peak 0.2×",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -232,7 +268,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily · promotion effective Aug 3, 2026 · end date TBA"
+        "sourceNote": "Daily · 60% off effective Sep 4, 2026 at 22:00 · end date TBA"
       },
       "periods": {
         "peak": {
@@ -242,12 +278,49 @@
         },
         "offPeak": {
           "name": "Promo off-peak rate",
-          "status": "Discounted 0.25× credit rate is active now",
-          "badge": "0.25× credits"
+          "status": "Discounted 0.2× credit rate is active now",
+          "badge": "0.2× credits"
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
+    },
+    {
+      "id": "qoder-qwen3-8-flash",
+      "slug": "qoder-qwen38-flash",
+      "provider": "Qoder",
+      "model": "Qwen3.8 Flash",
+      "product": "Credits promotion",
+      "shortName": "Q",
+      "temporary": true,
+      "title": "Qoder Qwen3.8 Flash pricing clock",
+      "subtitle": "Temporary Qwen credit rates in your local time",
+      "kicker": "Temporary promotion · standard 0.1× → off-peak 0.04×",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "22:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Daily · promotion effective Sep 4, 2026 at 22:00 · end date TBA"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard model rate",
+          "status": "Standard 0.1× credit rate is active now",
+          "badge": "0.1× credits"
+        },
+        "offPeak": {
+          "name": "Promo off-peak rate",
+          "status": "Discounted 0.04× credit rate is active now",
+          "badge": "0.04× credits"
+        }
+      },
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -284,7 +357,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
     },
     {
       "id": "tencent-deepseek-v4-flash-0731",
@@ -298,15 +371,16 @@
       "kicker": "TokenHub credits · 2× during peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
-        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakDays": [1, 2, 3, 4, 5],
         "peakWindows": [
           { "start": "09:00", "end": "12:00" },
           { "start": "14:00", "end": "18:00" }
         ],
         "windowName": "peak",
+        "offDayName": "Weekend",
         "sourceTitle": "Peak windows (Beijing):",
         "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "Daily · request start time sets the rate · effective Aug 17, 2026 · no published end date"
+        "sourceNote": "Monday–Friday · weekends all off-peak · weekday schedule effective Aug 29, 2026 · no published end date"
       },
       "periods": {
         "peak": {
@@ -321,7 +395,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-03"
+      "verifiedAt": "2026-09-05"
     }
   ]
 }
