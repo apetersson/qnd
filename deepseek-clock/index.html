@@ -435,6 +435,7 @@
         conic-gradient(from -90deg, rgba(34,211,238,0.20), rgba(34,211,238,0.05), rgba(255,107,74,0.18), rgba(255,209,102,0.16), rgba(34,211,238,0.20));
       filter: blur(18px);
       opacity: 0.95;
+      will-change: transform, opacity;
       animation: breathe 6s ease-in-out infinite;
     }
 
@@ -447,8 +448,27 @@
       width: 100%;
       height: 100%;
       display: block;
-      filter: drop-shadow(0 22px 48px rgba(0,0,0,0.36));
     }
+
+    /* Static shadow under the dial. A filter on the <svg> itself would force a
+       full re-rasterisation on every hand or arc update. */
+    .clock-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 9%;
+      border-radius: 50%;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.36);
+      pointer-events: none;
+    }
+
+    /* Glows are dropped for the duration of the 12h/24h transition: SVG
+       drop-shadow filters are re-rendered on each frame the geometry moves. */
+    .clock-wrap.is-transitioning .peak-arc,
+    .clock-wrap.is-transitioning .campaign-arc,
+    .clock-wrap.is-transitioning .hour-hand,
+    .clock-wrap.is-transitioning .minute-hand,
+    .clock-wrap.is-transitioning .second-hand,
+    .clock-wrap.is-transitioning .hub { filter: none; }
 
     .face-fill { fill: rgba(7, 14, 27, 0.76); stroke: rgba(255,255,255,0.13); stroke-width: 1; }
     .base-ring { fill: none; stroke: rgba(255,255,255,0.09); stroke-width: 24; }
@@ -998,7 +1018,7 @@
             <button type="button" class="seg-btn" data-dial="24" aria-pressed="false">24h</button>
           </div>
         </div>
-        <div class="clock-wrap">
+        <div class="clock-wrap" id="clockWrap">
           <div class="orbital-glow" aria-hidden="true"></div>
           <svg id="clockSvg" viewBox="0 0 420 420" role="img" aria-labelledby="clockTitle clockDesc">
             <title id="clockTitle">DeepSeek peak-hour clock</title>
@@ -1051,7 +1071,7 @@
         <div class="status-card">
           <div class="status-head">
             <span>Current window</span>
-            <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noopener noreferrer">[Source]</a>
+            <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noopener noreferrer">Source</a>
           </div>
           <div class="status-body">
             <div class="mode" id="mode">Loading…</div>
@@ -1073,7 +1093,7 @@
     <footer class="site-footer" aria-label="Site information">
       <a class="referral-card" id="referralCard" href="https://z.ai/subscribe?ic=RJHGNJBRJD" hidden>
         <span class="referral-mark" aria-hidden="true">z</span>
-        <span class="referral-copy">Support this utility by using my referral link.</span>
+        <span class="referral-copy">Support this site: sign up through my referral link.</span>
         <span class="referral-cta">Sign up at z.ai <b>→</b></span>
       </a>
 
@@ -1081,7 +1101,7 @@
         <div class="sponsor-mark" aria-hidden="true">1×</div>
         <div class="sponsor-copy">
           <span class="sponsor-label">Sponsorship available · exclusive placement</span>
-          <p>One developer-focused company can exclusively support ongoing pricing-data verification. No display ads, animation, tracking pixels, or competing banners.</p>
+          <p>One developer-focused company can sponsor ongoing verification of the pricing data. No display ads, animation, tracking pixels, or competing banners.</p>
         </div>
         <a class="sponsor-inquiry" href="mailto:clock-sponsoring@capacity.at?subject=Peak-hour%20clock%20sponsorship">
           <strong>Sponsorship inquiries</strong>
@@ -1095,8 +1115,8 @@
           <span class="about-operator">Offpeak Clock is operated by <a href="https://capacity.at/">capacity.at</a></span>
         </div>
         <div class="about-content">
-          <p>Offpeak Clock converts published time-of-day API pricing schedules into your local time. It is an independent project and is not affiliated with the providers listed.</p>
-          <p><strong>Estimate only: verify before use.</strong> Pricing information may be delayed, incomplete, or incorrect. Provider pricing pages, terms, and billing systems are authoritative. Verify current prices, schedules, eligibility, and promotion dates before incurring costs. Use of this site is at your own risk.</p>
+          <p>Offpeak Clock converts the time-of-day pricing schedules that providers publish into your local time. It is an independent project with no affiliation to the providers listed.</p>
+          <p><strong>Estimate only.</strong> The data here may be delayed, incomplete, or wrong. Provider pricing pages, terms, and billing systems are authoritative. Check current prices, schedules, eligibility, and promotion dates before you rely on them. Use at your own risk.</p>
         </div>
       </section>
     </footer>
@@ -1115,7 +1135,7 @@
       second: 158
     };
     const SVG_NS = 'http://www.w3.org/2000/svg';
-    const DIAL_TRANSITION_MS = 720;
+    const DIAL_TRANSITION_MS = 880;
     const scheduleFormatterCache = new Map();
     let pricingConfig = null;
     let activeProfile = null;
@@ -1160,6 +1180,7 @@
       offPeakLegend: document.getElementById('offPeakLegend'),
       offPeakLegendLabel: document.getElementById('offPeakLegendLabel'),
       sourceLink: document.getElementById('sourceLink'),
+      clockWrap: document.getElementById('clockWrap'),
       referralCard: document.getElementById('referralCard')
     };
 
@@ -1552,25 +1573,32 @@
       const paths = splitArcFragmentsAtHalf(joinedFragments, modelMode).map(([start, end]) => {
         const path = createSvgElement('path', `${arcClass} ${horizonClass}`);
         layer.appendChild(path);
-        return { path, start, end };
+        return { path, start, end, tween: null };
       });
       parent.appendChild(layer);
       return { layer, paths };
     }
 
     function updateArcTweenLayer(record, fromMode, toMode, progress, clockwise) {
-      for (const { path, start, end } of record.paths) {
-        const fromStart = canonicalArcAngle(start, fromMode, start);
-        const fromEnd = canonicalArcAngle(end, fromMode, start);
-        const toStart = canonicalArcAngle(start, toMode, start);
-        const toEnd = canonicalArcAngle(end, toMode, start);
-        const fromCenter = (fromStart + fromEnd) / 2;
-        const targetCenter = directedArcTarget(fromCenter, (toStart + toEnd) / 2, clockwise);
+      for (const entry of record.paths) {
+        if (!entry.tween) {
+          const { start, end } = entry;
+          const fromStart = canonicalArcAngle(start, fromMode, start);
+          const fromEnd = canonicalArcAngle(end, fromMode, start);
+          const toStart = canonicalArcAngle(start, toMode, start);
+          const toEnd = canonicalArcAngle(end, toMode, start);
+          const fromCenter = (fromStart + fromEnd) / 2;
+          entry.tween = {
+            fromCenter,
+            targetCenter: directedArcTarget(fromCenter, (toStart + toEnd) / 2, clockwise),
+            fromSpan: fromEnd - fromStart,
+            toSpan: toEnd - toStart
+          };
+        }
+        const { fromCenter, targetCenter, fromSpan, toSpan } = entry.tween;
         const center = fromCenter + (targetCenter - fromCenter) * progress;
-        const fromSpan = fromEnd - fromStart;
-        const toSpan = toEnd - toStart;
         const span = fromSpan + (toSpan - fromSpan) * progress;
-        path.setAttribute('d', arcPathFromAngles(center - span / 2, center + span / 2));
+        entry.path.setAttribute('d', arcPathFromAngles(center - span / 2, center + span / 2));
       }
     }
 
@@ -1685,21 +1713,51 @@
       return layer;
     }
 
-    function setHourScaleLabelOpacity(layer, opacity) {
-      for (const label of layer.querySelectorAll('.label')) {
-        label.setAttribute('opacity', opacity.toFixed(3));
+    function hourScaleLabels(layer) {
+      return Array.from(layer.querySelectorAll('.label'));
+    }
+
+    function setHourScaleLabelOpacity(layerOrLabels, opacity) {
+      const labels = Array.isArray(layerOrLabels) ? layerOrLabels : hourScaleLabels(layerOrLabels);
+      const value = opacity.toFixed(3);
+      for (const label of labels) label.setAttribute('opacity', value);
+    }
+
+    function hourScaleTween(layer, fromAngle, toAngle) {
+      // Resolve items, marks, labels and both angles once; frames then only
+      // write attributes. Deliberately interpolate the signed angle directly:
+      // on 12→24 the 0–11 half travels anti-clockwise while 12–23 travels
+      // clockwise; the reverse transition swaps directions and merges halves.
+      return Array.from(layer.querySelectorAll('.hour-scale-item')).map(item => {
+        const hour = Number(item.dataset.hour);
+        return {
+          mark: item.querySelector('.hour-mark'),
+          label: item.querySelector('.label'),
+          from: fromAngle(hour),
+          to: toAngle(hour)
+        };
+      });
+    }
+
+    function positionHourScaleTween(entry, angle) {
+      if (entry.mark) {
+        const markStart = point(CLOCK_CENTER, CLOCK_CENTER, 132, angle);
+        const markEnd = point(CLOCK_CENTER, CLOCK_CENTER, 143, angle);
+        entry.mark.setAttribute('x1', markStart.x.toFixed(2));
+        entry.mark.setAttribute('y1', markStart.y.toFixed(2));
+        entry.mark.setAttribute('x2', markEnd.x.toFixed(2));
+        entry.mark.setAttribute('y2', markEnd.y.toFixed(2));
+      }
+      if (entry.label) {
+        const labelPoint = point(CLOCK_CENTER, CLOCK_CENTER, 119, angle);
+        entry.label.setAttribute('x', labelPoint.x.toFixed(2));
+        entry.label.setAttribute('y', labelPoint.y.toFixed(2));
       }
     }
 
-    function updateHourScaleAngles(layer, fromAngle, toAngle, progress) {
-      for (const item of layer.querySelectorAll('.hour-scale-item')) {
-        const hour = Number(item.dataset.hour);
-        // Deliberately interpolate the signed angle directly. On 12→24 the
-        // 0–11 half travels anti-clockwise while 12–23 travels clockwise; the
-        // reverse transition swaps those directions and merges both halves.
-        const from = fromAngle(hour);
-        const angle = from + (toAngle(hour) - from) * progress;
-        positionHourScaleItem(item, angle);
+    function updateHourScaleAngles(tween, progress) {
+      for (const entry of tween) {
+        positionHourScaleTween(entry, entry.from + (entry.to - entry.from) * progress);
       }
     }
 
@@ -1719,13 +1777,16 @@
         // splits and travels into its AM/PM destination without fading.
         const outgoing = createHourScaleLayer(12, h => h * 30, { marks: false });
         const moving = createHourScaleLayer(24, h => (h % 12) * 30);
-        setHourScaleLabelOpacity(moving, 0);
         el.ticks.append(outgoing, moving);
+        const outgoingLabels = hourScaleLabels(outgoing);
+        const movingLabels = hourScaleLabels(moving);
+        const tween = hourScaleTween(moving, h => (h % 12) * 30, h => h * 15);
+        setHourScaleLabelOpacity(movingLabels, 0);
         return progress => {
           const blend = Math.min(1, progress * 1.8);
-          setHourScaleLabelOpacity(outgoing, 1 - blend);
-          setHourScaleLabelOpacity(moving, blend);
-          updateHourScaleAngles(moving, h => (h % 12) * 30, h => h * 15, progress);
+          setHourScaleLabelOpacity(outgoingLabels, 1 - blend);
+          setHourScaleLabelOpacity(movingLabels, blend);
+          updateHourScaleAngles(tween, progress);
         };
       }
 
@@ -1733,13 +1794,16 @@
       // Only their numbers fade while a single 12h label set appears.
       const moving = createHourScaleLayer(24, h => h * 15);
       const incoming = createHourScaleLayer(12, h => h * 30, { marks: false });
-      setHourScaleLabelOpacity(incoming, 0);
       el.ticks.append(moving, incoming);
+      const movingLabels = hourScaleLabels(moving);
+      const incomingLabels = hourScaleLabels(incoming);
+      const tween = hourScaleTween(moving, h => h * 15, h => (h % 12) * 30);
+      setHourScaleLabelOpacity(incomingLabels, 0);
       return progress => {
         const blend = Math.min(1, progress * 1.8);
-        setHourScaleLabelOpacity(moving, 1 - blend);
-        setHourScaleLabelOpacity(incoming, blend);
-        updateHourScaleAngles(moving, h => h * 15, h => (h % 12) * 30, progress);
+        setHourScaleLabelOpacity(movingLabels, 1 - blend);
+        setHourScaleLabelOpacity(incomingLabels, blend);
+        updateHourScaleAngles(tween, progress);
       };
     }
 
@@ -2093,7 +2157,8 @@
       const toHourAngle = hourHandAngle(startedAt, mode);
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      if (reduceMotion) {
+      // A hidden tab never receives animation frames, so switch instantly.
+      if (reduceMotion || document.hidden) {
         dialHours = mode;
         saveDialMode(mode);
         applyDialMode();
@@ -2109,8 +2174,29 @@
       dialHours = mode;
       saveDialMode(mode);
       updateDialModeUi();
+      el.clockWrap.classList.add('is-transitioning');
 
       let animationStart = null;
+      let frameHandle = 0;
+
+      function finish() {
+        cancelAnimationFrame(frameHandle);
+        document.removeEventListener('visibilitychange', onHidden);
+        dialTransitioning = false;
+        drawTicks();
+        const now = new Date();
+        drawRoundClock(now);
+        setHourHandAngle(hourHandAngle(now));
+        updateDialModeUi();
+        el.clockWrap.classList.remove('is-transitioning');
+      }
+
+      // Animation frames pause in a hidden tab; snap to the end state rather
+      // than leaving the dial half-way when the user switches apps.
+      function onHidden() {
+        if (document.hidden) finish();
+      }
+      document.addEventListener('visibilitychange', onHidden);
 
       function frame(timestamp) {
         if (animationStart === null) animationStart = timestamp;
@@ -2124,19 +2210,13 @@
         setHourHandAngle(fromHourAngle + (toHourAngle - fromHourAngle) * eased);
 
         if (progress < 1) {
-          requestAnimationFrame(frame);
+          frameHandle = requestAnimationFrame(frame);
           return;
         }
-
-        dialTransitioning = false;
-        drawTicks();
-        const now = new Date();
-        drawRoundClock(now);
-        setHourHandAngle(hourHandAngle(now));
-        updateDialModeUi();
+        finish();
       }
 
-      requestAnimationFrame(frame);
+      frameHandle = requestAnimationFrame(frame);
     }
 
     el.hourToggle.addEventListener('click', (e) => {
