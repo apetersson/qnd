@@ -83,6 +83,46 @@
       "verifiedAt": "2026-09-06"
     },
     {
+      "id": "bai-deepseek-v4",
+      "slug": "bai",
+      "provider": "B.AI",
+      "model": "DeepSeek V4 models",
+      "product": "API",
+      "shortName": "BAI",
+      "title": "B.AI DeepSeek V4 pricing clock",
+      "subtitle": "B.AI API pricing hours in your local time",
+      "kicker": "V4 Flash, Pro and Vision · peak rates are 2× off-peak",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [1, 2, 3, 4, 5],
+        "peakWindows": [
+          { "start": "09:00", "end": "12:00" },
+          { "start": "14:00", "end": "18:00" }
+        ],
+        "windowName": "busy",
+        "offDayName": "Weekend",
+        "sourceTitle": "Busy hours (Beijing time):",
+        "sourceWindows": "09:00–12:00 · 14:00–18:00",
+        "sourceNote": "Mon–Fri API pricing · Chat always uses idle rates · Flash and Vision currently receive an extra 50% discount at both rates · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Peak rate",
+          "status": "Peak rate is active now",
+          "badge": "2×",
+          "detail": "2× the off-peak rate"
+        },
+        "offPeak": {
+          "name": "Off-peak rate",
+          "status": "Off-peak rate is active now",
+          "badge": "1×",
+          "detail": "Base rate"
+        }
+      },
+      "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
+      "verifiedAt": "2026-09-06"
+    },
+    {
       "id": "zai-glm-5-3",
       "slug": "zai",
       "provider": "Z.ai",
