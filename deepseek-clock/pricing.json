@@ -48,9 +48,9 @@
       "model": "GLM-5.3",
       "product": "Coding Plan",
       "shortName": "GLM",
-      "title": "GLM-5.3 peak-hour clock",
-      "subtitle": "Coding Plan points converted to your local time",
-      "kicker": "Coding Plan quota · half usage off-peak",
+      "title": "GLM-5.3 off-peak clock",
+      "subtitle": "Z.ai Coding Plan quota hours in your local time",
+      "kicker": "Coding Plan · off-peak hours count half against your quota",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [1, 2, 3, 4, 5],
@@ -59,22 +59,22 @@
         ],
         "windowName": "peak",
         "offDayName": "Weekend",
-        "sourceTitle": "Peak window (Beijing):",
+        "sourceTitle": "Peak hours (Beijing time):",
         "sourceWindows": "14:00–18:00",
-        "sourceNote": "Monday–Friday · all other hours use half the standard quota"
+        "sourceNote": "Mon–Fri · every other hour counts half against your quota"
       },
       "periods": {
         "peak": {
-          "name": "Standard usage",
-          "status": "Standard quota usage is active now",
-          "badge": "Standard",
-          "detail": "Uses the standard quota"
+          "name": "Peak hours",
+          "status": "Peak hours: usage counts at the standard rate",
+          "badge": "1×",
+          "detail": "Counts at the standard rate"
         },
         "offPeak": {
-          "name": "Off-peak savings",
-          "status": "Off-peak quota savings are active now",
+          "name": "Off-peak hours",
+          "status": "Off-peak now: usage counts at half rate",
           "badge": "0.5×",
-          "detail": "Uses half the standard quota"
+          "detail": "Counts at half rate"
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
@@ -89,7 +89,7 @@
       "shortName": "GLM",
       "temporary": true,
       "title": "GLM-5.3-Flash campaign clock",
-      "subtitle": "Coding Plan usage windows converted to your local time",
+      "subtitle": "Z.ai Coding Plan campaign hours in your local time",
       "kicker": "Usage campaign · September 3–20, 2026",
       "schedule": {
         "timeZone": "Asia/Shanghai",
@@ -116,22 +116,22 @@
       },
       "periods": {
         "peak": {
-          "name": "Standard usage",
-          "status": "Standard quota usage is active now",
-          "badge": "Standard",
-          "detail": "Uses the standard quota"
+          "name": "Peak hours",
+          "status": "Peak hours: usage counts at the standard rate",
+          "badge": "1×",
+          "detail": "Counts at the standard rate"
         },
         "offPeak": {
-          "name": "Off-peak savings",
-          "status": "Off-peak quota savings are active now",
+          "name": "Off-peak hours",
+          "status": "Off-peak now: usage counts at half rate",
           "badge": "0.5×",
-          "detail": "Uses half the standard quota"
+          "detail": "Counts at half rate"
         },
         "campaign": {
-          "name": "Campaign benefit",
-          "status": "GLM-5.3-Flash campaign is active now",
+          "name": "Campaign hours",
+          "status": "GLM-5.3-Flash campaign hours are active now",
           "badge": "Campaign",
-          "detail": "ZCode: no quota · Other agents: half the standard quota",
+          "detail": "ZCode: no quota used · other agents: half rate",
           "tone": "special"
         }
       },
