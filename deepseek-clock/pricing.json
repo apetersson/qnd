@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-05",
-  "defaultProfile": "deepseek-v4-flash",
+  "updatedAt": "2026-09-06",
+  "defaultProfile": "deepseek-v4",
   "profiles": [
     {
-      "id": "deepseek-v4-flash",
+      "id": "deepseek-v4",
       "slug": "deepseek",
       "provider": "DeepSeek",
-      "model": "V4 Flash",
+      "model": "V4 models",
       "product": "API",
       "shortName": "DS",
-      "title": "DeepSeek peak-hour clock",
-      "subtitle": "API pricing converted to your local time",
-      "kicker": "Peak-valley pricing · 2× during peak",
+      "title": "DeepSeek V4 pricing clock",
+      "subtitle": "DeepSeek API pricing hours in your local time",
+      "kicker": "V4 Flash, Pro and Vision · peak rates are 2× off-peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [1, 2, 3, 4, 5],
@@ -22,24 +22,65 @@
         ],
         "windowName": "peak",
         "offDayName": "Weekend",
-        "sourceTitle": "Peak windows (Beijing):",
+        "sourceTitle": "Peak hours (Beijing time):",
         "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "Monday–Friday · weekends all off-peak"
+        "sourceNote": "Mon–Fri · applies to V4 Flash, V4 Pro and V4 Flash Vision · all other hours are off-peak"
       },
       "periods": {
         "peak": {
-          "name": "Peak price",
-          "status": "Peak pricing is active now",
-          "badge": "2×"
+          "name": "Peak rate",
+          "status": "Peak rate is active now",
+          "badge": "2×",
+          "detail": "2× the off-peak rate"
         },
         "offPeak": {
-          "name": "Off-peak",
-          "status": "Off-peak pricing is active now",
-          "badge": "1×"
+          "name": "Off-peak rate",
+          "status": "Off-peak rate is active now",
+          "badge": "1×",
+          "detail": "Base rate"
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-06"
+    },
+    {
+      "id": "ollama-deepseek-v4",
+      "slug": "ollama",
+      "provider": "Ollama",
+      "model": "DeepSeek V4 models",
+      "product": "Cloud API",
+      "shortName": "OL",
+      "title": "Ollama DeepSeek V4 pricing clock",
+      "subtitle": "Ollama Cloud pricing hours in your local time",
+      "kicker": "DeepSeek V4 Flash and Pro · peak rates are 2× off-peak",
+      "schedule": {
+        "timeZone": "UTC",
+        "peakDays": [1, 2, 3, 4, 5],
+        "peakWindows": [
+          { "start": "12:00", "end": "18:00" }
+        ],
+        "windowName": "peak",
+        "offDayName": "Weekend",
+        "sourceTitle": "Peak hours (UTC):",
+        "sourceWindows": "12:00–18:00",
+        "sourceNote": "Mon–Fri · applies to DeepSeek V4 Flash and Pro · all other hours are off-peak"
+      },
+      "periods": {
+        "peak": {
+          "name": "Peak rate",
+          "status": "Peak rate is active now",
+          "badge": "2×",
+          "detail": "2× the off-peak rate"
+        },
+        "offPeak": {
+          "name": "Off-peak rate",
+          "status": "Off-peak rate is active now",
+          "badge": "1×",
+          "detail": "Base rate"
+        }
+      },
+      "source": "https://ollama.com/pricing",
+      "verifiedAt": "2026-09-06"
     },
     {
       "id": "zai-glm-5-3",
