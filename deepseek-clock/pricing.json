@@ -1,30 +1,30 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-06",
+  "updatedAt": "2026-09-11",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
       "id": "deepseek-v4",
       "slug": "deepseek",
       "provider": "DeepSeek",
-      "model": "V4 models",
+      "model": "V4.1 Flash + V4 Pro",
       "product": "API",
       "shortName": "DS",
-      "title": "DeepSeek V4 pricing clock",
+      "title": "DeepSeek V4.1 pricing clock",
       "subtitle": "DeepSeek API pricing hours in your local time",
-      "kicker": "V4 Flash, Pro and Vision · peak rates are 2× off-peak",
+      "kicker": "V4.1 Flash and V4 Pro · peak rates are 2× off-peak",
       "schedule": {
-        "timeZone": "Asia/Shanghai",
+        "timeZone": "UTC",
         "peakDays": [1, 2, 3, 4, 5],
         "peakWindows": [
-          { "start": "09:00", "end": "12:00" },
-          { "start": "14:00", "end": "18:00" }
+          { "start": "01:00", "end": "04:00" },
+          { "start": "06:00", "end": "10:00" }
         ],
         "windowName": "peak",
         "offDayName": "Weekend",
-        "sourceTitle": "Peak hours (Beijing time):",
-        "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "Mon–Fri · applies to V4 Flash, V4 Pro and V4 Flash Vision · all other hours are off-peak"
+        "sourceTitle": "Peak hours (UTC):",
+        "sourceWindows": "01:00–04:00 · 06:00–10:00",
+        "sourceNote": "Mon–Fri · off-peak is half the peak rate · legacy V4 Flash and Vision IDs now route to V4.1 Flash · V4 Pro routes to V4.1 Flash from Sep 14, 2026 · no published end date"
       },
       "periods": {
         "peak": {
@@ -41,18 +41,18 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-06"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "ollama-deepseek-v4",
       "slug": "ollama",
       "provider": "Ollama",
-      "model": "DeepSeek V4 models",
+      "model": "DeepSeek V4.1 Flash + V4 Pro",
       "product": "Cloud API",
       "shortName": "OL",
-      "title": "Ollama DeepSeek V4 pricing clock",
+      "title": "Ollama DeepSeek V4.1 pricing clock",
       "subtitle": "Ollama Cloud pricing hours in your local time",
-      "kicker": "DeepSeek V4 Flash and Pro · peak rates are 2× off-peak",
+      "kicker": "V4.1 Flash and V4 Pro · peak rates are 2× off-peak",
       "schedule": {
         "timeZone": "UTC",
         "peakDays": [1, 2, 3, 4, 5],
@@ -63,7 +63,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "12:00–18:00",
-        "sourceNote": "Mon–Fri · applies to DeepSeek V4 Flash and Pro · all other hours are off-peak"
+        "sourceNote": "Mon–Fri · applies to V4.1 Flash, legacy V4 Flash, and V4 Pro · all other hours are off-peak · no published end date"
       },
       "periods": {
         "peak": {
@@ -80,18 +80,18 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-09-06"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "bai-deepseek-v4",
       "slug": "bai",
       "provider": "B.AI",
-      "model": "DeepSeek V4 models",
+      "model": "DeepSeek V4.1 Flash + V4 Pro",
       "product": "API",
       "shortName": "BAI",
-      "title": "B.AI DeepSeek V4 pricing clock",
+      "title": "B.AI DeepSeek V4.1 pricing clock",
       "subtitle": "B.AI API pricing hours in your local time",
-      "kicker": "V4 Flash, Pro and Vision · peak rates are 2× off-peak",
+      "kicker": "V4.1 Flash and V4 Pro · busy rates are 2× idle",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [1, 2, 3, 4, 5],
@@ -103,24 +103,24 @@
         "offDayName": "Weekend",
         "sourceTitle": "Busy hours (Beijing time):",
         "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "Mon–Fri API pricing · Chat always uses idle rates · Flash and Vision currently receive an extra 50% discount at both rates · no published end date"
+        "sourceNote": "API busy periods are weekdays 09:00–12:00 and 14:00–18:00 Beijing · Chat uses idle rates · legacy Flash and Vision requests progressively route to V4.1 Flash · its 10%-of-standard promotion begins Sep 12, 2026 at 10:00 Beijing · no published end date"
       },
       "periods": {
         "peak": {
-          "name": "Peak rate",
-          "status": "Peak rate is active now",
-          "badge": "2×",
-          "detail": "2× the off-peak rate"
+          "name": "Busy rate",
+          "status": "Busy rate is active now",
+          "badge": "2× idle",
+          "detail": "2× the idle rate"
         },
         "offPeak": {
-          "name": "Off-peak rate",
-          "status": "Off-peak rate is active now",
-          "badge": "1×",
+          "name": "Idle rate",
+          "status": "Idle rate is active now",
+          "badge": "1× idle",
           "detail": "Base rate"
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-09-06"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "zai-glm-5-3",
@@ -142,7 +142,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (Beijing time):",
         "sourceWindows": "14:00–18:00",
-        "sourceNote": "Mon–Fri · every other hour counts half against your quota"
+        "sourceNote": "Mon–Fri · every other hour counts half against your quota · no published end date"
       },
       "periods": {
         "peak": {
@@ -159,7 +159,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -193,7 +193,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak / campaign (Singapore):",
         "sourceWindows": "Peak 14:00–18:00 weekdays · campaign 23:00–09:00 daily",
-        "sourceNote": "Campaign Sep 3–20, 2026 · paid plans · ZCode uses no quota, other supported agents receive double quota"
+        "sourceNote": "Campaign Sep 3–20, 2026 · paid plans · ZCode 3.10+ uses no quota; other supported agents receive double quota"
       },
       "periods": {
         "peak": {
@@ -217,19 +217,19 @@
         }
       },
       "source": "https://docs.z.ai/devpack/notice/event-glm-5.3-flash",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "alibaba-qwen3-8-max",
       "slug": "alibaba",
       "provider": "Alibaba Cloud",
-      "model": "Qwen3.8 Max",
+      "model": "Qwen3.8 Max + DeepSeek V4",
       "product": "Personal Token Plan",
       "shortName": "QW",
       "temporary": true,
-      "title": "Qwen 3.8 night-rate clock",
-      "subtitle": "Personal Token Plan credits converted to your local time",
-      "kicker": "Limited-time night pricing · 50% fewer credits off-peak",
+      "title": "Alibaba Token Plan night-rate clock",
+      "subtitle": "Qwen and DeepSeek plan credits in your local time",
+      "kicker": "Token Plan night pricing · 50% fewer credits off-peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -239,7 +239,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Coding/agent tools only · 50% discount 22:00–08:00 · no published end date"
+        "sourceNote": "Coding/agent tools only · Qwen3.8 Max, DeepSeek V4 Pro 0813 and Flash 0731 · 50% discount 22:00–08:00 · no published end date"
       },
       "periods": {
         "peak": {
@@ -254,7 +254,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -289,8 +289,8 @@
           "badge": "0.8× credits"
         }
       },
-      "source": "https://mimo.mi.com/token-plan",
-      "verifiedAt": "2026-09-05"
+      "source": "https://mimo.mi.com/docs/en-US/updates/feature/platform",
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -312,7 +312,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily · promotion effective Jun 23, 2026 · end date TBA"
+        "sourceNote": "Daily · promotion effective Jun 23, 2026 · end date to be announced"
       },
       "periods": {
         "peak": {
@@ -327,7 +327,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -349,7 +349,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily · 60% off effective Sep 4, 2026 at 22:00 · end date TBA"
+        "sourceNote": "Daily · 60% off effective Sep 4, 2026 at 22:00 · end date to be announced"
       },
       "periods": {
         "peak": {
@@ -364,7 +364,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -386,7 +386,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily · promotion effective Sep 4, 2026 at 22:00 · end date TBA"
+        "sourceNote": "Daily · 60% off effective Sep 4, 2026 at 22:00 · end date to be announced"
       },
       "periods": {
         "peak": {
@@ -401,7 +401,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -423,7 +423,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily · promotion effective Jun 23, 2026 · end date TBA"
+        "sourceNote": "Daily · promotion effective Jun 23, 2026 · end date to be announced"
       },
       "periods": {
         "peak": {
@@ -438,18 +438,18 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
     },
     {
-      "id": "tencent-deepseek-v4-flash-0731",
+      "id": "tencent-deepseek-v4-vendor-direct",
       "slug": "tencent",
       "provider": "Tencent Cloud",
-      "model": "DeepSeek V4 Flash 0731",
+      "model": "DeepSeek V4 vendor-direct models",
       "product": "TokenHub Enterprise Pro Plan",
       "shortName": "TC",
-      "title": "Tencent TokenHub peak-hour clock",
-      "subtitle": "DeepSeek credit rates converted to your local time",
-      "kicker": "TokenHub credits · 2× during peak",
+      "title": "Tencent TokenHub vendor-direct clock",
+      "subtitle": "Vendor-direct DeepSeek V4 credit rates in your local time",
+      "kicker": "Flash, Pro and Vision · 2× during weekday peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [1, 2, 3, 4, 5],
@@ -461,7 +461,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak windows (Beijing):",
         "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "Monday–Friday · weekends all off-peak · weekday schedule effective Aug 29, 2026 · no published end date"
+        "sourceNote": "Vendor-direct Flash 0731, Pro 0813 and Flash Vision Exp · Monday–Friday · weekends all off-peak · effective Aug 29, 2026 · no published end date"
       },
       "periods": {
         "peak": {
@@ -476,7 +476,82 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-05"
+      "verifiedAt": "2026-09-11"
+    },
+    {
+      "id": "tencent-deepseek-v4-ga",
+      "slug": "tencent-v4-ga",
+      "provider": "Tencent Cloud",
+      "model": "DeepSeek V4 GA models",
+      "product": "TokenHub Enterprise Pro Plan",
+      "shortName": "TC",
+      "title": "Tencent V4 GA peak-hour clock",
+      "subtitle": "DeepSeek V4 GA credit rates in your local time",
+      "kicker": "Flash and Pro GA · 2× during daily peak",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "09:00", "end": "12:00" },
+          { "start": "14:00", "end": "18:00" }
+        ],
+        "windowName": "peak",
+        "sourceTitle": "Peak windows (Beijing):",
+        "sourceWindows": "09:00–12:00 · 14:00–18:00",
+        "sourceNote": "Flash 0731 GA and Pro 0813 GA · every day · off-peak is half price · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Peak credits",
+          "status": "Peak credit rate is active now",
+          "badge": "2× credits"
+        },
+        "offPeak": {
+          "name": "Off-peak credits",
+          "status": "Off-peak credit rate is active now",
+          "badge": "1× credits"
+        }
+      },
+      "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
+      "verifiedAt": "2026-09-11"
+    },
+    {
+      "id": "swarms-swarm-completions",
+      "slug": "swarms",
+      "provider": "Swarms",
+      "model": "Swarm Completions",
+      "product": "Swarms API",
+      "shortName": "SW",
+      "title": "Swarms night-rate clock",
+      "subtitle": "Multi-agent Swarm Completions token rates in your local time",
+      "kicker": "Night-time pricing · 50% off token costs",
+      "schedule": {
+        "timeZone": "America/Los_Angeles",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "06:00", "end": "20:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Pacific Time):",
+        "sourceWindows": "06:00–20:00",
+        "sourceNote": "Daily · Swarm Completions token costs only · agent costs unchanged · discount applies automatically · no published effective date or end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard token rate",
+          "status": "Standard token rate is active now",
+          "badge": "1× tokens",
+          "detail": "Base token rate"
+        },
+        "offPeak": {
+          "name": "Night-time discount",
+          "status": "Night-time token discount is active now",
+          "badge": "0.5× tokens",
+          "detail": "50% off token costs"
+        }
+      },
+      "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
+      "verifiedAt": "2026-09-11"
     }
   ]
 }
