@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-11",
+  "updatedAt": "2026-09-19",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -20,11 +20,49 @@
           { "start": "01:00", "end": "04:00" },
           { "start": "06:00", "end": "10:00" }
         ],
+        "publicHolidayDates": [
+          "2026-01-01",
+          "2026-01-02",
+          "2026-01-03",
+          "2026-02-15",
+          "2026-02-16",
+          "2026-02-17",
+          "2026-02-18",
+          "2026-02-19",
+          "2026-02-20",
+          "2026-02-21",
+          "2026-02-22",
+          "2026-02-23",
+          "2026-04-04",
+          "2026-04-05",
+          "2026-04-06",
+          "2026-05-01",
+          "2026-05-02",
+          "2026-05-03",
+          "2026-05-04",
+          "2026-05-05",
+          "2026-06-19",
+          "2026-06-20",
+          "2026-06-21",
+          "2026-09-25",
+          "2026-09-26",
+          "2026-09-27",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-03",
+          "2026-10-04",
+          "2026-10-05",
+          "2026-10-06",
+          "2026-10-07"
+        ],
+        "publicHolidayName": "Chinese public holiday",
+        "publicHolidayTimeZone": "Asia/Shanghai",
+        "publicHolidaySource": "https://english.www.gov.cn/policies/featured/202511/04/content_WS6909c915c6d00ca5f9a074f7.html",
         "windowName": "peak",
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "Mon–Fri · off-peak is half the peak rate · legacy V4 Flash and Vision IDs now route to V4.1 Flash · V4 Pro 0813 routes to V4.1 Flash from Sep 14, 2026 · no published end date"
+        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · off-peak is half the peak rate · legacy V4 Flash and Vision IDs now route to V4.1 Flash · V4 Pro 0813 continues after Sep 14, 2026 with billing unchanged · 2026 holiday dates follow the State Council schedule · no published end date"
       },
       "periods": {
         "peak": {
@@ -41,7 +79,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-11"
+      "verifiedAt": "2026-09-19"
     },
     {
       "id": "ollama-deepseek-v4",
@@ -80,7 +118,150 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-09-11"
+      "verifiedAt": "2026-09-19"
+    },
+    {
+      "id": "above-deepseek-v4",
+      "slug": "above",
+      "provider": "above.dev",
+      "model": "DeepSeek V4.1 Flash / V4 Flash Vision (Exp) / V4 Pro",
+      "product": "Cloud API",
+      "shortName": "AB",
+      "title": "above.dev DeepSeek pricing clock",
+      "subtitle": "above.dev DeepSeek pricing hours in your local time",
+      "kicker": "DeepSeek gateway · peak rates are 2× off-peak",
+      "schedule": {
+        "timeZone": "UTC",
+        "peakDays": [1, 2, 3, 4, 5],
+        "peakWindows": [
+          { "start": "01:00", "end": "04:00" },
+          { "start": "06:00", "end": "10:00" }
+        ],
+        "publicHolidayDates": [
+          "2026-01-01", "2026-01-02", "2026-01-03",
+          "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23",
+          "2026-04-04", "2026-04-05", "2026-04-06",
+          "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05",
+          "2026-06-19", "2026-06-20", "2026-06-21",
+          "2026-09-25", "2026-09-26", "2026-09-27",
+          "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07"
+        ],
+        "publicHolidayName": "Chinese public holiday",
+        "publicHolidayTimeZone": "Asia/Shanghai",
+        "publicHolidaySource": "https://english.www.gov.cn/policies/featured/202511/04/content_WS6909c915c6d00ca5f9a074f7.html",
+        "windowName": "peak",
+        "offDayName": "Weekend",
+        "sourceTitle": "Peak hours (UTC):",
+        "sourceWindows": "01:00–04:00 · 06:00–10:00",
+        "sourceNote": "DeepSeek upstream schedule · weekdays except Chinese public holidays · above.dev adds a flat 10% · weekends and listed public holidays are off-peak · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Peak rate",
+          "status": "Peak rate is active now",
+          "badge": "2×",
+          "detail": "2× the off-peak rate"
+        },
+        "offPeak": {
+          "name": "Off-peak rate",
+          "status": "Off-peak rate is active now",
+          "badge": "1×",
+          "detail": "Base rate plus above.dev's 10% markup"
+        }
+      },
+      "source": "https://above.dev/docs",
+      "verifiedAt": "2026-09-19"
+    },
+    {
+      "id": "aihubmix-deepseek-v4-1-flash",
+      "slug": "aihubmix",
+      "provider": "AIHubMix",
+      "model": "DeepSeek V4.1 Flash",
+      "product": "OpenAI-compatible API",
+      "shortName": "AH",
+      "title": "AIHubMix DeepSeek pricing clock",
+      "subtitle": "AIHubMix DeepSeek pricing hours in your local time",
+      "kicker": "V4.1 Flash · peak rates are 2× off-peak",
+      "schedule": {
+        "timeZone": "UTC",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "01:00", "end": "04:00" },
+          { "start": "06:00", "end": "10:00" }
+        ],
+        "windowName": "peak",
+        "sourceTitle": "Peak windows (UTC):",
+        "sourceWindows": "01:00–04:00 · 06:00–10:00",
+        "sourceNote": "AIHubMix publishes these UTC windows but does not state weekday or holiday exceptions on the model page, so this clock treats them as daily · route-specific pricing may differ · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Peak rate",
+          "status": "Peak rate is active now",
+          "badge": "2×",
+          "detail": "2× the off-peak rate"
+        },
+        "offPeak": {
+          "name": "Off-peak rate",
+          "status": "Off-peak rate is active now",
+          "badge": "1×",
+          "detail": "Base rate"
+        }
+      },
+      "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
+      "verifiedAt": "2026-09-19"
+    },
+    {
+      "id": "alibaba-model-studio-deepseek-v4",
+      "slug": "alibaba-model-studio",
+      "provider": "Alibaba Cloud Model Studio",
+      "model": "DeepSeek V4.1 Flash / V4 Flash 0731 / V4 Pro 0813",
+      "product": "Model Studio API",
+      "shortName": "AL",
+      "title": "Alibaba Model Studio DeepSeek clock",
+      "subtitle": "Alibaba Cloud DeepSeek busy hours in your local time",
+      "kicker": "DeepSeek API · busy rates are 2× idle",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [1, 2, 3, 4, 5],
+        "peakWindows": [
+          { "start": "09:00", "end": "12:00" },
+          { "start": "14:00", "end": "18:00" }
+        ],
+        "publicHolidayDates": [
+          "2026-01-01", "2026-01-02", "2026-01-03",
+          "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23",
+          "2026-04-04", "2026-04-05", "2026-04-06",
+          "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05",
+          "2026-06-19", "2026-06-20", "2026-06-21",
+          "2026-09-25", "2026-09-26", "2026-09-27",
+          "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07"
+        ],
+        "publicHolidayName": "Chinese public holiday",
+        "publicHolidayTimeZone": "Asia/Shanghai",
+        "publicHolidaySource": "https://english.www.gov.cn/policies/featured/202511/04/content_WS6909c915c6d00ca5f9a074f7.html",
+        "windowName": "busy",
+        "offDayName": "Weekend",
+        "sourceTitle": "Busy hours (Beijing):",
+        "sourceWindows": "09:00–12:00 · 14:00–18:00",
+        "sourceNote": "Busy prices are 2× idle prices · 2026-08-17 effective date for V4 Flash 0731 · DeepSeek's published weekday/public-holiday rule is applied to the Model Studio schedule · no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Busy rate",
+          "status": "Busy rate is active now",
+          "badge": "2× idle",
+          "detail": "2× the idle rate"
+        },
+        "offPeak": {
+          "name": "Idle rate",
+          "status": "Idle rate is active now",
+          "badge": "1× idle",
+          "detail": "Base rate"
+        }
+      },
+      "source": "https://help.aliyun.com/en/model-studio/deepseek-v4-1-flash",
+      "verifiedAt": "2026-09-19"
     },
     {
       "id": "bai-deepseek-v4",
