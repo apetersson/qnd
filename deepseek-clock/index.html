@@ -1208,9 +1208,9 @@
       return scheduleFormatterCache.get(timeZone);
     }
 
-    function scheduleParts(date) {
+    function zonedParts(date, timeZone) {
       const values = {};
-      for (const part of scheduleFormatter(activeProfile.schedule.timeZone).formatToParts(date)) {
+      for (const part of scheduleFormatter(timeZone).formatToParts(date)) {
         if (part.type !== 'literal') values[part.type] = part.value;
       }
       const hour = Number(values.hour) % 24;
@@ -1223,6 +1223,15 @@
       };
     }
 
+    function scheduleParts(date) {
+      return zonedParts(date, activeProfile.schedule.timeZone);
+    }
+
+    function dateKeyInTimeZone(date, timeZone) {
+      const parts = zonedParts(date, timeZone);
+      return `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
+    }
+
     function parseClockMinutes(value) {
       const [hour, minute] = value.split(':').map(Number);
       return hour * 60 + minute;
@@ -1230,6 +1239,11 @@
 
     function scheduleHasDay(weekday) {
       return activeProfile.schedule.peakDays.includes(weekday);
+    }
+
+    function isPublicHoliday(date) {
+      const dateKey = dateKeyInTimeZone(date, activeProfile.schedule.publicHolidayTimeZone || activeProfile.schedule.timeZone);
+      return (activeProfile.schedule.publicHolidayDates || []).includes(dateKey);
     }
 
     function calendarDateNumber({ year, month, day }) {
@@ -1262,11 +1276,16 @@
       if (!matchesTime || !days.includes(anchorWeekday)) return false;
       if (startDate && anchorDate < isoDateNumber(startDate)) return false;
       if (endDate && anchorDate > isoDateNumber(endDate)) return false;
+      const anchorKey = dateKeyInTimeZone(
+        new Date(anchorDate * DAY + 12 * HOUR),
+        activeProfile.schedule.publicHolidayTimeZone || activeProfile.schedule.timeZone
+      );
+      if ((activeProfile.schedule.publicHolidayDates || []).includes(anchorKey)) return false;
       return true;
     }
 
     function isScheduleOffDay(date) {
-      return !scheduleHasDay(scheduleParts(date).weekday);
+      return isPublicHoliday(date) || !scheduleHasDay(scheduleParts(date).weekday);
     }
 
     function isPeak(date) {
@@ -1914,6 +1933,9 @@
       const peak = periodKey === 'peak';
       const special = isSpecialPeriodKey(periodKey);
       const offDay = isScheduleOffDay(now);
+      const offDayName = isPublicHoliday(now)
+        ? activeProfile.schedule.publicHolidayName || 'Public holiday'
+        : activeProfile.schedule.offDayName;
       // Interpolate the hour and minute hands between markings like a real
       // analog clock; the second hand stays on its visible whole-second mark.
       const minute = now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
@@ -1935,8 +1957,8 @@
       el.app.classList.toggle('is-special', special);
       const period = activeProfile.periods[periodKey];
       el.topStatus.textContent = period.status;
-      el.mode.textContent = periodKey === 'offPeak' && offDay && activeProfile.schedule.offDayName
-        ? `${activeProfile.schedule.offDayName} · ${period.name}`
+      el.mode.textContent = periodKey === 'offPeak' && offDay && offDayName
+        ? `${offDayName} · ${period.name}`
         : period.name;
       el.badge.textContent = period.badge;
     }
@@ -1980,6 +2002,11 @@
           if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(window.start) ||
               !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) || window.start === window.end) {
             throw new Error(`Invalid pricing window in ${profile.id}`);
+          }
+        }
+        for (const holidayDate of profile.schedule.publicHolidayDates || []) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(holidayDate)) {
+            throw new Error(`Invalid public holiday date in ${profile.id}`);
           }
         }
         for (const override of profile.schedule.overrides || []) {
