@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-22",
+  "updatedAt": "2026-09-23",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -79,7 +79,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "ollama-deepseek-v4",
@@ -118,7 +118,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "above-deepseek-v4",
@@ -159,7 +159,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -198,7 +198,7 @@
         }
       },
       "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "alibaba-model-studio-deepseek-v4",
@@ -250,7 +250,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/deepseek-v4-1-flash",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "bai-deepseek-v4",
@@ -319,7 +319,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -371,7 +371,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "zai-glm-5-3",
@@ -388,6 +388,17 @@
         "peakDays": [1, 2, 3, 4, 5],
         "peakWindows": [
           { "start": "14:00", "end": "18:00" }
+        ],
+        "overrides": [
+          {
+            "period": "promotion",
+            "startDate": "2026-09-25",
+            "endDate": "2026-10-07",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "00:00", "end": "00:00", "allDay": true }
+            ]
+          }
         ],
         "windowName": "peak",
         "offDayName": "Weekend",
@@ -407,10 +418,17 @@
           "status": "Off-peak now: usage counts at half rate",
           "badge": "0.5×",
           "detail": "Counts at half rate"
+        },
+        "promotion": {
+          "name": "All-day off-peak",
+          "status": "All-day off-peak promotion is active now",
+          "badge": "0.5×",
+          "detail": "50% credit consumption during the published Sep 25–Oct 7 promotion",
+          "tone": "special"
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -428,11 +446,31 @@
         "peakWindows": [
           { "start": "14:00", "end": "18:00" }
         ],
+        "overrides": [
+          {
+            "period": "campaign",
+            "startDate": "2026-09-03",
+            "endDate": "2026-10-07",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "23:00", "end": "09:00" }
+            ]
+          },
+          {
+            "period": "promotion",
+            "startDate": "2026-09-25",
+            "endDate": "2026-10-07",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "00:00", "end": "00:00", "allDay": true }
+            ]
+          }
+        ],
         "windowName": "peak",
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (Singapore time):",
         "sourceWindows": "14:00–18:00 weekdays",
-        "sourceNote": "All plans support GLM-5.3-Flash · Monday–Friday, Singapore Standard Time (UTC+8) · off-peak usage is charged at 50% of the standard credit rate · the Sep 3–20, 2026 usage campaign has ended · no published end date for the standard plan"
+        "sourceNote": "All plans support GLM-5.3-Flash · Monday–Friday peak hours are 14:00–18:00 Singapore Standard Time (UTC+8) · off-peak usage is charged at 50% of the standard credit rate · paid-plan Flash campaign runs daily 23:00–09:00 from Sep 3 through Oct 7, 2026 (ZCode unlimited, other agents 2× quota) · all-day off-peak promotion runs Sep 25–Oct 7, 2026 · no published end date for the standard plan"
       },
       "periods": {
         "peak": {
@@ -446,10 +484,24 @@
           "status": "Off-peak now: usage counts at half rate",
           "badge": "0.5×",
           "detail": "Counts at half rate"
+        },
+        "campaign": {
+          "name": "Flash usage campaign",
+          "status": "GLM-5.3-Flash campaign window is active now",
+          "badge": "Campaign",
+          "detail": "ZCode unlimited usage; other agents receive 2× quota",
+          "tone": "special"
+        },
+        "promotion": {
+          "name": "All-day off-peak",
+          "status": "All-day off-peak promotion is active now",
+          "badge": "0.5×",
+          "detail": "50% credit consumption during the published Sep 25–Oct 7 promotion",
+          "tone": "special"
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -486,7 +538,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -522,7 +574,7 @@
         }
       },
       "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -559,7 +611,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -596,7 +648,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -651,7 +703,7 @@
         }
       },
       "source": "https://docs.qoder.cn/events/flashoffer",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -688,7 +740,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -726,7 +778,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "tencent-deepseek-v4-ga",
@@ -763,7 +815,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     },
     {
       "id": "swarms-swarm-completions",
@@ -801,7 +853,7 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-09-22"
+      "verifiedAt": "2026-09-23"
     }
   ]
 }
