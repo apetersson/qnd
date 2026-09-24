@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-23",
+  "updatedAt": "2026-09-24",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -62,7 +62,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · off-peak is half the peak rate · legacy V4 Flash and Vision IDs route to V4.1 Flash · current pricing lists deepseek-v4-pro as DeepSeek-V4-Pro-0813 with separate rates and says Pro continues after Sep 14, 2026 · the Sep 10 release article still describes a planned route, so model behavior is internally inconsistent and should be confirmed before billing · 2026 holiday dates follow the State Council schedule · no published end date"
+        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · off-peak is half the peak rate · legacy V4 Flash and Vision IDs are retired and route to V4.1 Flash · current pricing lists deepseek-v4-pro as DeepSeek-V4-Pro-0813 and the changelog confirms V4 Pro API service continues after Sep 14, 2026 with billing unchanged · peak/off-peak pricing took effect Aug 16, 2026 at 16:00 UTC · 2026 holiday dates follow the State Council schedule · no published end date"
       },
       "periods": {
         "peak": {
@@ -79,7 +79,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "ollama-deepseek-v4",
@@ -118,7 +118,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "above-deepseek-v4",
@@ -159,7 +159,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -181,7 +181,7 @@
         "windowName": "peak",
         "sourceTitle": "Peak windows (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "AIHubMix's headline page lists these UTC windows but does not state weekday or holiday exceptions · provider-specific routes on the same page publish different schedules, so this generic route is unverified · the page advertises a limited-time 30% discount ending Sep 27, 2026, but gives no start time or generic-route eligibility, so that discount is not encoded · no published end date for the base schedule"
+        "sourceNote": "AIHubMix DeepSeek V4.1 Flash route · peak windows are 01:00–04:00 and 06:00–10:00 UTC, with off-peak at all other hours · the page does not state weekday or holiday exceptions · it advertises daily 30% promotional rates ending Sep 27, 2026, but publishes no promotion start time, so that discount is not encoded · no published end date for the base schedule"
       },
       "periods": {
         "peak": {
@@ -198,7 +198,7 @@
         }
       },
       "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "alibaba-model-studio-deepseek-v4",
@@ -250,7 +250,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/deepseek-v4-1-flash",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "bai-deepseek-v4",
@@ -319,7 +319,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -371,7 +371,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "zai-glm-5-3",
@@ -428,7 +428,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -501,19 +501,19 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "alibaba-qwen3-8-max",
       "slug": "alibaba",
       "provider": "Alibaba Cloud",
-      "model": "Qwen3.8 Max + DeepSeek V4 Pro 0813 / Flash 0731",
+      "model": "Qwen3.8 Max / Qwen3.8 Flash",
       "product": "Personal Token Plan",
       "shortName": "QW",
       "temporary": true,
-      "title": "Alibaba Token Plan night-rate clock",
-      "subtitle": "Qwen and DeepSeek plan credits in your local time",
-      "kicker": "Token Plan night pricing · 50% fewer credits off-peak",
+      "title": "Alibaba Qwen night-rate clock",
+      "subtitle": "Qwen Token Plan credits in your local time",
+      "kicker": "Qwen3.8 night pricing · 60% fewer Credits off-peak",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -523,7 +523,44 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "China Beijing Token Plan coding/agent tools only · listed models are Qwen3.8 Max, DeepSeek V4 Pro 0813 and DeepSeek V4 Flash 0731 · 50% fewer Credits 22:00–08:00 UTC+8 · limited-time offer with no published end date"
+        "sourceNote": "China Beijing Token Plan coding/agent tools only · qwen3.8-max and qwen3.8-flash · 60% fewer Credits 22:00–08:00 UTC+8 · limited-time offer with no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard credits",
+          "status": "Standard credit rate is active now",
+          "badge": "1× credits"
+        },
+        "offPeak": {
+          "name": "Night discount",
+          "status": "Nightly 60% credit discount is active now",
+          "badge": "0.4× credits"
+        }
+      },
+      "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
+      "verifiedAt": "2026-09-24"
+    },
+    {
+      "id": "alibaba-deepseek-v4-token-plan",
+      "slug": "alibaba-deepseek",
+      "provider": "Alibaba Cloud",
+      "model": "DeepSeek V4.1 Flash / V4 Pro 0813 / V4 Flash 0731",
+      "product": "Personal Token Plan",
+      "shortName": "DS",
+      "temporary": true,
+      "title": "Alibaba DeepSeek night-rate clock",
+      "subtitle": "DeepSeek Token Plan credits in your local time",
+      "kicker": "DeepSeek night pricing · 50% fewer Credits off-peak",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "22:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "China Beijing Token Plan coding/agent tools only · deepseek-v4-pro-0813, deepseek-v4-flash-0731 and deepseek-v4.1-flash · 50% fewer Credits 22:00–08:00 UTC+8 · limited-time offer with no published effective or end date"
       },
       "periods": {
         "peak": {
@@ -538,7 +575,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -574,7 +611,7 @@
         }
       },
       "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -596,7 +633,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily, including weekends/public holidays · promotion effective Jun 23, 2026 · no published end date"
+        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · promotion effective Jun 23, 2026 · no published end date"
       },
       "periods": {
         "peak": {
@@ -611,7 +648,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -633,7 +670,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily, including weekends/public holidays · 60% off effective Sep 4, 2026 at 22:00 Beijing · no published end date"
+        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · 60% off effective Sep 4, 2026 at 22:00 Beijing · no published end date"
       },
       "periods": {
         "peak": {
@@ -648,7 +685,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -703,7 +740,7 @@
         }
       },
       "source": "https://docs.qoder.cn/events/flashoffer",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -725,7 +762,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Daily, including weekends/public holidays · promotion effective Jun 23, 2026 · no published end date"
+        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · promotion effective Jun 23, 2026 · no published end date"
       },
       "periods": {
         "peak": {
@@ -740,7 +777,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -778,7 +815,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "tencent-deepseek-v4-ga",
@@ -815,7 +852,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     },
     {
       "id": "swarms-swarm-completions",
@@ -853,7 +890,7 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-09-23"
+      "verifiedAt": "2026-09-24"
     }
   ]
 }
