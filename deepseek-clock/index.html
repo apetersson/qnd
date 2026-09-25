@@ -1227,6 +1227,10 @@
       return zonedParts(date, activeProfile.schedule.timeZone);
     }
 
+    function scheduleDayParts(date) {
+      return zonedParts(date, activeProfile.schedule.dayTimeZone || activeProfile.schedule.timeZone);
+    }
+
     function dateKeyInTimeZone(date, timeZone) {
       const parts = zonedParts(date, timeZone);
       return `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
@@ -1255,15 +1259,18 @@
       return calendarDateNumber({ year, month, day });
     }
 
-    function matchesScheduleWindow(date, days, window, startDate = null, endDate = null) {
+    function matchesScheduleWindow(date, days, window, startDate = null, endDate = null, startAt = null, endAt = null) {
       const parts = scheduleParts(date);
+      const dayParts = scheduleDayParts(date);
       const start = parseClockMinutes(window.start);
       const end = parseClockMinutes(window.end);
-      let anchorWeekday = parts.weekday;
-      let anchorDate = calendarDateNumber(parts);
+      let anchorWeekday = dayParts.weekday;
+      let anchorDate = calendarDateNumber(dayParts);
       let matchesTime = false;
 
-      if (start < end) {
+      if (window.allDay) {
+        matchesTime = true;
+      } else if (start < end) {
         matchesTime = parts.minute >= start && parts.minute < end;
       } else if (parts.minute >= start) {
         matchesTime = true;
@@ -1276,16 +1283,18 @@
       if (!matchesTime || !days.includes(anchorWeekday)) return false;
       if (startDate && anchorDate < isoDateNumber(startDate)) return false;
       if (endDate && anchorDate > isoDateNumber(endDate)) return false;
+      if (startAt && date < new Date(startAt)) return false;
+      if (endAt && date >= new Date(endAt)) return false;
       const anchorKey = dateKeyInTimeZone(
         new Date(anchorDate * DAY + 12 * HOUR),
         activeProfile.schedule.publicHolidayTimeZone || activeProfile.schedule.timeZone
       );
-      if ((activeProfile.schedule.publicHolidayDates || []).includes(anchorKey)) return false;
+      if (!window.allDay && (activeProfile.schedule.publicHolidayDates || []).includes(anchorKey)) return false;
       return true;
     }
 
     function isScheduleOffDay(date) {
-      return isPublicHoliday(date) || !scheduleHasDay(scheduleParts(date).weekday);
+      return isPublicHoliday(date) || !scheduleHasDay(scheduleDayParts(date).weekday);
     }
 
     function isPeak(date) {
@@ -1297,7 +1306,7 @@
     function overridePeriodKey(date) {
       for (const override of activeProfile.schedule.overrides || []) {
         if (override.windows.some(window =>
-          matchesScheduleWindow(date, override.days, window, override.startDate, override.endDate)
+          matchesScheduleWindow(date, override.days, window, override.startDate, override.endDate, override.startAt, override.endAt)
         )) return override.period;
       }
       return null;
@@ -2000,7 +2009,8 @@
         }
         for (const window of profile.schedule.peakWindows) {
           if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(window.start) ||
-              !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) || window.start === window.end) {
+              !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) ||
+              (window.start === window.end && window.allDay !== true)) {
             throw new Error(`Invalid pricing window in ${profile.id}`);
           }
         }
@@ -2010,16 +2020,27 @@
           }
         }
         for (const override of profile.schedule.overrides || []) {
+          const hasStartDate = typeof override.startDate === 'string';
+          const hasEndDate = typeof override.endDate === 'string';
+          const hasStartAt = typeof override.startAt === 'string';
+          const hasEndAt = typeof override.endAt === 'string';
+          const startAt = hasStartAt ? Date.parse(override.startAt) : null;
+          const endAt = hasEndAt ? Date.parse(override.endAt) : null;
           if (!profile.periods[override.period] || !Array.isArray(override.days) ||
               !Array.isArray(override.windows) || override.windows.length === 0 ||
-              !/^\d{4}-\d{2}-\d{2}$/.test(override.startDate) ||
-              !/^\d{4}-\d{2}-\d{2}$/.test(override.endDate) ||
-              isoDateNumber(override.startDate) > isoDateNumber(override.endDate)) {
+              (!hasStartDate && !hasStartAt) ||
+              (hasStartDate && !/^\d{4}-\d{2}-\d{2}$/.test(override.startDate)) ||
+              (hasEndDate && !/^\d{4}-\d{2}-\d{2}$/.test(override.endDate)) ||
+              (hasStartDate && hasEndDate && isoDateNumber(override.startDate) > isoDateNumber(override.endDate)) ||
+              (hasStartAt && Number.isNaN(startAt)) ||
+              (hasEndAt && Number.isNaN(endAt)) ||
+              (hasStartAt && hasEndAt && startAt >= endAt)) {
             throw new Error(`Invalid pricing override in ${profile.id}`);
           }
           for (const window of override.windows) {
             if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(window.start) ||
-                !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) || window.start === window.end) {
+                !/^([01]\d|2[0-3]):[0-5]\d$/.test(window.end) ||
+                (window.start === window.end && window.allDay !== true)) {
               throw new Error(`Invalid override window in ${profile.id}`);
             }
           }
