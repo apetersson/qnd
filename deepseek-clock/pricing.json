@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-25",
+  "updatedAt": "2026-09-26",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
       "id": "deepseek-v4",
       "slug": "deepseek",
       "provider": "DeepSeek",
-      "model": "V4.1 Flash + V4 Pro 0813",
+      "model": "V4.1 Flash (Pro alias routed to Flash rates)",
       "product": "API",
       "shortName": "DS",
       "title": "DeepSeek Flash / Pro pricing clock",
       "subtitle": "DeepSeek API pricing hours in your local time",
-      "kicker": "V4.1 Flash and V4 Pro 0813 · peak rates are 2× off-peak",
+      "kicker": "V4.1 Flash · V4 Pro alias uses Flash rates from Sep 14",
       "schedule": {
         "timeZone": "UTC",
         "peakDays": [1, 2, 3, 4, 5],
@@ -62,7 +62,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · off-peak is half the peak rate · legacy V4 Flash and Vision IDs are retired and route to V4.1 Flash · the current pricing table still lists deepseek-v4-pro as DeepSeek-V4-Pro-0813, while the Sep 10 release notice says all deepseek-v4-pro requests route to V4.1-Flash rates from Sep 14, 2026 at 04:00 UTC; that notice also says new pricing takes effect Sep 10 at 04:00 UTC, conflicting with the Aug 16 effective date in the V4 release notice; the combined Pro/Flash profile is unverified until DeepSeek clarifies both points · 2026 holiday dates follow the State Council schedule · no published end date"
+        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · off-peak is half the peak rate · legacy V4 Flash and Vision IDs are retired and route to V4.1 Flash · the Sep 10, 2026 release notice says deepseek-v4-pro requests route to V4.1-Flash rates from Sep 14, 2026 at 04:00 UTC until V4.1-Pro launches; the live pricing table still shows a Pro reference column, so this profile displays the current effective Flash schedule for both aliases · no published end date for peak/off-peak or the V4.1-Pro launch"
       },
       "periods": {
         "peak": {
@@ -79,7 +79,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "ollama-deepseek-v4",
@@ -118,7 +118,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "above-deepseek-v4",
@@ -142,7 +142,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "DeepSeek-style UTC windows · above.dev defines weekends in Beijing time (off-peak from Fri 16:00 UTC through Sun 16:00 UTC) · above.dev adds a flat 10% · Chinese public-holiday treatment is not stated · no published end date"
+        "sourceNote": "DeepSeek-style UTC windows · above.dev defines weekends in Beijing time (off-peak from Fri 16:00 UTC through Sun 16:00 UTC) · current docs do not expose the previous flat 10% markup, so that markup is unverified · Chinese public-holiday treatment is not stated · no published end date"
       },
       "periods": {
         "peak": {
@@ -155,11 +155,11 @@
           "name": "Off-peak rate",
           "status": "Off-peak rate is active now",
           "badge": "1×",
-          "detail": "Base rate plus above.dev's 10% markup"
+          "detail": "Base rate; above.dev markup is not stated in the current docs"
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -198,7 +198,7 @@
         }
       },
       "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "alibaba-model-studio-deepseek-v4",
@@ -250,7 +250,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/deepseek-v4-1-flash",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "bai-deepseek-v4",
@@ -335,7 +335,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -387,7 +387,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "zai-glm-5-3",
@@ -444,7 +444,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -517,7 +517,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -554,7 +554,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "alibaba-deepseek-v4-token-plan",
@@ -591,7 +591,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -627,7 +627,7 @@
         }
       },
       "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -664,7 +664,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -701,7 +701,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -756,7 +756,7 @@
         }
       },
       "source": "https://docs.qoder.cn/events/flashoffer",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -793,7 +793,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -831,7 +831,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "tencent-deepseek-v4-ga",
@@ -868,7 +868,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
     },
     {
       "id": "swarms-swarm-completions",
@@ -906,7 +906,138 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-09-25"
+      "verifiedAt": "2026-09-26"
+    },
+    {
+      "id": "baidu-qianfan-deepseek-v4",
+      "slug": "baidu-qianfan-deepseek",
+      "provider": "Baidu Qianfan",
+      "model": "DeepSeek V4.1 Flash + V4 Pro 0813",
+      "product": "Qianfan API campaign",
+      "shortName": "BD",
+      "temporary": true,
+      "title": "Baidu Qianfan DeepSeek campaign clock",
+      "subtitle": "Qianfan National Day campaign rates in your local time",
+      "kicker": "DeepSeek V4 · limited-time 40% off busy and idle rates",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "22:00" }
+        ],
+        "windowName": "busy",
+        "offDayName": "Weekend",
+        "sourceTitle": "Busy hours (Beijing time):",
+        "sourceWindows": "08:00–22:00",
+        "overrides": [
+          {
+            "period": "campaignBusy",
+            "startAt": "2026-09-24T00:00:00+08:00",
+            "endAt": "2026-10-08T00:00:00+08:00",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "08:00", "end": "22:00" }
+            ]
+          },
+          {
+            "period": "campaignIdle",
+            "startAt": "2026-09-24T00:00:00+08:00",
+            "endAt": "2026-10-08T00:00:00+08:00",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "22:00", "end": "08:00" }
+            ]
+          }
+        ],
+        "sourceNote": "Official Baidu Qianfan campaign lists DeepSeek V4.1 Flash and V4 Pro 0813 at 0.6× of the original busy and idle prices · busy 08:00–22:00 and idle 22:00–08:00 Beijing time · campaign runs Sep 24, 2026 00:00 through Oct 7, 2026 23:59 Beijing time, then original prices return · public-holiday treatment is not stated · published end date: 2026-10-07 23:59 Beijing"
+      },
+      "periods": {
+        "peak": {
+          "name": "Busy reference rate",
+          "status": "Busy reference rate is active now",
+          "badge": "2× idle",
+          "detail": "Original busy reference rate"
+        },
+        "offPeak": {
+          "name": "Idle reference rate",
+          "status": "Idle reference rate is active now",
+          "badge": "1× idle",
+          "detail": "Original idle reference rate"
+        },
+        "campaignBusy": {
+          "name": "Campaign · busy",
+          "status": "Baidu campaign rate is active now",
+          "badge": "0.6× base",
+          "detail": "40% off the busy reference rate through Oct 7",
+          "tone": "special"
+        },
+        "campaignIdle": {
+          "name": "Campaign · idle",
+          "status": "Baidu campaign rate is active now",
+          "badge": "0.6× base",
+          "detail": "40% off the idle reference rate through Oct 7",
+          "tone": "special"
+        }
+      },
+      "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
+      "verifiedAt": "2026-09-26"
+    },
+    {
+      "id": "baidu-qianfan-glm53",
+      "slug": "baidu-qianfan-glm53",
+      "provider": "Baidu Qianfan",
+      "model": "GLM 5.3",
+      "product": "Qianfan API campaign",
+      "shortName": "BD",
+      "temporary": true,
+      "title": "Baidu Qianfan GLM 5.3 campaign clock",
+      "subtitle": "Qianfan National Day campaign rates in your local time",
+      "kicker": "GLM 5.3 · limited-time 40% off all day",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "00:00", "end": "00:00", "allDay": true }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Campaign hours (Beijing time):",
+        "sourceWindows": "All day",
+        "overrides": [
+          {
+            "period": "campaign",
+            "startAt": "2026-09-24T00:00:00+08:00",
+            "endAt": "2026-10-08T00:00:00+08:00",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "00:00", "end": "00:00", "allDay": true }
+            ]
+          }
+        ],
+        "sourceNote": "Official Baidu Qianfan campaign lists GLM 5.3 at 0.6× of the original list price all day · campaign runs Sep 24, 2026 00:00 through Oct 7, 2026 23:59 Beijing time, then original prices return · published end date: 2026-10-07 23:59 Beijing"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard reference rate",
+          "status": "Standard reference rate is active now",
+          "badge": "1× base",
+          "detail": "Original list-price reference"
+        },
+        "offPeak": {
+          "name": "Standard reference rate",
+          "status": "Standard reference rate is active now",
+          "badge": "1× base",
+          "detail": "Original list-price reference"
+        },
+        "campaign": {
+          "name": "Campaign · all day",
+          "status": "Baidu campaign rate is active now",
+          "badge": "0.6× base",
+          "detail": "40% off the list price through Oct 7",
+          "tone": "special"
+        }
+      },
+      "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
+      "verifiedAt": "2026-09-26"
     }
   ]
 }
