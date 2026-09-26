@@ -539,7 +539,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "China Beijing Token Plan coding/agent tools only · qwen3.8-max and qwen3.8-flash · 60% fewer Credits 22:00–08:00 UTC+8 · limited-time offer with no published end date"
+        "sourceNote": "China Beijing Token Plan coding/agent tools only · current official overview lists qwen3.8-max and qwen3.8-flash, but does not republish the older 22:00–08:00 UTC+8 coefficient here, so the displayed timing remains unverified · no published end date"
       },
       "periods": {
         "peak": {
@@ -576,7 +576,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "China Beijing Token Plan coding/agent tools only · deepseek-v4-pro-0813, deepseek-v4-flash-0731 and deepseek-v4.1-flash · 50% fewer Credits 22:00–08:00 UTC+8 · limited-time offer with no published effective or end date"
+        "sourceNote": "China Beijing Token Plan coding/agent tools only · current official overview lists deepseek-v4-pro-0813, deepseek-v4-flash-0731 and deepseek-v4.1-flash, but does not republish the older 22:00–08:00 UTC+8 coefficient here, so the displayed timing remains unverified · no published effective or end date"
       },
       "periods": {
         "peak": {
