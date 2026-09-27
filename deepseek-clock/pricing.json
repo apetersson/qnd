@@ -181,7 +181,7 @@
         "windowName": "peak",
         "sourceTitle": "Peak windows (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "AIHubMix DeepSeek V4.1 Flash route · peak windows are 01:00–04:00 and 06:00–10:00 UTC, with off-peak at all other hours · the page does not state weekday or holiday exceptions · it advertises daily 30% promotional rates ending Sep 27, 2026, but publishes no promotion start time, so that discount is not encoded · no published end date for the base schedule"
+        "sourceNote": "AIHubMix DeepSeek V4.1 Flash route · the aggregate pricing table shows peak windows 01:00–04:00 and 06:00–10:00 UTC, with off-peak at all other hours · provider-specific routes on the same page publish different windows, so this aggregate schedule is approximate and should be treated as unverified for a chosen route · the page advertises daily 30% promotional rates ending Sep 27, 2026, but publishes no promotion start time, so that discount is not encoded · no published end date for the aggregate schedule"
       },
       "periods": {
         "peak": {
