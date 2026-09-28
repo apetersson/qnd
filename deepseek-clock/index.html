@@ -622,6 +622,37 @@
       min-width: 0;
     }
 
+    .account-note {
+      margin: -2px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .status-card .account-note span {
+      display: inline;
+      margin: 0;
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+
+    .account-note a {
+      color: #b9f6ff;
+      text-decoration-color: rgba(185, 246, 255, 0.38);
+      text-underline-offset: 3px;
+      white-space: nowrap;
+    }
+
+    .account-note a:hover,
+    .account-note a:focus-visible {
+      color: var(--ink);
+      text-decoration-color: currentColor;
+    }
+
+    .account-note[hidden] { display: none; }
+
     .status-card span,
     .timeline-label {
       display: block;
@@ -1077,6 +1108,10 @@
             <div class="mode" id="mode">Loading…</div>
             <div class="badge" id="badge">--</div>
           </div>
+          <p class="account-note" id="accountNote" hidden>
+            <span id="accountNoteText"></span>
+            <a id="accountNoteLink" href="#" target="_blank" rel="noopener noreferrer">Details</a>
+          </p>
         </div>
 
         <div class="timeline">
@@ -1180,6 +1215,9 @@
       offPeakLegend: document.getElementById('offPeakLegend'),
       offPeakLegendLabel: document.getElementById('offPeakLegendLabel'),
       sourceLink: document.getElementById('sourceLink'),
+      accountNote: document.getElementById('accountNote'),
+      accountNoteText: document.getElementById('accountNoteText'),
+      accountNoteLink: document.getElementById('accountNoteLink'),
       clockWrap: document.getElementById('clockWrap'),
       referralCard: document.getElementById('referralCard')
     };
@@ -1912,7 +1950,22 @@
     }
 
     function nextBoundary(now) {
-      // A full eight-day scan covers any weekly recurring schedule in pricing.json.
+      // A full eight-day scan covers weekly recurring schedules. Finite campaigns
+      // can last longer than that window, so consider their explicit timestamps
+      // as boundaries too (and keep the earlier recurring transition if there is one).
+      const explicitBoundaries = [];
+      for (const override of activeProfile.schedule.overrides || []) {
+        for (const value of [override.startAt, override.endAt]) {
+          const timestamp = typeof value === 'string' ? Date.parse(value) : NaN;
+          if (!Number.isNaN(timestamp) && timestamp > now.getTime()) {
+            const candidate = new Date(timestamp);
+            if (periodKeyAt(new Date(timestamp - 1)) !== periodKeyAt(candidate)) {
+              explicitBoundaries.push(candidate);
+            }
+          }
+        }
+      }
+      const explicitBoundary = explicitBoundaries.sort((a, b) => a - b)[0] || null;
       const scanUntil = new Date(now.getTime() + 8 * DAY);
       const cursor = new Date(now.getTime());
       cursor.setSeconds(0, 0);
@@ -1921,10 +1974,15 @@
       for (let t = cursor.getTime(); t <= scanUntil.getTime(); t += 60000) {
         const before = periodKeyAt(new Date(t - 1));
         const after = periodKeyAt(new Date(t));
-        if (before !== after) return new Date(t);
+        if (before !== after) {
+          const recurringBoundary = new Date(t);
+          return explicitBoundary && explicitBoundary < recurringBoundary
+            ? explicitBoundary
+            : recurringBoundary;
+        }
       }
 
-      return null;
+      return explicitBoundary;
     }
 
     let lastTimelineMinute = '';
@@ -2132,6 +2190,13 @@
       el.brandSubtitle.textContent = activeProfile.subtitle;
       el.sourceLink.href = activeProfile.source;
       el.sourceLink.setAttribute('aria-label', `Open official pricing source for ${activeProfile.provider} ${activeProfile.model}`);
+      const accountBenefit = activeProfile.accountBenefit;
+      el.accountNote.hidden = !accountBenefit?.text;
+      if (accountBenefit?.text) {
+        el.accountNoteText.textContent = accountBenefit.text;
+        el.accountNoteLink.href = accountBenefit.source || activeProfile.source;
+        el.accountNoteLink.setAttribute('aria-label', `Open account benefit details for ${activeProfile.provider} ${activeProfile.model}`);
+      }
       el.clockTitle.textContent = activeProfile.title;
       el.profileValue.textContent = profileOptionLabel(activeProfile);
       el.campaignLegend.hidden = !(activeProfile.schedule.overrides || []).length;
