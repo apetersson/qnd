@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -79,7 +79,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "ollama-deepseek-v4",
@@ -118,7 +118,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "above-deepseek-v4",
@@ -159,7 +159,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -181,7 +181,7 @@
         "windowName": "peak",
         "sourceTitle": "Peak windows (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "AIHubMix DeepSeek V4.1 Flash route · the aggregate pricing table shows peak windows 01:00–04:00 and 06:00–10:00 UTC, with off-peak at all other hours · provider-specific routes on the same page publish different windows, so this aggregate schedule is approximate and should be treated as unverified for a chosen route · the page advertises daily 30% promotional rates ending Sep 27, 2026, but publishes no promotion start time, so that discount is not encoded · no published end date for the aggregate schedule"
+        "sourceNote": "AIHubMix DeepSeek V4.1 Flash route · the aggregate pricing table shows peak windows 01:00–04:00 and 06:00–10:00 UTC, with off-peak at all other hours · provider-specific routes on the same page publish different windows, so this aggregate schedule is approximate and should be treated as unverified for a chosen route · the page's 30% promotion had a published end date of Sep 27, 2026 and is now expired; no start time was published, so it is not encoded · no published end date for the aggregate schedule"
       },
       "periods": {
         "peak": {
@@ -198,7 +198,7 @@
         }
       },
       "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "alibaba-model-studio-deepseek-v4",
@@ -250,7 +250,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/deepseek-v4-1-flash",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-deepseek-v4",
@@ -335,7 +335,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -387,7 +387,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "zai-glm-5-3",
@@ -444,7 +444,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -517,7 +517,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -554,7 +554,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "alibaba-deepseek-v4-token-plan",
@@ -591,7 +591,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -627,7 +627,7 @@
         }
       },
       "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -664,7 +664,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -701,7 +701,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -756,7 +756,7 @@
         }
       },
       "source": "https://docs.qoder.cn/events/flashoffer",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "qoder-qwen3-7-plus",
@@ -793,7 +793,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -831,7 +831,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "tencent-deepseek-v4-ga",
@@ -868,7 +868,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "swarms-swarm-completions",
@@ -906,7 +906,7 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "baidu-qianfan-deepseek-v4",
@@ -980,7 +980,7 @@
         }
       },
       "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "baidu-qianfan-glm53",
@@ -1037,7 +1037,7 @@
         }
       },
       "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-mimo26-flash",
@@ -1093,7 +1093,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-glm53-flash",
@@ -1149,7 +1149,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-qwen38-flash",
@@ -1205,7 +1205,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-mimo26-pro",
@@ -1261,7 +1261,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-glm52",
@@ -1317,7 +1317,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     },
     {
       "id": "bai-glm53",
@@ -1373,7 +1373,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-09-27"
+      "verifiedAt": "2026-09-28"
     }
   ]
 }
