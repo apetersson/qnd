@@ -891,7 +891,6 @@
     .reset-route.is-personal { color: #b6a7ff; }
     .reset-route.is-personal .reset-trajectory { stroke-dasharray: 3 4; opacity: 0.38; }
     .reset-route.is-reached .reset-trajectory { opacity: 0; }
-    .reset-pin-leader { fill: none; stroke: currentColor; stroke-width: 1; opacity: 0.65; }
     .reset-route.is-beyond .reset-pin-halo { fill: none; stroke: currentColor; stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.65; }
     .reset-beyond-label { fill: currentColor; font-size: 9px; font-weight: 650; paint-order: stroke; stroke: #09111f; stroke-width: 4; stroke-linejoin: round; }
     .reset-pin { color: var(--cyan); }
@@ -1304,7 +1303,7 @@
         <div class="reset-legend" id="resetLegend" aria-label="Reset markers" hidden>
           <span><i aria-hidden="true">✦</i><b>Global</b><time id="globalMarkerDate"></time></span>
           <span class="personal" id="personalMarkerLegend" hidden><i aria-hidden="true">✦</i><b>Yours</b><time id="personalMarkerDate"></time></span>
-          <small id="resetOrbitHelp">Each turn is 12 hours. Stars spiral inward to their landing dots.</small>
+          <small id="resetOrbitHelp">Stars point to their reset times. Distance from the rim shows hours remaining.</small>
         </div>
       </section>
 
@@ -1424,8 +1423,8 @@
     const DAY = 24 * HOUR;
     const CLOCK_CENTER = 210;
     const CLOCK_RADIUS = 171;
-    const RESET_ORBIT_PITCH = 14;
-    const RESET_ORBIT_TURNS = 4;
+    const RESET_RADIAL_STEP = 14;
+    const RESET_RADIAL_STEPS = 4;
     const TICK_OUTER_RADIUS = 159;
     const HAND_RADII = {
       hour: 115,
@@ -1586,28 +1585,27 @@
 
     function resetSpiralGeometry(at, now, hours = dialHours, targetHours = hours, progress = 0) {
       const remainingHours = Math.max(0, (at.getTime() - now.getTime()) / HOUR);
-      // Morph turns, not SVG coordinates: every intermediate frame remains an
-      // inward spiral and its star stays attached. Reversing the dial retraces it.
-      const turns = remainingHours * ((1 - progress) / hours + progress / targetHours);
-      const visibleTurns = Math.min(turns, RESET_ORBIT_TURNS);
+      const radialSteps = remainingHours * ((1 - progress) / hours + progress / targetHours);
+      const radialOffset = Math.min(radialSteps, RESET_RADIAL_STEPS) * RESET_RADIAL_STEP;
       const landingAngle = hourHandAngle(at, hours) * (1 - progress) + hourHandAngle(at, targetHours) * progress;
-      // Anchor the destination to its local clock time, but measure each turn in
-      // elapsed hours so the countdown stays correct across daylight saving.
-      const onSpiral = turn => point(CLOCK_CENTER, CLOCK_CENTER,
-        CLOCK_RADIUS + turn * RESET_ORBIT_PITCH, landingAngle - turn * 360);
-      const samples = Math.max(1, Math.ceil(visibleTurns * 96));
+      // The star must read as the reset time, not the current time. One complete
+      // inward turn connects aligned endpoints; only radial distance encodes
+      // elapsed hours remaining. Interpolate both with the dial's moving scale.
+      const onSpiral = fraction => point(CLOCK_CENTER, CLOCK_CENTER,
+        CLOCK_RADIUS + fraction * radialOffset, landingAngle - fraction * 360);
+      const samples = remainingHours > 0 ? 96 : 1;
       const path = Array.from({ length: samples + 1 }, (_, index) => {
-        const position = onSpiral(visibleTurns * (1 - index / samples));
+        const position = onSpiral(1 - index / samples);
         return `${index ? 'L' : 'M'} ${position.x.toFixed(2)} ${position.y.toFixed(2)}`;
       }).join(' ');
       return {
         path,
-        position: onSpiral(visibleTurns),
+        position: point(CLOCK_CENTER, CLOCK_CENTER, CLOCK_RADIUS + radialOffset, landingAngle),
         landing: onSpiral(0),
-        angle: landingAngle - visibleTurns * 360,
+        angle: landingAngle,
         landingAngle,
-        beyond: turns > RESET_ORBIT_TURNS,
-        reached: turns === 0
+        beyond: radialSteps > RESET_RADIAL_STEPS,
+        reached: remainingHours === 0
       };
     }
 
@@ -1641,10 +1639,10 @@
           }
         };
         // A radial ruler, not concentric rings: the only orbit is the spiral.
-        for (let turn = 1; turn <= RESET_ORBIT_TURNS; turn++) {
-          const y = CLOCK_CENTER - CLOCK_RADIUS - turn * RESET_ORBIT_PITCH;
+        for (let step = 1; step <= RESET_RADIAL_STEPS; step++) {
+          const y = CLOCK_CENTER - CLOCK_RADIUS - step * RESET_RADIAL_STEP;
           scale.appendChild(resetSvgNode('line', { class: 'reset-orbit-tick', x1: CLOCK_CENTER - 3, x2: CLOCK_CENTER + 3, y1: y, y2: y }));
-          addModeLabels(scale, { class: 'reset-orbit-label', x: CLOCK_CENTER + 8, y: y + 3 }, mode => `${turn * mode}h`);
+          addModeLabels(scale, { class: 'reset-orbit-label', x: CLOCK_CENTER + 8, y: y + 3 }, mode => `${step * mode}h`);
         }
         for (const event of events) {
           const personalClass = event.kind === 'personal' ? ' is-personal' : '';
@@ -1659,7 +1657,6 @@
           routes.appendChild(route);
 
           const marker = resetSvgNode('g', { class: `reset-route${personalClass}` });
-          const leader = resetSvgNode('line', { class: 'reset-pin-leader' });
           const pin = resetSvgNode('g', { id: `resetPin-${event.kind}`, class: `reset-pin${personalClass}` });
           const title = resetSvgNode('title');
           title.textContent = `${event.name}: ${fmtResetDate.format(new Date(event.at))}`;
@@ -1668,10 +1665,10 @@
           const overflow = resetSvgNode('g');
           const remaining = Date.parse(event.at) - now.getTime();
           addModeLabels(overflow, { class: 'reset-beyond-label', 'text-anchor': 'middle' }, mode =>
-            remaining > mode * RESET_ORBIT_TURNS * HOUR ? `>${mode * RESET_ORBIT_TURNS}h` : '');
-          marker.append(leader, pin, overflow);
+            remaining > mode * RESET_RADIAL_STEPS * HOUR ? `>${mode * RESET_RADIAL_STEPS}h` : '');
+          marker.append(pin, overflow);
           pins.appendChild(marker);
-          resetOrbitNodes.set(event.kind, { route, path, landing, marker, leader, pin, core, overflow });
+          resetOrbitNodes.set(event.kind, { route, path, landing, marker, pin, core, overflow });
         }
       }
 
@@ -1695,29 +1692,20 @@
         nodes.path.setAttribute('d', shape.path);
         nodes.landing.setAttribute('transform', `translate(${shape.landing.x.toFixed(2)} ${shape.landing.y.toFixed(2)}) rotate(${shape.landingAngle})`);
 
-        // Separate coincident future stars tangentially without moving their
-        // true path endpoints. At a shared landing, nest the smaller violet star.
-        const displacement = close && !shape.reached ? (index ? 1 : -1) * (22 - separation) / 2 : 0;
-        const tangent = shape.angle * Math.PI / 180;
-        const x = shape.position.x + Math.cos(tangent) * displacement;
-        const y = shape.position.y + Math.sin(tangent) * displacement;
-        nodes.pin.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${shape.angle})`);
-        nodes.core.setAttribute('transform', close && shape.reached && index ? 'scale(0.55)' : 'scale(1)');
-        nodes.leader.setAttribute('x1', shape.position.x);
-        nodes.leader.setAttribute('y1', shape.position.y);
-        nodes.leader.setAttribute('x2', x);
-        nodes.leader.setAttribute('y2', y);
-        nodes.leader.style.display = displacement ? '' : 'none';
+        // Nest nearby stars instead of moving either away from its reset angle
+        // or changing its radial countdown distance.
+        nodes.pin.setAttribute('transform', `translate(${shape.position.x.toFixed(2)} ${shape.position.y.toFixed(2)}) rotate(${shape.angle})`);
+        nodes.core.setAttribute('transform', close && index ? 'scale(0.55)' : 'scale(1)');
         nodes.overflow.style.display = shape.beyond ? '' : 'none';
         if (shape.beyond) {
-          const label = point(CLOCK_CENTER, CLOCK_CENTER, CLOCK_RADIUS + RESET_ORBIT_TURNS * RESET_ORBIT_PITCH - 19, shape.angle);
+          const label = point(CLOCK_CENTER, CLOCK_CENTER, CLOCK_RADIUS + RESET_RADIAL_STEPS * RESET_RADIAL_STEP - 19, shape.angle);
           nodes.overflow.setAttribute('transform', `translate(${label.x} ${label.y + 3})`);
         }
       });
       if (fromMode === toMode) {
         const beyond = geometry.some(shape => shape.beyond);
-        el.resetOrbitHelp.textContent = `Each turn is ${toMode} hours. Stars spiral inward to their landing dots.` +
-          (beyond ? ` >${toMode * RESET_ORBIT_TURNS}h marks a reset beyond the visible spiral.` : '');
+        el.resetOrbitHelp.textContent = 'Stars point to their reset times. Distance from the rim shows hours remaining.' +
+          (beyond ? ` >${toMode * RESET_RADIAL_STEPS}h marks a reset beyond the radial scale.` : '');
       }
     }
 
@@ -2905,7 +2893,7 @@
       const reset = isResetProfile();
       el.app.classList.toggle('is-24h', is24);
       el.clockDesc.textContent = reset
-        ? `A ${dialHours}-hour local clock. Cyan and violet stars follow inward spirals to the global and personal reset times. Each turn is ${dialHours} elapsed hours. Dots on the rim mark the landing times. Resets beyond ${dialHours * RESET_ORBIT_TURNS} hours are labeled at the outer edge; dates and countdowns remain exact.`
+        ? `A ${dialHours}-hour local clock. Cyan and violet stars align with the global and personal reset times. Each star's distance from the rim shows elapsed hours remaining, with ${dialHours} hours per radial scale step. Inward spirals connect the stars to their landing dots. Resets beyond ${dialHours * RESET_RADIAL_STEPS} hours are labeled at the outer edge; dates and countdowns remain exact.`
         : is24
         ? 'A 24-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 24 hours; muted arcs show windows 24 to 48 hours from now.'
         : 'A 12-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 12 hours; muted arcs show windows 12 to 24 hours from now.';
