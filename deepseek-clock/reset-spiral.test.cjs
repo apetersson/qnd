@@ -18,9 +18,9 @@ function declaration(name) {
   assert.ok(end > start);
   return source.slice(start, end + 6);
 }
-const constants = ['MINUTE', 'HOUR', 'CLOCK_CENTER', 'CLOCK_RADIUS', 'RESET_RADIAL_STEP', 'RESET_RADIAL_STEPS', 'DIAL_TRANSITION_MS']
+const constants = ['MINUTE', 'HOUR', 'DAY', 'CLOCK_CENTER', 'CLOCK_RADIUS', 'RESET_RADIAL_STEP', 'RESET_RADIAL_STEPS', 'DIAL_TRANSITION_MS']
   .map(name => source.match(new RegExp(`    const ${name} = [^;]+;`))[0]).join('\n');
-const functions = ['point', 'dialRange', 'angleForDialMinutes', 'wallMinute', 'dialMinutesOf', 'hourHandAngle', 'resetSpiralGeometry', 'easeInOutCubic'];
+const functions = ['point', 'dialRange', 'angleForDialMinutes', 'wallMinute', 'dialMinutesOf', 'hourHandAngle', 'resetPassesBefore', 'resetSpiralGeometry', 'easeInOutCubic'];
 const context = vm.createContext({});
 vm.runInContext(`${constants}\nlet dialHours = 12;\n${functions.map(declaration).join('\n')}`, context);
 const HOUR = 3600000;
@@ -38,16 +38,40 @@ function pathPoints(shape) {
     .map(([, x, y]) => ({ x: Number(x), y: Number(y) }));
 }
 
-test('Each radial scale step adds one dial period and 14px, without changing the reset angle', () => {
+test('The next pass is on the rim; each earlier pass adds one 14px step', () => {
   for (const mode of [12, 24]) {
-    for (const steps of [0.25, 1, 2, 3, 4]) {
-      const shape = geometry(steps * mode, mode);
-      near(radius(shape.position), 171 + steps * 14);
+    for (const [remaining, passes] of [
+      [1 / HOUR, 0], [mode / 2, 0], [mode, 0],
+      [mode + 1 / HOUR, 1], [mode * 2, 1],
+      [mode * 2 + 1 / HOUR, 2], [mode * 3, 2],
+      [mode * 4, 3], [mode * 5, 4], [mode * 5 + 1 / HOUR, 5]
+    ]) {
+      const shape = geometry(remaining, mode);
+      assert.equal(shape.extraPasses, passes);
+      near(radius(shape.position), 171 + Math.min(passes, 4) * 14);
       near(radius(shape.landing), 171);
       near(shape.angle, shape.landingAngle);
-      assert.equal(shape.beyond, false);
+      assert.equal(shape.beyond, passes > 4);
       assert.equal(shape.reached, false);
+      assert.equal(shape.path === '', passes === 0, 'No misleading circle for a next-pass reset');
     }
+  }
+});
+
+test('Both resets from the screenshot sit on the 24h rim, one step out in 12h', () => {
+  const start = new Date('2026-10-02T20:23:46+02:00');
+  for (const [time, angle12, angle24] of [
+    ['2026-10-03T20:00:00+02:00', 240, 300],
+    ['2026-10-03T19:00:00+02:00', 210, 285]
+  ]) {
+    const at = new Date(time);
+    const twelve = context.resetSpiralGeometry(at, start, 12);
+    const twentyFour = context.resetSpiralGeometry(at, start, 24);
+    near(radius(twelve.position), 185);
+    near(twelve.angle, angle12);
+    near(radius(twentyFour.position), 171);
+    near(twentyFour.angle, angle24);
+    assert.equal(twentyFour.path, '');
   }
 });
 
@@ -75,26 +99,31 @@ test('Both directions start and finish at exactly the static geometry', () => {
   }
 });
 
-test('Every in-between trajectory is an inward spiral, with its star attached', () => {
+test('Mode switches keep stars attached to inward spirals, disappearing at the rim', () => {
   for (const remaining of [1, 24, 36, 60, 120]) {
     for (const from of [12, 24]) {
       const to = from === 12 ? 24 : 12;
       for (const progress of [0, 0.125, 0.25, 0.5, 0.75, 0.875, 1]) {
         const shape = geometry(remaining, from, to, progress);
         const points = pathPoints(shape);
-        near(distance(points[0], shape.position), 0, 0.008);
-        near(distance(points.at(-1), shape.landing), 0, 0.008);
         const outerRadius = radius(shape.position);
-        assert.ok(outerRadius > 171, 'Not a circle on the rim');
-        points.forEach((point, index) => {
-          near(radius(point), outerRadius + (171 - outerRadius) * index / (points.length - 1), 0.008);
-        });
+        if (shape.extraPasses === 0) {
+          near(outerRadius, 171);
+          assert.equal(points.length, 0, 'No circular trajectory on the rim');
+        } else {
+          near(distance(points[0], shape.position), 0, 0.008);
+          near(distance(points.at(-1), shape.landing), 0, 0.008);
+          assert.ok(outerRadius > 171, 'Not a circle on the rim');
+          points.forEach((point, index) => {
+            near(radius(point), outerRadius + (171 - outerRadius) * index / (points.length - 1), 0.008);
+          });
+          // A complete, genuinely inward revolution joins endpoints on the same
+          // clock angle. Its midpoint is opposite them, not a straight connector.
+          const midpoint = points[(points.length - 1) / 2];
+          const expectedMidpoint = context.point(210, 210, (outerRadius + 171) / 2, shape.angle + 180);
+          near(distance(midpoint, expectedMidpoint), 0, 0.008);
+        }
         near(shape.angle, shape.landingAngle);
-        // A complete, genuinely inward revolution joins endpoints on the same
-        // clock angle. Its midpoint is opposite them, not a straight connector.
-        const midpoint = points[(points.length - 1) / 2];
-        const expectedMidpoint = context.point(210, 210, (outerRadius + 171) / 2, shape.angle + 180);
-        near(distance(midpoint, expectedMidpoint), 0, 0.008);
         const reverse = geometry(remaining, to, from, 1 - progress);
         near(distance(shape.position, reverse.position), 0);
         near(distance(shape.landing, reverse.landing), 0);
@@ -108,17 +137,17 @@ test('Every in-between trajectory is an inward spiral, with its star attached', 
 test('The spiral stays continuous when a distant reset enters or leaves the radial limit', () => {
   for (const from of [12, 24]) {
     const to = from === 12 ? 24 : 12;
-    let previous = geometry(60, from, to, 0);
+    let previous = geometry(72, from, to, 0);
     for (let frame = 1; frame <= 1000; frame++) {
-      const shape = geometry(60, from, to, frame / 1000);
+      const shape = geometry(72, from, to, frame / 1000);
       assert.ok(distance(previous.position, shape.position) < 5, 'No cap-boundary jump');
       assert.ok(radius(shape.position) <= 227 + 1e-8);
       assert.ok((radius(shape.position) - radius(previous.position)) * (to - from) < 1e-8);
       previous = shape;
     }
   }
-  assert.equal(geometry(60, 12).beyond, true);
-  assert.equal(geometry(60, 24).beyond, false);
+  assert.equal(geometry(72, 12).beyond, true);
+  assert.equal(geometry(72, 24).beyond, false);
 });
 
 test('Reached timers remain on the landing dot throughout the transition', () => {
@@ -127,20 +156,53 @@ test('Reached timers remain on the landing dot throughout the transition', () =>
       const shape = geometry(remaining, 12, 24, progress);
       assert.equal(shape.reached, true);
       assert.equal(shape.beyond, false);
+      assert.equal(shape.path, '');
       near(distance(shape.position, shape.landing), 0);
     }
   }
 });
 
-test('DST changes keep elapsed-hour radial distance and local-time landing positions', () => {
-  for (const start of [new Date('2026-03-28T22:30:00Z'), new Date('2026-10-24T22:30:00Z')]) {
-    const at = new Date(start.getTime() + 36 * HOUR);
-    assert.notEqual(start.getTimezoneOffset(), at.getTimezoneOffset());
-    for (const mode of [12, 24]) {
-      const shape = geometry(36, mode, mode, 0, start);
-      near(radius(shape.position), 171 + 36 / mode * 14);
-      near(shape.landingAngle, context.hourHandAngle(at, mode));
+test('DST uses real passes: long days, repeated hours and skipped local times', () => {
+  for (const [startTime, resetTime, passes12, passes24] of [
+    // This next 24h-dial pass is 25 elapsed hours away, but still on the rim.
+    ['2026-10-24T20:00:00+02:00', '2026-10-25T20:00:00+01:00', 1, 0],
+    ['2026-10-25T01:30:00+02:00', '2026-10-25T02:30:00+02:00', 0, 0],
+    // The hour hand will reach 02:30 twice during the autumn change.
+    ['2026-10-25T01:30:00+02:00', '2026-10-25T02:30:00+01:00', 1, 1],
+    ['2026-10-25T02:45:00+02:00', '2026-10-25T02:30:00+01:00', 0, 0],
+    // Sunday 02:30 never occurs; only the two afternoon 12h passes intervene.
+    ['2026-03-28T02:30:00+01:00', '2026-03-30T02:30:00+02:00', 2, 0]
+  ]) {
+    const at = new Date(resetTime);
+    for (const [mode, passes] of [[12, passes12], [24, passes24]]) {
+      const shape = context.resetSpiralGeometry(at, new Date(startTime), mode);
+      assert.equal(shape.extraPasses, passes, `${startTime} to ${resetTime} in ${mode}h`);
+      near(radius(shape.position), 171 + passes * 14);
+      near(shape.angle, context.hourHandAngle(at, mode));
     }
+  }
+});
+
+test('Pass boundaries work in UTC and fractional-offset time zones too', () => {
+  const originalZone = process.env.TZ;
+  try {
+    for (const zone of ['UTC', 'America/New_York', 'Asia/Kathmandu', 'Pacific/Chatham']) {
+      process.env.TZ = zone;
+      for (const mode of [12, 24]) {
+        for (const [remaining, passes] of [[mode, 0], [mode + 1 / HOUR, 1], [mode * 2, 1]]) {
+          assert.equal(geometry(remaining, mode).extraPasses, passes, `${zone}: ${remaining}h`);
+        }
+      }
+    }
+    process.env.TZ = 'Australia/Lord_Howe';
+    // Lord Howe's 30-minute autumn change repeats 01:45, not a whole hour.
+    const at = new Date('2026-04-05T01:45:00+10:30');
+    const start = new Date('2026-04-05T01:00:00+11:00');
+    for (const mode of [12, 24]) {
+      assert.equal(context.resetSpiralGeometry(at, start, mode).extraPasses, 1);
+    }
+  } finally {
+    process.env.TZ = originalZone;
   }
 });
 
@@ -167,9 +229,9 @@ test('Rendering nearby or coincident stars never nudges them off their reset ang
     ${declaration('resetSvgNode')}
     ${declaration('drawResetMarkers')}
   `, renderer);
-  for (const minutesApart of [0, 1, 10]) {
+  for (const [remaining, minutesApart] of [[23, 0], [23, 1], [23, 10], [34, 0], [34, 1], [34, 10]]) {
     const events = ['global', 'personal'].map((kind, index) => ({
-      kind, name: kind, at: new Date(now.getTime() + 34 * HOUR + index * minutesApart * 60000).toISOString()
+      kind, name: kind, at: new Date(now.getTime() + remaining * HOUR + index * minutesApart * 60000).toISOString()
     }));
     renderer.setEvents(events);
     for (const from of [12, 24]) {
@@ -182,6 +244,9 @@ test('Rendering nearby or coincident stars never nudges them off their reset ang
           const [, x, y, angle] = pin.match(/translate\(([-\d.]+) ([-\d.]+)\) rotate\(([-\d.]+)\)/);
           near(distance({ x: Number(x), y: Number(y) }, expected.position), 0, 0.008);
           near(Number(angle), expected.landingAngle);
+          const trajectory = renderer.marker(event.kind).path;
+          assert.equal(trajectory.attributes.get('d'), expected.path);
+          near(trajectory.style.opacity, Math.min(1, expected.extraPasses) * (event.kind === 'personal' ? 0.38 : 0.35));
         }
         assert.equal(renderer.marker('personal').core.attributes.get('transform'), 'scale(0.55)');
       }
