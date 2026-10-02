@@ -18,7 +18,7 @@ function declaration(name) {
   assert.ok(end > start);
   return source.slice(start, end + 6);
 }
-const constants = ['MINUTE', 'HOUR', 'CLOCK_CENTER', 'CLOCK_RADIUS', 'RESET_ORBIT_PITCH', 'RESET_ORBIT_TURNS', 'DIAL_TRANSITION_MS']
+const constants = ['MINUTE', 'HOUR', 'CLOCK_CENTER', 'CLOCK_RADIUS', 'RESET_RADIAL_STEP', 'RESET_RADIAL_STEPS', 'DIAL_TRANSITION_MS']
   .map(name => source.match(new RegExp(`    const ${name} = [^;]+;`))[0]).join('\n');
 const functions = ['point', 'dialRange', 'angleForDialMinutes', 'wallMinute', 'dialMinutesOf', 'hourHandAngle', 'resetSpiralGeometry', 'easeInOutCubic'];
 const context = vm.createContext({});
@@ -38,15 +38,29 @@ function pathPoints(shape) {
     .map(([, x, y]) => ({ x: Number(x), y: Number(y) }));
 }
 
-test('Each turn adds one dial period and 14px, with an exact landing time', () => {
+test('Each radial scale step adds one dial period and 14px, without changing the reset angle', () => {
   for (const mode of [12, 24]) {
-    for (const turns of [0.25, 1, 2, 3, 4]) {
-      const shape = geometry(turns * mode, mode);
-      near(radius(shape.position), 171 + turns * 14);
+    for (const steps of [0.25, 1, 2, 3, 4]) {
+      const shape = geometry(steps * mode, mode);
+      near(radius(shape.position), 171 + steps * 14);
       near(radius(shape.landing), 171);
-      near(shape.landingAngle - shape.angle, turns * 360);
+      near(shape.angle, shape.landingAngle);
       assert.equal(shape.beyond, false);
       assert.equal(shape.reached, false);
+    }
+  }
+});
+
+test('A fixed reset keeps its own clock angle as time passes, not the current hour hand', () => {
+  const at = new Date('2026-10-03T18:00:00Z'); // 20:00 in Vienna.
+  for (const [mode, angle] of [[12, 240], [24, 300]]) {
+    for (const remaining of [120, 60, 36.75, 25, 15.5, 3, 0.01, 0]) {
+      const start = new Date(at.getTime() - remaining * HOUR);
+      const shape = context.resetSpiralGeometry(at, start, mode);
+      near(shape.angle, angle);
+      const unit = context.point(210, 210, 1, angle);
+      near((shape.position.x - 210) / radius(shape.position), unit.x - 210);
+      near((shape.position.y - 210) / radius(shape.position), unit.y - 210);
     }
   }
 });
@@ -75,6 +89,12 @@ test('Every in-between trajectory is an inward spiral, with its star attached', 
         points.forEach((point, index) => {
           near(radius(point), outerRadius + (171 - outerRadius) * index / (points.length - 1), 0.008);
         });
+        near(shape.angle, shape.landingAngle);
+        // A complete, genuinely inward revolution joins endpoints on the same
+        // clock angle. Its midpoint is opposite them, not a straight connector.
+        const midpoint = points[(points.length - 1) / 2];
+        const expectedMidpoint = context.point(210, 210, (outerRadius + 171) / 2, shape.angle + 180);
+        near(distance(midpoint, expectedMidpoint), 0, 0.008);
         const reverse = geometry(remaining, to, from, 1 - progress);
         near(distance(shape.position, reverse.position), 0);
         near(distance(shape.landing, reverse.landing), 0);
@@ -85,7 +105,7 @@ test('Every in-between trajectory is an inward spiral, with its star attached', 
   }
 });
 
-test('Winding stays continuous when a distant reset enters or leaves the four-turn limit', () => {
+test('The spiral stays continuous when a distant reset enters or leaves the radial limit', () => {
   for (const from of [12, 24]) {
     const to = from === 12 ? 24 : 12;
     let previous = geometry(60, from, to, 0);
@@ -112,7 +132,7 @@ test('Reached timers remain on the landing dot throughout the transition', () =>
   }
 });
 
-test('DST changes keep elapsed-hour turns and local-time landing positions', () => {
+test('DST changes keep elapsed-hour radial distance and local-time landing positions', () => {
   for (const start of [new Date('2026-03-28T22:30:00Z'), new Date('2026-10-24T22:30:00Z')]) {
     const at = new Date(start.getTime() + 36 * HOUR);
     assert.notEqual(start.getTimezoneOffset(), at.getTimezoneOffset());
@@ -120,6 +140,51 @@ test('DST changes keep elapsed-hour turns and local-time landing positions', () 
       const shape = geometry(36, mode, mode, 0, start);
       near(radius(shape.position), 171 + 36 / mode * 14);
       near(shape.landingAngle, context.hourHandAngle(at, mode));
+    }
+  }
+});
+
+test('Rendering nearby or coincident stars never nudges them off their reset angle', () => {
+  const createNode = () => ({
+    attributes: new Map(), children: [], style: {}, classList: { toggle() {} },
+    setAttribute(name, value) { this.attributes.set(name, String(value)); },
+    append(...nodes) { this.children.push(...nodes); },
+    appendChild(node) { this.children.push(node); },
+    replaceChildren() { this.children.length = 0; }
+  });
+  const renderer = vm.createContext({ document: { createElementNS: createNode } });
+  vm.runInContext(`
+    ${constants}
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    let dialHours = 12, resetMarkerKey = '', events = [];
+    const resetOrbitNodes = new Map(), resetOrbitLabels = [];
+    const el = { resetMarkers: document.createElementNS(), resetOrbitHelp: {} };
+    const fmtResetDate = new Intl.DateTimeFormat('en');
+    function resetEvents() { return events; }
+    function setEvents(value) { events = value; }
+    function marker(kind) { return resetOrbitNodes.get(kind); }
+    ${functions.map(declaration).join('\n')}
+    ${declaration('resetSvgNode')}
+    ${declaration('drawResetMarkers')}
+  `, renderer);
+  for (const minutesApart of [0, 1, 10]) {
+    const events = ['global', 'personal'].map((kind, index) => ({
+      kind, name: kind, at: new Date(now.getTime() + 34 * HOUR + index * minutesApart * 60000).toISOString()
+    }));
+    renderer.setEvents(events);
+    for (const from of [12, 24]) {
+      const to = from === 12 ? 24 : 12;
+      for (const progress of [0, 0.25, 0.5, 0.75, 1]) {
+        renderer.drawResetMarkers(now, from, to, progress);
+        for (const event of events) {
+          const expected = context.resetSpiralGeometry(new Date(event.at), now, from, to, progress);
+          const pin = renderer.marker(event.kind).pin.attributes.get('transform');
+          const [, x, y, angle] = pin.match(/translate\(([-\d.]+) ([-\d.]+)\) rotate\(([-\d.]+)\)/);
+          near(distance({ x: Number(x), y: Number(y) }, expected.position), 0, 0.008);
+          near(Number(angle), expected.landingAngle);
+        }
+        assert.equal(renderer.marker('personal').core.attributes.get('transform'), 'scale(0.55)');
+      }
     }
   }
 });
