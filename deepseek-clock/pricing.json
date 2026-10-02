@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-10-02",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -80,6 +80,29 @@
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
       "verifiedAt": "2026-09-28"
+    },
+    {
+      "id": "codex-reset",
+      "slug": "codex",
+      "kind": "reset",
+      "provider": "Codex",
+      "model": "Usage resets",
+      "product": "Global reset + personal timer",
+      "shortName": "CX",
+      "title": "Codex reset clock",
+      "subtitle": "A fresh start, down to the second",
+      "events": [
+        {
+          "id": "codex-global-2026-10-03",
+          "name": "Global reset",
+          "at": "2026-10-03T10:00:00-08:00",
+          "scope": "All paid ChatGPT accounts",
+          "sourceTime": "3 Oct · 10:00 AM PST (UTC−8)"
+        }
+      ],
+      "source": "https://x.com/thsottiaux/status/2105843926221660585",
+      "sourceNote": "Unofficial countdown using the announcement's stated PST (UTC−8), a fixed offset. This is a one-off reset, not a recurring pricing window.",
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "ollama-deepseek-v4",
