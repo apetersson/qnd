@@ -1,0 +1,590 @@
+{
+  "checkedAt": "2026-10-02",
+  "baseCommit": "5093e245c2d13f48499c93eea4167c0ca4368a10",
+  "branch": "automation/floating-pricing-2026-10-02",
+  "method": "All 28 existing profiles reviewed against official documents before new-policy discovery. Documentation verification, not paid API billing tests. AIHubMix remains route-dependent/unverified and its verifiedAt was not advanced.",
+  "summary": [
+    "Correct Qoder CN Flash extension and scope.",
+    "Add two Qoder Service Account clocks plus Alibaba Global Qwen3.7-Plus API night pricing.",
+    "Remove retired/unlisted models and the unsupported assertion that DeepSeek Pro always bills at Flash rates.",
+    "Include AutoClaw in the Z.ai campaign and clarify B.AI Chat versus API.",
+    "Fix open-ended list rows and continuous clock arcs; show compact scope notes."
+  ],
+  "uncertainties": [
+    "DeepSeek current table and Quick Start list separate V4 Pro access/prices; older release notice says Pro routes to Flash. Current pricing display follows the live table, not an unverified cheaper-route assumption.",
+    "AIHubMix aggregate and individual routes publish different schedules. Its existing approximate schedule is not a universal billing promise.",
+    "Z.ai Flash campaign publishes an October 7 end date and nightly 23:00–09:00 following-day windows, but no precise final cutoff instant. Existing window-start-date interpretation retained; confirm the final overnight boundary with Z.ai.",
+    "Codex announcement says PST (fixed UTC−8), not PDT. Countdown remains explicitly unofficial.",
+    "No replacement end date has been published for Qoder CN Flash. No expiry was invented.",
+    "No inference that Tencent, Alibaba, above.dev or Ollama follow DeepSeek's Chinese holiday exceptions."
+  ],
+  "validations": [
+    {
+      "id": "deepseek-v4",
+      "existing": true,
+      "provider": "DeepSeek",
+      "model": "V4.1 Flash / V4 Pro 0813",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; current rates verified, historical routing conflict",
+      "scheduleAndRates": "Mon–Fri 01:00–04:00 / 06:00–10:00 UTC; 2× off-peak. Chinese holidays/weekends off-peak.",
+      "eligibilityAndScope": "API Flash and Pro priced separately in live table; legacy Flash/Vision aliases route to Flash.",
+      "publishedEffectiveDate": "Flash rates: 2026-09-10 04:00 UTC; no new effective date on the current schedule page.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://api-docs.deepseek.com/quick_start/pricing/",
+        "https://api-docs.deepseek.com/news/news260910/",
+        "https://api-docs.deepseek.com/",
+        "https://english.beijing.gov.cn/workinginbeijing/laborrights/publicholidays/"
+      ]
+    },
+    {
+      "id": "codex-reset",
+      "existing": true,
+      "provider": "Codex",
+      "model": "Usage resets",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "scheduled; unofficial countdown",
+      "scheduleAndRates": "One instant: 2026-10-03 10:00 PST (UTC−8), not a price policy.",
+      "eligibilityAndScope": "All paid ChatGPT accounts; literal PST retained, not assumed PDT.",
+      "publishedEffectiveDate": "Announcement 2026-10-02 02:14:51 UTC.",
+      "publishedEndDate": "One-off reset at 2026-10-03T18:00:00Z; no recurring policy.",
+      "sources": [
+        "https://x.com/thsottiaux/status/2105843926221660585",
+        "https://cdn.syndication.twimg.com/tweet-result?id=2105843926221660585&lang=en&token=0"
+      ]
+    },
+    {
+      "id": "ollama-deepseek-v4",
+      "existing": true,
+      "provider": "Ollama",
+      "model": "DeepSeek V4.1 Flash / V4 Pro",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; retired model removed",
+      "scheduleAndRates": "Mon–Fri 12:00–18:00 UTC peak; off-peak 50%, including weekends.",
+      "eligibilityAndScope": "Cloud API V4.1 Flash / V4 Pro.",
+      "publishedEffectiveDate": "no published effective date on current rate card",
+      "publishedEndDate": "no published end date; legacy V4 Flash retired 2026-09-25",
+      "sources": [
+        "https://ollama.com/pricing",
+        "https://ollama.com/library/deepseek-v4-flash"
+      ]
+    },
+    {
+      "id": "above-deepseek-v4",
+      "existing": true,
+      "provider": "above.dev",
+      "model": "DeepSeek V4.1 Flash / V4 Pro",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unlisted Vision scope removed",
+      "scheduleAndRates": "01:00–04:00 / 06:00–10:00 UTC; Beijing weekdays; peak 2×.",
+      "eligibilityAndScope": "API V4.1 Flash (V4 Flash alias) / V4 Pro. Holiday exception not published.",
+      "publishedEffectiveDate": "no published effective date",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://above.dev/docs"
+      ]
+    },
+    {
+      "id": "aihubmix-deepseek-v4-1-flash",
+      "existing": true,
+      "provider": "AIHubMix",
+      "model": "DeepSeek V4.1 Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-01",
+      "status": "unverified for selected route",
+      "scheduleAndRates": "Aggregate 01:00–04:00 / 06:00–10:00 UTC; approximately 2×; underlying routes disagree.",
+      "eligibilityAndScope": "Automatic/provider-specific routing prevents universal confirmation; weekends/holidays not specified.",
+      "publishedEffectiveDate": "no published effective date for aggregate schedule",
+      "publishedEndDate": "no published end date for schedule; previous Sep 27 promotion no longer shown",
+      "sources": [
+        "https://aihubmix.com/model/deepseek-v4.1-flash"
+      ]
+    },
+    {
+      "id": "alibaba-model-studio-deepseek-v4",
+      "existing": true,
+      "provider": "Alibaba Cloud Model Studio",
+      "model": "DeepSeek V4.1 Flash / V4 Flash 0731 / V4 Pro 0813",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Daily 08:00–22:00 UTC+8 busy, 22:00–08:00 half-rate.",
+      "eligibilityAndScope": "API V4.1 Flash / V4 Pro 0813 / V4 Flash 0731; region-specific prices.",
+      "publishedEffectiveDate": "Flash 0731 schedule: 2026-08-17 00:00 UTC+8; other starts not specified here.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+      ]
+    },
+    {
+      "id": "bai-deepseek-v4",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "DeepSeek-V4.1-Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; Chat/API distinction clarified",
+      "scheduleAndRates": "09:00–12:00 / 14:00–18:00 UTC+8 weekdays; holidays/weekends off-peak; promo 0.3× applicable rate.",
+      "eligibilityAndScope": "API Flash only; Chat uses off-peak base all day.",
+      "publishedEffectiveDate": "2026-09-25 15:00 UTC+8 current 0.3× offer.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/pricing-and-usage/",
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+        "https://english.beijing.gov.cn/workinginbeijing/laborrights/publicholidays/"
+      ]
+    },
+    {
+      "id": "bai-deepseek-v4-pro",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "DeepSeek V4 Pro",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; Chat/API distinction clarified",
+      "scheduleAndRates": "09:00–12:00 / 14:00–18:00 UTC+8 weekdays; holidays/weekends off-peak; peak 2×.",
+      "eligibilityAndScope": "API V4 Pro; Chat always off-peak. No Flash promotion.",
+      "publishedEffectiveDate": "no published effective date on current rate card",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/pricing-and-usage/",
+        "https://english.beijing.gov.cn/workinginbeijing/laborrights/publicholidays/"
+      ]
+    },
+    {
+      "id": "zai-glm-5-3",
+      "existing": true,
+      "provider": "Z.ai",
+      "model": "GLM-5.3",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Normal Mon–Fri 14:00–18:00 UTC+8 1×, otherwise 0.5×; current all-day 0.5×.",
+      "eligibilityAndScope": "Coding Plan; reset cards are account benefits, not price multipliers.",
+      "publishedEffectiveDate": "All-day promotion: 2026-09-25.",
+      "publishedEndDate": "Promotion: 2026-10-07 (Singapore time); standard policy: no published end date.",
+      "sources": [
+        "https://docs.z.ai/devpack/overview",
+        "https://zcode.z.ai/en/docs/usage-stats"
+      ]
+    },
+    {
+      "id": "zai-glm-5-3-flash",
+      "existing": true,
+      "provider": "Z.ai",
+      "model": "GLM-5.3-Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; AutoClaw and campaign eligibility clarified",
+      "scheduleAndRates": "Normal peak 14:00–18:00 weekdays, 1×/0.5×; all-day 0.5× now; nightly 23:00–09:00 campaign.",
+      "eligibilityAndScope": "Paid plans: ZCode 3.10+/AutoClaw unlimited; others 2× quota; exhausted quota must reset.",
+      "publishedEffectiveDate": "Night campaign: 2026-09-03; all-day discount: 2026-09-25.",
+      "publishedEndDate": "Both campaigns: 2026-10-07 Singapore date; standard policy: no published end date.",
+      "sources": [
+        "https://docs.z.ai/devpack/overview",
+        "https://docs.z.ai/devpack/notice/event-glm-5.3-flash",
+        "https://zcode.z.ai/en/docs/usage-stats"
+      ]
+    },
+    {
+      "id": "alibaba-qwen3-8-max",
+      "existing": true,
+      "provider": "Alibaba Cloud",
+      "model": "Qwen3.8 Max / Qwen3.8 Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Daily 22:00–08:00 UTC+8 consumes 0.4× credits; other hours 1×.",
+      "eligibilityAndScope": "Beijing Personal Token Plan, coding/agent tools; Qwen3.8 Max/Flash.",
+      "publishedEffectiveDate": "no published effective date",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://help.aliyun.com/en/model-studio/token-plan-personal-overview"
+      ]
+    },
+    {
+      "id": "alibaba-deepseek-v4-token-plan",
+      "existing": true,
+      "provider": "Alibaba Cloud",
+      "model": "DeepSeek V4.1 Flash / V4 Pro 0813 / V4 Flash 0731",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Daily 22:00–08:00 UTC+8 consumes 0.5× credits; other hours 1×.",
+      "eligibilityAndScope": "Beijing Personal Token Plan, coding/agent tools; V4.1 Flash / Pro 0813 / Flash 0731.",
+      "publishedEffectiveDate": "no published effective date",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://help.aliyun.com/en/model-studio/token-plan-personal-overview"
+      ]
+    },
+    {
+      "id": "xiaomi-mimo-v2-5-token-plan",
+      "existing": true,
+      "provider": "Xiaomi MiMo",
+      "model": "MiMo V2.6 Pro / V2.6 Flash (V2.5 ends Oct 21)",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Daily 00:00–08:00 UTC+8 consumes 0.8× credits; other hours 1×.",
+      "eligibilityAndScope": "Token Plan coding tools; V2.6 Pro/Flash; older V2.5 nearing retirement.",
+      "publishedEffectiveDate": "V2.6 release 2026-09-22; no published night-policy effective date.",
+      "publishedEndDate": "Night discount: no published end date; V2.5/V2.5-Pro retire 2026-10-21 10:00 Beijing.",
+      "sources": [
+        "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
+        "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/subscription",
+        "https://mimo.mi.com/docs/en-US/updates/deprecate"
+      ]
+    },
+    {
+      "id": "qoder-qwen3-7-max",
+      "existing": true,
+      "provider": "Qoder",
+      "model": "Qwen3.7-Max",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "standard rate active; promotion expired",
+      "scheduleAndRates": "0.5× credits all day.",
+      "eligibilityAndScope": "Qwen3.7-Max; former night offer no longer applies.",
+      "publishedEffectiveDate": "Standard all-day resumed 2026-09-30 22:00 UTC+8.",
+      "publishedEndDate": "Former offer: 2026-09-30 22:00 Beijing; standard: no published end date.",
+      "sources": [
+        "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount"
+      ]
+    },
+    {
+      "id": "qoder-qwen3-8-max",
+      "existing": true,
+      "provider": "Qoder",
+      "model": "Qwen3.8-Max",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; Service Account exclusion clarified",
+      "scheduleAndRates": "Daily 22:00–08:00 UTC+8: 0.2× credits; other hours 0.5×.",
+      "eligibilityAndScope": "Pro Trial/paid Qoder products; Service Accounts separate.",
+      "publishedEffectiveDate": "2026-09-04 22:00 UTC+8.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount"
+      ]
+    },
+    {
+      "id": "qoder-qwen3-8-flash",
+      "existing": true,
+      "provider": "Qoder CN",
+      "model": "Qwen3.8-Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; extension corrected",
+      "scheduleAndRates": "All-day 0 Credits, including after Sep 30.",
+      "eligibilityAndScope": "Qoder CN individual Free/trial/membership/paid accounts; no Teams/Enterprise.",
+      "publishedEffectiveDate": "2026-09-18 10:00 Beijing.",
+      "publishedEndDate": "no published end date; original 2026-09-30 23:59:59 Beijing deadline superseded",
+      "sources": [
+        "https://docs.qoder.cn/en/events/flashoffer"
+      ]
+    },
+    {
+      "id": "qoder-qwen3-7-plus",
+      "existing": true,
+      "provider": "Qoder",
+      "model": "Qwen3.7-Plus",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; Service Account exclusion clarified",
+      "scheduleAndRates": "Daily 22:00–08:00 UTC+8: 0.04× credits; other hours 0.1×.",
+      "eligibilityAndScope": "Pro Trial/paid Qoder products; Service Accounts separate.",
+      "publishedEffectiveDate": "2026-06-23; no exact start time published.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount"
+      ]
+    },
+    {
+      "id": "tencent-deepseek-v4-vendor-direct",
+      "existing": true,
+      "provider": "Tencent Cloud",
+      "model": "DeepSeek V4.1 Flash / V4 Flash 0731 / Pro 0813 / Vision (Vendor Direct)",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Mon–Fri 09:00–12:00 / 14:00–18:00 UTC+8: 2×; weekends 1×.",
+      "eligibilityAndScope": "TokenHub Enterprise Pro Vendor Direct: V4.1 Flash / Flash 0731 / Pro 0813 / Vision; no stated holiday exception.",
+      "publishedEffectiveDate": "2026-08-29 00:00 Beijing.",
+      "publishedEndDate": "Schedule: no published end date; Flash 0731 retires 2026-10-31 00:00:00 Beijing.",
+      "sources": [
+        "https://www-sg.tencentcloud.com/document/product/1300/81489",
+        "https://www-sg.tencentcloud.com/jp/announce/detail/101537"
+      ]
+    },
+    {
+      "id": "tencent-deepseek-v4-ga",
+      "existing": true,
+      "provider": "Tencent Cloud",
+      "model": "DeepSeek V4.1 Flash / V4 Flash 0731 / Pro 0813 (non-vendor)",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Mon–Fri 09:00–12:00 / 14:00–18:00 UTC+8: 2×; weekends 1×.",
+      "eligibilityAndScope": "TokenHub Enterprise Pro non-vendor: V4.1 Flash / Flash 0731 / Pro 0813; excludes undated legacy Flash/Pro.",
+      "publishedEffectiveDate": "2026-09-26 00:00 Beijing.",
+      "publishedEndDate": "Schedule: no published end date; Flash 0731 retires 2026-10-31 00:00:00 Beijing.",
+      "sources": [
+        "https://www-sg.tencentcloud.com/document/product/1300/81489",
+        "https://www-sg.tencentcloud.com/jp/announce/detail/101537"
+      ]
+    },
+    {
+      "id": "swarms-swarm-completions",
+      "existing": true,
+      "provider": "Swarms",
+      "model": "Swarm Completions endpoint",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "Daily 20:00–06:00 America/Los_Angeles: token charges 0.5×.",
+      "eligibilityAndScope": "Swarm Completions endpoint only; agent costs unchanged; Pacific DST applies.",
+      "publishedEffectiveDate": "no published effective date",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.swarms.ai/docs/documentation/resources/pricing"
+      ]
+    },
+    {
+      "id": "baidu-qianfan-deepseek-v4",
+      "existing": true,
+      "provider": "Baidu Qianfan",
+      "model": "DeepSeek V4.1 Flash + V4 Pro 0813",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "08:00–22:00 busy / 22:00–08:00 idle UTC+8; campaign 0.6× each reference.",
+      "eligibilityAndScope": "Qianfan API V4.1 Flash / V4 Pro 0813.",
+      "publishedEffectiveDate": "2026-09-24 00:00 Beijing.",
+      "publishedEndDate": "2026-10-07 23:59 Beijing; no published end date for underlying daily schedule",
+      "sources": [
+        "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner"
+      ]
+    },
+    {
+      "id": "baidu-qianfan-glm53",
+      "existing": true,
+      "provider": "Baidu Qianfan",
+      "model": "GLM 5.3",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.6× list.",
+      "eligibilityAndScope": "Qianfan API GLM-5.3.",
+      "publishedEffectiveDate": "2026-09-24 00:00 Beijing.",
+      "publishedEndDate": "2026-10-07 23:59 Beijing",
+      "sources": [
+        "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner"
+      ]
+    },
+    {
+      "id": "bai-mimo26-flash",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "MiMo-V2.6-Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.1× reference.",
+      "eligibilityAndScope": "Eligible API/Chat; platform settlement controls.",
+      "publishedEffectiveDate": "2026-09-25 15:00 UTC+8.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/"
+      ]
+    },
+    {
+      "id": "bai-glm53-flash",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "GLM-5.3-Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.3× reference.",
+      "eligibilityAndScope": "Eligible API/Chat; platform settlement controls.",
+      "publishedEffectiveDate": "2026-09-25 15:00 UTC+8.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/"
+      ]
+    },
+    {
+      "id": "bai-qwen38-flash",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "Qwen3.8-Flash",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.3× reference.",
+      "eligibilityAndScope": "Eligible API/Chat; platform settlement controls.",
+      "publishedEffectiveDate": "2026-09-25 15:00 UTC+8.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/"
+      ]
+    },
+    {
+      "id": "bai-mimo26-pro",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "MiMo-V2.6-Pro",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.5× reference.",
+      "eligibilityAndScope": "Eligible API/Chat; platform settlement controls.",
+      "publishedEffectiveDate": "2026-09-25 15:00 UTC+8.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/"
+      ]
+    },
+    {
+      "id": "bai-glm52",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "GLM-5.2",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.6× reference.",
+      "eligibilityAndScope": "Eligible API/web app; platform settlement controls.",
+      "publishedEffectiveDate": "2026-08-12; no exact start time published.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/"
+      ]
+    },
+    {
+      "id": "bai-glm53",
+      "existing": true,
+      "provider": "B.AI",
+      "model": "GLM-5.3",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "active; unchanged",
+      "scheduleAndRates": "All-day 0.9× reference.",
+      "eligibilityAndScope": "Eligible API/web app; platform settlement controls.",
+      "publishedEffectiveDate": "2026-08-14; no exact start time published.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.b.ai/llmservice/promotions-and-pricing-notices/"
+      ]
+    },
+    {
+      "id": "qoder-qwen3-8-max-service-account",
+      "existing": false,
+      "provider": "Qoder",
+      "model": "Qwen3.8-Max (Service Account)",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "new; active",
+      "scheduleAndRates": "Daily 01:00–07:00 UTC+8: 0.2× credits; otherwise 0.5×.",
+      "eligibilityAndScope": "Qoder Service Accounts, including weekends/holidays.",
+      "publishedEffectiveDate": "No distinct effective date published for Service Account window.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount"
+      ]
+    },
+    {
+      "id": "qoder-qwen3-7-plus-service-account",
+      "existing": false,
+      "provider": "Qoder",
+      "model": "Qwen3.7-Plus (Service Account)",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "new; active",
+      "scheduleAndRates": "Daily 01:00–07:00 UTC+8: 0.04× credits; otherwise 0.1×.",
+      "eligibilityAndScope": "Qoder Service Accounts, including weekends/holidays.",
+      "publishedEffectiveDate": "No distinct effective date published for Service Account window.",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount"
+      ]
+    },
+    {
+      "id": "alibaba-qwen3-7-plus-api-global",
+      "existing": false,
+      "provider": "Alibaba Cloud",
+      "model": "Qwen3.7 Plus (Global API)",
+      "checkedAt": "2026-10-02",
+      "verifiedAt": "2026-10-02",
+      "status": "new; active",
+      "scheduleAndRates": "Daily 22:00–08:00 UTC+8: 0.4× list; otherwise 0.8×; billing time.",
+      "eligibilityAndScope": "qwen3.7-plus Global API: HK/Frankfurt/Virginia/Tokyo; not dated IDs, regional deployments or Token Plan.",
+      "publishedEffectiveDate": "no published effective date",
+      "publishedEndDate": "no published end date",
+      "sources": [
+        "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+      ]
+    }
+  ],
+  "discovery": [
+    {
+      "provider": "Alibaba Cloud",
+      "result": "New Global Qwen3.7-Plus API day/night discount added.",
+      "sources": [
+        "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+      ]
+    },
+    {
+      "provider": "Qoder",
+      "result": "Distinct Service Account window and Flash extension added.",
+      "sources": [
+        "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+        "https://docs.qoder.cn/en/events/flashoffer"
+      ]
+    },
+    {
+      "provider": "DeepInfra",
+      "result": "Official model page shows 30% promotional pricing and Priority/Flex tiers, but no time-of-day schedule or bounded campaign dates. Not added as a clock.",
+      "sources": [
+        "https://deepinfra.com/deepseek-ai/DeepSeek-V4.1-Flash"
+      ]
+    },
+    {
+      "provider": "Morph",
+      "result": "No peak/off-peak policy found on official pricing page. No clock added.",
+      "sources": [
+        "https://www.morphllm.com/pricing"
+      ]
+    },
+    {
+      "provider": "Volcengine",
+      "result": "Official Ark pricing page was script-only in text retrieval. Community articles and aggregator schedules are insufficient; unverified, not added.",
+      "sources": [
+        "https://docs.volcengine.com/docs/ark/model-pricing?lang=zh"
+      ]
+    }
+  ],
+  "tests": {
+    "command": "node --test deepseek-clock/pricing.test.cjs",
+    "passed": 10,
+    "coverage": [
+      "JSON and inline JavaScript parse",
+      "Profile/slug uniqueness",
+      "Service Account boundaries and exclusions",
+      "Qoder Flash extension start and open-ended display",
+      "Continuous campaign dial arcs",
+      "Finite campaign real end dates",
+      "Alibaba day/night transitions",
+      "DeepSeek National Day and weekend boundaries",
+      "Z.ai/Baidu campaign transitions",
+      "Unverified timestamp retention"
+    ],
+    "browser": "In-app localhost smoke checks: Qoder CN Flash (including full campaign arc), Alibaba Global API, both Qoder Service Account entries, Codex reset regression. No console warnings/errors; no desktop horizontal overflow. No mobile viewport test."
+  },
+  "disposition": "Commit locally only. Do not merge/push; remove temporary worktree after commit while preserving branch and untouched saved checkout."
+}

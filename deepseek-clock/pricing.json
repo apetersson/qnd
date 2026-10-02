@@ -7,12 +7,12 @@
       "id": "deepseek-v4",
       "slug": "deepseek",
       "provider": "DeepSeek",
-      "model": "V4.1 Flash (Pro alias routed to Flash rates)",
+      "model": "V4.1 Flash / V4 Pro 0813",
       "product": "API",
       "shortName": "DS",
       "title": "DeepSeek Flash / Pro pricing clock",
       "subtitle": "DeepSeek API pricing hours in your local time",
-      "kicker": "V4.1 Flash · V4 Pro alias uses Flash rates from Sep 14",
+      "kicker": "Flash and Pro · peak rates are 2× each model's off-peak rate",
       "schedule": {
         "timeZone": "UTC",
         "peakDays": [1, 2, 3, 4, 5],
@@ -62,7 +62,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · off-peak is half the peak rate · legacy V4 Flash and Vision IDs are retired and route to V4.1 Flash · the Sep 10, 2026 release notice says deepseek-v4-pro requests route to V4.1-Flash rates from Sep 14, 2026 at 04:00 UTC until V4.1-Pro launches; the live pricing table still shows a Pro reference column, so this profile displays the current effective Flash schedule for both aliases · no published end date for peak/off-peak or the V4.1-Pro launch"
+        "sourceNote": "Mon–Fri except Chinese public holidays · weekends and public holidays are fully off-peak · the current pricing table lists V4.1 Flash and V4 Pro 0813 at separate prices, both with a 2× peak/off-peak ratio · retired V4 Flash and Vision IDs route to V4.1 Flash · the older Sep 10 release notice conflicts with the current table on Pro routing, so do not assume Pro requests are billed at Flash prices · no published end date"
       },
       "periods": {
         "peak": {
@@ -79,7 +79,7 @@
         }
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "codex-reset",
@@ -108,12 +108,12 @@
       "id": "ollama-deepseek-v4",
       "slug": "ollama",
       "provider": "Ollama",
-      "model": "DeepSeek V4.1 Flash / V4 Flash / V4 Pro",
+      "model": "DeepSeek V4.1 Flash / V4 Pro",
       "product": "Cloud API",
       "shortName": "OL",
       "title": "Ollama DeepSeek V4 pricing clock",
       "subtitle": "Ollama Cloud pricing hours in your local time",
-      "kicker": "V4.1 Flash, V4 Flash and V4 Pro · peak rates are 2× off-peak",
+      "kicker": "V4.1 Flash and V4 Pro · peak rates are 2× off-peak",
       "schedule": {
         "timeZone": "UTC",
         "peakDays": [1, 2, 3, 4, 5],
@@ -124,7 +124,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "12:00–18:00",
-        "sourceNote": "Mon–Fri · applies to V4.1 Flash, legacy V4 Flash, and V4 Pro · all other hours are off-peak · no published end date"
+        "sourceNote": "Mon–Fri · V4.1 Flash and V4 Pro Cloud API · weekends and all other hours are off-peak · legacy deepseek-v4-flash was retired Sep 25, 2026 · no published end date for the current pricing schedule"
       },
       "periods": {
         "peak": {
@@ -141,13 +141,13 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "above-deepseek-v4",
       "slug": "above",
       "provider": "above.dev",
-      "model": "DeepSeek V4.1 Flash / V4 Flash Vision (Exp) / V4 Pro",
+      "model": "DeepSeek V4.1 Flash / V4 Pro",
       "product": "Cloud API",
       "shortName": "AB",
       "title": "above.dev DeepSeek pricing clock",
@@ -165,7 +165,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (UTC):",
         "sourceWindows": "01:00–04:00 · 06:00–10:00",
-        "sourceNote": "DeepSeek-style UTC windows · above.dev defines weekends in Beijing time (off-peak from Fri 16:00 UTC through Sun 16:00 UTC) · current docs do not expose the previous flat 10% markup, so that markup is unverified · Chinese public-holiday treatment is not stated · no published end date"
+        "sourceNote": "DeepSeek-style UTC windows · above.dev defines weekends in Beijing time (off-peak from Fri 16:00 UTC through Sun 16:00 UTC) · current docs do not expose the previous flat 10% markup, so that markup is unverified · Chinese public-holiday treatment is not stated · no published end date · current model catalog lists V4.1 Flash (including the V4 Flash alias) and V4 Pro; separate Vision Exp availability is not confirmed"
       },
       "periods": {
         "peak": {
@@ -182,7 +182,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -260,7 +260,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-deepseek-v4",
@@ -314,7 +314,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Busy hours (Beijing time):",
         "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "B.AI API and Chat promotion · V4.1 Flash is 10% of the standard reference price from Sep 12, 2026 10:00 until Sep 25, 2026 15:00 Beijing time, then 30% from Sep 25, 2026 15:00 · the 30% rate follows the applicable DeepSeek peak or off-peak reference price · Chinese public holidays are off-peak · no published end date"
+        "sourceNote": "B.AI API and Chat promotion · V4.1 Flash is 10% of the standard reference price from Sep 12, 2026 10:00 until Sep 25, 2026 15:00 Beijing time, then 30% from Sep 25, 2026 15:00 · the 30% rate follows the applicable DeepSeek peak or off-peak reference price · Chinese public holidays are off-peak · no published end date · this clock is for API calls; B.AI Chat bills DeepSeek at off-peak rates all day"
       },
       "periods": {
         "peak": {
@@ -345,7 +345,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -380,7 +380,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Busy hours (Beijing time):",
         "sourceWindows": "09:00–12:00 · 14:00–18:00",
-        "sourceNote": "B.AI standard API rates · V4 Pro is 2× during weekday busy periods and idle on weekends/Chinese public holidays · current promotion list excludes V4 Pro · no published end date"
+        "sourceNote": "B.AI standard API rates · V4 Pro is 2× during weekday busy periods and idle on weekends/Chinese public holidays · current promotion list excludes V4 Pro · no published end date · this clock is for API calls; B.AI Chat bills DeepSeek at off-peak rates all day"
       },
       "periods": {
         "peak": {
@@ -397,7 +397,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "zai-glm-5-3",
@@ -458,7 +458,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -500,7 +500,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (Singapore time):",
         "sourceWindows": "14:00–18:00 weekdays",
-        "sourceNote": "All plans support GLM-5.3-Flash · Monday–Friday peak hours are 14:00–18:00 Singapore Standard Time (UTC+8) · off-peak usage is charged at 50% of the standard credit rate · paid-plan Flash campaign runs daily 23:00–09:00 from Sep 3 through Oct 7, 2026 (ZCode unlimited, other agents 2× quota) · all-day off-peak promotion runs Sep 25–Oct 7, 2026 · ZCode's usage docs confirm account-linked weekly and five-hour reset cards with expiry; a Reddit report claims four of each, but that quantity and an end date are not published in Z.ai's pricing docs, so this is not encoded as a rate · no published end date for the standard plan"
+        "sourceNote": "All plans support GLM-5.3-Flash · Monday–Friday peak hours are 14:00–18:00 Singapore Standard Time (UTC+8) · off-peak usage is charged at 50% of the standard credit rate · paid-plan Flash campaign runs daily 23:00–09:00 from Sep 3 through Oct 7, 2026 (ZCode/AutoClaw unlimited, other agents 2× quota) · all-day off-peak promotion runs Sep 25–Oct 7, 2026 · ZCode's usage docs confirm account-linked weekly and five-hour reset cards with expiry; a Reddit report claims four of each, but that quantity and an end date are not published in Z.ai's pricing docs, so this is not encoded as a rate · no published end date for the standard plan · campaign requires ZCode 3.10+ when using ZCode; an exhausted five-hour/weekly quota must reset before participation"
       },
       "accountBenefit": {
         "text": "ZCode documents account-linked weekly and five-hour quota reset cards with expiry. A Reddit report claims four of each were issued, but Z.ai does not publish that quantity or an end date in its pricing docs; this is not a price multiplier.",
@@ -523,7 +523,7 @@
           "name": "Flash usage campaign",
           "status": "GLM-5.3-Flash campaign window is active now",
           "badge": "Campaign",
-          "detail": "ZCode unlimited usage; other agents receive 2× quota",
+          "detail": "ZCode/AutoClaw unlimited; other agents receive 2× quota",
           "tone": "special"
         },
         "promotion": {
@@ -535,7 +535,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "alibaba-qwen3-8-max",
@@ -572,7 +572,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "alibaba-deepseek-v4-token-plan",
@@ -609,7 +609,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -645,7 +645,7 @@
         }
       },
       "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -681,19 +681,20 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "qoder-qwen3-8-max",
       "slug": "qoder-qwen38-max",
       "provider": "Qoder",
       "model": "Qwen3.8-Max",
-      "product": "Credits promotion",
+      "product": "Credits promotion (not Service Accounts)",
       "shortName": "Q",
       "temporary": true,
       "title": "Qoder Qwen3.8 pricing clock",
       "subtitle": "Temporary Qwen credit rates in your local time",
       "kicker": "Temporary promotion · standard 0.5× → off-peak 0.2×",
+      "policyNote": "Pro Trial and paid accounts. Service Accounts use a different night window; select their separate entry.",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -703,7 +704,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · 60% off effective Sep 4, 2026 at 22:00 Beijing · no published end date"
+        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · 60% off effective Sep 4, 2026 at 22:00 Beijing · no published end date · other Qoder products only; Service Accounts use 01:00–07:00 Beijing instead and have separate clock entries"
       },
       "periods": {
         "peak": {
@@ -718,18 +719,19 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "qoder-qwen3-8-flash",
       "slug": "qoder-qwen38-flash",
-      "provider": "Qoder",
+      "provider": "Qoder CN",
       "model": "Qwen3.8-Flash",
-      "product": "Credits",
+      "product": "Individual-account promotion",
       "shortName": "Q",
-      "title": "Qoder Qwen3.8 Flash pricing clock",
-      "subtitle": "Qwen credit rates in your local time",
-      "kicker": "Standard 0.1× credit rate all day after Sep 30",
+      "title": "Qoder CN Flash free-offer clock",
+      "subtitle": "Qwen3.8-Flash credits for individual Qoder CN accounts",
+      "kicker": "Free all day · individual Qoder CN accounts only",
+      "policyNote": "Individual Qoder CN accounts only, including Free and trials. Teams and Enterprise excluded. Extended beyond Sep 30; no published end date.",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -737,9 +739,19 @@
           { "start": "00:00", "end": "00:00", "allDay": true }
         ],
         "windowName": "standard-rate",
-        "sourceTitle": "Standard rate (Beijing):",
+        "sourceTitle": "Promotion hours (Beijing):",
         "sourceWindows": "All day",
-        "sourceNote": "The Qwen3.8-Flash free campaign ended Sep 30, 2026 at 23:59:59 Beijing; current Qoder model-selector pricing lists the standard 0.1× rate all day · no published end date for the standard rate"
+        "sourceNote": "Qwen3.8-Flash is free for Qoder CN individual accounts, including Free, Pro, Pro+, Ultra, trials and membership cards, even with zero Credits · Teams and Enterprise editions are excluded · started Sep 18, 2026 at 10:00 Beijing · extended beyond the original Sep 30, 2026 23:59:59 deadline · no published end date for the extension; later billing will follow the rate published at that time",
+        "overrides": [
+          {
+            "period": "campaign",
+            "startAt": "2026-09-18T10:00:00+08:00",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "00:00", "end": "00:00", "allDay": true }
+            ]
+          }
+        ]
       },
       "periods": {
         "peak": {
@@ -751,22 +763,31 @@
           "name": "Standard model rate",
           "status": "Standard 0.1× credit rate is active now",
           "badge": "0.1× credits"
+        },
+        "campaign": {
+          "name": "Free promotion",
+          "status": "Free for eligible Qoder CN individual accounts",
+          "badge": "Free",
+          "detail": "0 Credits; Teams and Enterprise excluded",
+          "tone": "special"
         }
       },
-      "source": "https://docs.qoder.cn/en/qoder/model-selector",
-      "verifiedAt": "2026-10-01"
+      "source": "https://docs.qoder.cn/en/events/flashoffer",
+      "verifiedAt": "2026-10-02",
+      "temporary": true
     },
     {
       "id": "qoder-qwen3-7-plus",
       "slug": "qoder-qwen37-plus",
       "provider": "Qoder",
       "model": "Qwen3.7-Plus",
-      "product": "Credits promotion",
+      "product": "Credits promotion (not Service Accounts)",
       "shortName": "Q",
       "temporary": true,
       "title": "Qoder Qwen3.7 Plus pricing clock",
       "subtitle": "Temporary Qwen credit rates in your local time",
       "kicker": "Temporary promotion · standard 0.1× → off-peak 0.04×",
+      "policyNote": "Pro Trial and paid accounts. Service Accounts use a different night window; select their separate entry.",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -776,7 +797,7 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
         "sourceWindows": "08:00–22:00",
-        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · promotion effective Jun 23, 2026 · no published end date"
+        "sourceNote": "Pro Trial and paying users · daily, including weekends/public holidays · promotion effective Jun 23, 2026 · no published end date · other Qoder products only; Service Accounts use 01:00–07:00 Beijing instead and have separate clock entries"
       },
       "periods": {
         "peak": {
@@ -791,7 +812,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -829,7 +850,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "tencent-deepseek-v4-ga",
@@ -866,7 +887,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "swarms-swarm-completions",
@@ -904,7 +925,7 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "baidu-qianfan-deepseek-v4",
@@ -978,7 +999,7 @@
         }
       },
       "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "baidu-qianfan-glm53",
@@ -1035,7 +1056,7 @@
         }
       },
       "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-mimo26-flash",
@@ -1091,7 +1112,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-glm53-flash",
@@ -1147,7 +1168,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-qwen38-flash",
@@ -1203,7 +1224,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-mimo26-pro",
@@ -1259,7 +1280,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-glm52",
@@ -1315,7 +1336,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
     },
     {
       "id": "bai-glm53",
@@ -1371,7 +1392,123 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-01"
+      "verifiedAt": "2026-10-02"
+    },
+    {
+      "id": "qoder-qwen3-8-max-service-account",
+      "slug": "qoder-qwen38-max-service-account",
+      "provider": "Qoder",
+      "model": "Qwen3.8-Max (Service Account)",
+      "product": "Service Account credits promotion",
+      "shortName": "Q",
+      "temporary": true,
+      "title": "Qoder Qwen3.8-Max Service Account clock",
+      "policyNote": "Service Accounts only. Night discount: 01:00–07:00 Beijing daily. No published end date.",
+      "subtitle": "Service Account credit rates in your local time",
+      "kicker": "Service Account · 60% fewer Credits from 01:00–07:00 Beijing",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "07:00", "end": "01:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "07:00–01:00 next day",
+        "sourceNote": "Qoder Service Accounts only · daily 01:00–07:00 Beijing off-peak, including weekends and public holidays · the same model multipliers apply as on other products, which instead use 22:00–08:00 · no published effective date for the Service Account window and no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard model rate",
+          "status": "Standard 0.5× credit rate is active now",
+          "badge": "0.5× credits"
+        },
+        "offPeak": {
+          "name": "Promo off-peak rate",
+          "status": "Discounted 0.2× credit rate is active now",
+          "badge": "0.2× credits"
+        }
+      },
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-10-02"
+    },
+    {
+      "id": "qoder-qwen3-7-plus-service-account",
+      "slug": "qoder-qwen37-plus-service-account",
+      "provider": "Qoder",
+      "model": "Qwen3.7-Plus (Service Account)",
+      "product": "Service Account credits promotion",
+      "shortName": "Q",
+      "temporary": true,
+      "title": "Qoder Qwen3.7-Plus Service Account clock",
+      "policyNote": "Service Accounts only. Night discount: 01:00–07:00 Beijing daily. No published end date.",
+      "subtitle": "Service Account credit rates in your local time",
+      "kicker": "Service Account · 60% fewer Credits from 01:00–07:00 Beijing",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "07:00", "end": "01:00" }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (Beijing):",
+        "sourceWindows": "07:00–01:00 next day",
+        "sourceNote": "Qoder Service Accounts only · daily 01:00–07:00 Beijing off-peak, including weekends and public holidays · the same model multipliers apply as on other products, which instead use 22:00–08:00 · no published effective date for the Service Account window and no published end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard model rate",
+          "status": "Standard 0.1× credit rate is active now",
+          "badge": "0.1× credits"
+        },
+        "offPeak": {
+          "name": "Promo off-peak rate",
+          "status": "Discounted 0.04× credit rate is active now",
+          "badge": "0.04× credits"
+        }
+      },
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-10-02"
+    },
+    {
+      "id": "alibaba-qwen3-7-plus-api-global",
+      "slug": "alibaba-qwen37-plus-api",
+      "provider": "Alibaba Cloud",
+      "model": "Qwen3.7 Plus (Global API)",
+      "product": "Model Studio API · HK / Frankfurt / Virginia / Tokyo",
+      "shortName": "QW",
+      "temporary": true,
+      "title": "Alibaba Qwen Plus API night-rate clock",
+      "policyNote": "Global API deployment in Hong Kong, Frankfurt, Virginia or Tokyo only. Not regional deployments, dated model IDs or Token Plans. No published end date.",
+      "subtitle": "Global-deployment API rates in your local time",
+      "kicker": "Global API · 60% off list at night, 20% off during the day",
+      "schedule": {
+        "timeZone": "Asia/Shanghai",
+        "peakDays": [0, 1, 2, 3, 4, 5, 6],
+        "peakWindows": [
+          { "start": "08:00", "end": "22:00" }
+        ],
+        "windowName": "daytime",
+        "sourceTitle": "Daytime hours (UTC+8):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "qwen3.7-plus Global deployment in Hong Kong, Frankfurt, Virginia and Tokyo only · billing-time night window 22:00–08:00 UTC+8 daily · input and output prices are 0.4× list at night and 0.8× by day · excludes regional deployments and the dated qwen3.7-plus-2026-05-26 model ID · separate from Personal Token Plan · no published effective date or end date"
+      },
+      "periods": {
+        "peak": {
+          "name": "Daytime discount",
+          "status": "Daytime 20% API discount is active now",
+          "badge": "0.8× list",
+          "detail": "20% off input and output list prices"
+        },
+        "offPeak": {
+          "name": "Night discount",
+          "status": "Night-time 60% API discount is active now",
+          "badge": "0.4× list",
+          "detail": "60% off input and output list prices"
+        }
+      },
+      "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "verifiedAt": "2026-10-02"
     }
   ]
 }

@@ -754,7 +754,15 @@
       text-decoration-color: currentColor;
     }
 
-    .account-note[hidden] { display: none; }
+    .account-note[hidden], .policy-note[hidden] { display: none; }
+
+    .policy-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
 
     .status-card span,
     .timeline-label {
@@ -1299,6 +1307,7 @@
             <div class="mode" id="mode">Loading…</div>
             <div class="badge" id="badge">--</div>
           </div>
+          <p class="policy-note" id="policyNote" hidden></p>
           <p class="account-note" id="accountNote" hidden>
             <span id="accountNoteText"></span>
             <a id="accountNoteLink" href="#" target="_blank" rel="noopener noreferrer">Details</a>
@@ -1464,6 +1473,7 @@
       offPeakLegend: document.getElementById('offPeakLegend'),
       offPeakLegendLabel: document.getElementById('offPeakLegendLabel'),
       sourceLink: document.getElementById('sourceLink'),
+      policyNote: document.getElementById('policyNote'),
       accountNote: document.getElementById('accountNote'),
       accountNoteText: document.getElementById('accountNoteText'),
       accountNoteLink: document.getElementById('accountNoteLink'),
@@ -1843,6 +1853,14 @@
         active = nextActive;
       }
 
+      // A continuous rate can outlast the scan. Keep its visible arc without
+      // turning the scan limit into a claimed end to the policy.
+      if (active && actualStart && actualStart < rangeEnd) {
+        const start = clip ? new Date(Math.max(actualStart, rangeStart)) : actualStart;
+        const end = clip ? new Date(rangeEnd) : new Date(scanEnd);
+        if (end > start) intervals.push({ start, end, actualStart, actualEnd: null });
+      }
+
       return intervals.sort((a, b) => a.start - b.start);
     }
 
@@ -2022,8 +2040,8 @@
       // the selected dial. Longer windows wrap a 12h dial, so show only their
       // remaining planning-horizon portion instead of implying a full-day rate.
       const near = mergeMinuteFragments(nearIntervals.flatMap(interval => {
-        const activeNow = interval.actualStart < now && interval.actualEnd > now;
-        const completeWindowFits = interval.actualEnd - interval.actualStart <= hours * HOUR;
+        const activeNow = interval.actualStart < now && (!interval.actualEnd || interval.actualEnd > now);
+        const completeWindowFits = interval.actualEnd && interval.actualEnd - interval.actualStart <= hours * HOUR;
         const start = activeNow && completeWindowFits
           ? interval.actualStart
           : interval.start;
@@ -2359,6 +2377,7 @@
         periods.push({
           start: new Date(cursor),
           end: periodEnd,
+          hasKnownEnd: Boolean(boundary),
           periodKey
         });
         if (periodEnd <= cursor) break;
@@ -2368,18 +2387,19 @@
       return periods.filter(period => period.end > period.start);
     }
 
-    // The listing must always show at least two entries, even when the next
+    // Show at least two entries when their boundaries are known, even if the next
     // schedule boundary lies beyond the 24h horizon (e.g. a long weekend).
     // Within 24h, show every interval; if that's fewer than two, extend the
     // horizon and return only the next two entries to keep the list short.
     function outlookPeriods(now) {
       const within24 = pricingPeriodsBetween(now, new Date(now.getTime() + DAY));
-      if (within24.length >= 2) return within24;
+      if (within24.length >= 2 || within24.some(period => !period.hasKnownEnd)) return within24;
       let horizon = DAY;
       let periods = within24;
       for (let guard = 0; periods.length < 2 && guard < 8; guard++) {
         horizon += DAY;
         periods = pricingPeriodsBetween(now, new Date(now.getTime() + horizon));
+        if (periods.some(period => !period.hasKnownEnd)) break;
       }
       return periods.slice(0, 2);
     }
@@ -2407,13 +2427,16 @@
         const hours = ((pricingPeriod.end - pricingPeriod.start) / HOUR).toLocaleString([], { maximumFractionDigits: 1 });
         const current = pricingPeriod.start.getTime() === now.getTime();
         const detail = period.detail || period.name;
-        const descriptor = current
-          ? `${hours}h remaining · ${detail}`
-          : `${hours}h · ${detail}`;
+        const descriptor = !pricingPeriod.hasKnownEnd
+          ? `No scheduled change found · ${detail}`
+          : (current ? `${hours}h remaining · ${detail}` : `${hours}h · ${detail}`);
+        const heading = pricingPeriod.hasKnownEnd
+          ? formatWindow(pricingPeriod.start, pricingPeriod.end, now)
+          : `${current ? 'Now' : `From ${fmtTime.format(pricingPeriod.start)}`} · ${period.name}`;
         const rowClass = pricingPeriod.periodKey === 'offPeak'
           ? 'window is-off-peak'
           : `window${isSpecialPeriodKey(pricingPeriod.periodKey) ? ' is-special' : ''}`;
-        return `<div class="${rowClass}"><em>${index + 1}</em><div><strong>${formatWindow(pricingPeriod.start, pricingPeriod.end, now)}</strong><small>${descriptor}</small></div><div class="multiplier">${period.badge}</div></div>`;
+        return `<div class="${rowClass}"><em>${index + 1}</em><div><strong>${heading}</strong><small>${descriptor}</small></div><div class="multiplier">${period.badge}</div></div>`;
       }).join('');
     }
 
@@ -2714,6 +2737,8 @@
       el.brandSubtitle.textContent = activeProfile.subtitle;
       el.sourceLink.href = activeProfile.source;
       el.sourceLink.setAttribute('aria-label', `Open official pricing source for ${activeProfile.provider} ${activeProfile.model}`);
+      el.policyNote.hidden = !activeProfile.policyNote;
+      el.policyNote.textContent = activeProfile.policyNote || '';
       const accountBenefit = activeProfile.accountBenefit;
       el.accountNote.hidden = !accountBenefit?.text;
       if (accountBenefit?.text) {
