@@ -24,7 +24,7 @@ const functions = [
   'scheduleParts', 'scheduleDayParts', 'dateKeyInTimeZone', 'parseClockMinutes',
   'scheduleHasDay', 'isPublicHoliday', 'calendarDateNumber', 'isoDateNumber',
   'matchesScheduleWindow', 'isScheduleOffDay', 'isPeak', 'overridePeriodKey',
-  'periodKeyAt', 'validatePricingConfig', 'nextBoundary', 'pricingPeriodsBetween',
+  'periodKeyAt', 'availableProfiles', 'validatePricingConfig', 'nextBoundary', 'pricingPeriodsBetween',
   'outlookPeriods', 'isSpecialPeriodKey', 'drawNext24', 'formatWindow', 'sameLocalDate',
   'intervalsBetween', 'specialIntervalsBetween'
 ];
@@ -146,5 +146,154 @@ test('Z.ai all-day discount and Baidu campaign stop after October 7', () => {
 test('Unverified routing is not newly date-stamped; retired names are not advertised', () => {
   assert.equal(config.profiles.find(p => p.slug === 'aihubmix').verifiedAt, '2026-10-01');
   assert.equal(config.profiles.find(p => p.slug === 'ollama').model, 'DeepSeek V4.1 Flash / V4 Pro');
+  assert.match(config.profiles.find(p => p.slug === 'ollama').schedule.sourceNote, /retired Sep 25, 2026/);
   assert.doesNotMatch(config.profiles.find(p => p.slug === 'deepseek').model, /alias routed/);
+});
+
+test('B.AI October 4 offers switch at exactly 10:00 SGT, not at midnight', () => {
+  for (const instant of ['2026-10-03T17:00:00+08:00', '2026-10-04T00:00:00+08:00', '2026-10-04T09:59:59.999+08:00']) {
+    assert.equal(sample('bai', instant).key, 'campaign30');
+    assert.equal(sample('bai-glm53-flash', instant).badge, '0.3× base');
+  }
+  for (const instant of ['2026-10-04T10:00:00+08:00', '2026-10-04T02:00:00Z', '2026-10-04T04:00:00+02:00']) {
+    assert.equal(sample('bai', instant).badge, '0.6× off-peak');
+    assert.equal(sample('bai-glm53-flash', instant).badge, '0.7× base');
+  }
+  assert.equal(sample('bai', '2026-09-25T14:59:59+08:00').key, 'campaign10');
+  assert.equal(sample('bai', '2026-09-25T15:00:00+08:00').key, 'campaign30');
+});
+
+test('B.AI 60% offer retains peak/off-peak phases and holiday/weekend exceptions', () => {
+  for (const instant of ['2026-10-04T10:30:00+08:00', '2026-10-07T09:30:00+08:00', '2026-10-10T09:30:00+08:00']) {
+    assert.equal(sample('bai', instant).key, 'campaign60OffPeak');
+  }
+  for (const [time, expected] of [
+    ['08:59:59', 'campaign60OffPeak'], ['09:00:00', 'campaign60Peak'],
+    ['11:59:59', 'campaign60Peak'], ['12:00:00', 'campaign60OffPeak'],
+    ['13:59:59', 'campaign60OffPeak'], ['14:00:00', 'campaign60Peak'],
+    ['17:59:59', 'campaign60Peak'], ['18:00:00', 'campaign60OffPeak']
+  ]) {
+    assert.equal(sample('bai', `2026-10-08T${time}+08:00`).key, expected, time);
+  }
+  assert.equal(sample('bai-v4-pro', '2026-10-08T09:00:00+08:00').badge, '2× idle');
+});
+
+test('B.AI outlook shows the changeover and does not invent an offer expiry', () => {
+  const before = context.renderedOutlook('bai-glm53-flash', '2026-10-04T01:30:00Z');
+  assert.equal(before.periods[0].end.toISOString(), '2026-10-04T02:00:00.000Z');
+  assert.match(before.html, /0\.3× base/);
+  assert.match(before.html, /0\.7× base/);
+  const after = context.renderedOutlook('bai-glm53-flash', '2026-10-04T02:00:00Z');
+  assert.equal(after.periods.length, 1);
+  assert.equal(after.periods[0].hasKnownEnd, false);
+  assert.match(after.html, /Now · Campaign · 70%/);
+  assert.doesNotMatch(after.html, /h remaining/);
+  const flash = context.renderedOutlook('bai', '2026-10-08T08:30:00+08:00');
+  assert.match(flash.html, /0\.6× peak/);
+  assert.match(flash.html, /0\.6× off-peak/);
+});
+
+test('B.AI model-page offers remain scoped and no new offer has an invented end date', () => {
+  for (const [slug, rate, source] of [
+    ['bai-glm52', '0.6× base', 'https://docs.b.ai/llmservice/models/glm-5-2/'],
+    ['bai-glm53', '0.9× base', 'https://docs.b.ai/llmservice/models/glm-5-3/'],
+    ['bai-mimo26-flash', '0.1× base'], ['bai-qwen38-flash', '0.3× base'], ['bai-mimo26-pro', '0.5× base']
+  ]) {
+    assert.equal(sample(slug, '2026-10-04T10:00:00+08:00').badge, rate);
+    if (source) assert.equal(config.profiles.find(p => p.slug === slug).source, source);
+  }
+  for (const slug of ['bai', 'bai-glm53-flash']) {
+    const profile = config.profiles.find(p => p.slug === slug);
+    assert.doesNotMatch(profile.kicker + ' ' + profile.policyNote, /Oct 3(?:\s|,|$)/);
+    const offers = profile.schedule.overrides.filter(o => o.startAt === '2026-10-04T10:00:00+08:00');
+    assert.equal(offers.length, slug === 'bai' ? 2 : 1);
+    for (const rule of offers) {
+      assert.equal(rule.endAt, undefined);
+      assert.equal(rule.endDate, undefined);
+    }
+  }
+});
+
+test('SiliconFlow CN Flash has half-price tokens at 02:00–08:00 every day', () => {
+  for (const date of ['2026-10-04', '2026-10-05', '2026-10-08', '2026-10-10']) {
+    for (const [time, key, badge] of [
+      ['00:00:00', 'peak', '1×'], ['01:59:59', 'peak', '1×'],
+      ['02:00:00', 'offPeak', '0.5×'], ['07:59:59', 'offPeak', '0.5×'],
+      ['08:00:00', 'peak', '1×'], ['23:59:59', 'peak', '1×']
+    ]) {
+      const result = sample('siliconflow', date + 'T' + time + '+08:00');
+      assert.equal(result.key, key, date + ' ' + time);
+      assert.equal(result.badge, badge);
+    }
+  }
+  assert.equal(sample('siliconflow', '2026-10-04T18:00:00Z').key, 'offPeak');
+  assert.equal(sample('siliconflow', '2026-10-04T20:00:00+02:00').key, 'offPeak');
+  assert.equal(sample('siliconflow', '2026-10-05T00:00:00Z').key, 'peak');
+});
+
+test('SiliconFlow outlook spans midnight with real phase ends and no inherited holidays', () => {
+  const profile = config.profiles.find(p => p.slug === 'siliconflow');
+  assert.equal(profile.model, 'DeepSeek V4 Flash');
+  assert.equal(profile.product, 'CN API');
+  assert.equal(profile.schedule.publicHolidayDates, undefined);
+  assert.match(profile.schedule.sourceNote, /effective Sep 1, 2026/);
+  assert.match(profile.schedule.sourceNote, /no published end date/);
+  const result = context.renderedOutlook('siliconflow', '2026-10-04T12:00:00+08:00');
+  assert.equal(result.periods[0].end.toISOString(), '2026-10-04T18:00:00.000Z');
+  assert.equal(result.periods[1].end.toISOString(), '2026-10-05T00:00:00.000Z');
+  assert.equal(result.periods[2].end.toISOString(), '2026-10-05T18:00:00.000Z');
+  assert.match(result.html, /50% of the standard input, cached-input and output prices/);
+  assert.match(result.html, /0\.5×/);
+  // The direct API has holiday/weekend exemptions; this CN route does not.
+  assert.equal(sample('deepseek', '2026-10-04T12:00:00+08:00').key, 'offPeak');
+  assert.equal(sample('siliconflow', '2026-10-04T12:00:00+08:00').key, 'peak');
+});
+
+test('Partially verified policies and disabled Codex keep previous verification dates', () => {
+  assert.equal(config.profiles.find(p => p.slug === 'aihubmix').verifiedAt, '2026-10-01');
+  const codex = config.profiles.find(p => p.slug === 'codex');
+  assert.equal(codex.verifiedAt, '2026-10-02');
+  assert.equal(codex.enabled, false);
+  for (const slug of ['deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53']) {
+    assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-02', slug);
+  }
+  assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
+  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53'].includes(p.slug))) {
+    assert.equal(profile.verifiedAt, '2026-10-06', profile.slug);
+  }
+});
+
+test('Baidu retains its stated cutoff and explicitly labels the unverified time zone', () => {
+  for (const slug of ['baidu-qianfan-deepseek', 'baidu-qianfan-glm53']) {
+    const profile = config.profiles.find(p => p.slug === slug);
+    assert.equal(profile.verifiedAt, '2026-10-02');
+    assert.match(profile.policyNote, /does not explicitly label a time zone/);
+    assert.match(profile.schedule.sourceNote, /2026-10-07 23:59/);
+    // Existing interpretation: the published 23:59 minute is inclusive, Beijing assumed.
+    assert.match(sample(slug, '2026-10-07T15:59:59.999Z').key, /^campaign/);
+    assert.doesNotMatch(sample(slug, '2026-10-07T16:00:00Z').key, /^campaign/);
+    const outlook = context.renderedOutlook(slug, '2026-10-07T23:30:00+08:00');
+    assert.equal(outlook.periods[0].end.toISOString(), '2026-10-07T16:00:00.000Z');
+  }
+});
+
+test('Z.ai date-only cutoff retains the documented final-night uncertainty', () => {
+  assert.equal(sample('zai', '2026-10-07T23:59:59.999+08:00').key, 'promotion');
+  assert.equal(sample('zai', '2026-10-08T00:00:00+08:00').key, 'offPeak');
+  // Regression for the existing window-start-date interpretation, not provider confirmation.
+  assert.equal(sample('zai-glm53-flash', '2026-10-08T08:59:59.999+08:00').key, 'campaign');
+  assert.equal(sample('zai-glm53-flash', '2026-10-08T09:00:00+08:00').key, 'offPeak');
+  assert.equal(sample('zai-glm53-flash', '2026-10-08T14:00:00+08:00').key, 'peak');
+  assert.equal(sample('zai-glm53-flash', '2026-10-08T23:00:00+08:00').key, 'offPeak');
+  assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
+});
+
+test('Expired Qoder Max discounts do not survive their exact end instant', () => {
+  assert.equal(sample('qoder-qwen37-max', '2026-09-30T21:59:59+08:00').badge, '0.5× credits');
+  for (const instant of ['2026-09-30T22:00:00+08:00', '2026-10-06T23:00:00+08:00', '2026-10-07T04:00:00+08:00']) {
+    assert.equal(sample('qoder-qwen37-max', instant).badge, '0.5× credits');
+  }
+  const result = context.renderedOutlook('qoder-qwen37-max', '2026-10-06T12:00:00+08:00');
+  assert.equal(result.periods.length, 1);
+  assert.equal(result.periods[0].hasKnownEnd, false);
 });

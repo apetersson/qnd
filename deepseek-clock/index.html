@@ -2655,12 +2655,16 @@
       return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
     }
 
+    function availableProfiles(config = pricingConfig) {
+      return config.profiles.filter(profile => profile.enabled !== false);
+    }
+
     function profileIdFromHash() {
       const requestedProvider = new URLSearchParams(window.location.hash.slice(1)).get('provider');
       if (!requestedProvider || !pricingConfig) return null;
 
       const requestedKey = normalizedProviderKey(requestedProvider);
-      const profile = pricingConfig.profiles.find(candidate =>
+      const profile = availableProfiles().find(candidate =>
         normalizedProviderKey(candidate.slug) === requestedKey ||
         normalizedProviderKey(candidate.id) === requestedKey ||
         normalizedProviderKey(candidate.provider) === requestedKey
@@ -2679,6 +2683,9 @@
         throw new Error('pricing.json must contain at least one schema-version-1 profile');
       }
       for (const profile of config.profiles) {
+        if (profile.enabled !== undefined && typeof profile.enabled !== 'boolean') {
+          throw new Error(`Invalid enabled flag in ${profile.id || 'unknown'}`);
+        }
         if (isResetProfile(profile)) {
           if (!profile.id || !profile.slug || !/^https:\/\//.test(profile.source || '') ||
               !Array.isArray(profile.events) || !profile.events.length ||
@@ -2730,6 +2737,9 @@
             }
           }
         }
+      }
+      if (availableProfiles(config).length === 0) {
+        throw new Error('pricing.json must contain at least one enabled profile');
       }
     }
 
@@ -2792,7 +2802,7 @@
 
     function populateProfileMenu() {
       el.profileOptions.replaceChildren();
-      for (const profile of pricingConfig.profiles) {
+      for (const profile of availableProfiles()) {
         const option = document.createElement('button');
         const copy = document.createElement('span');
         const title = document.createElement('strong');
@@ -2882,9 +2892,10 @@
     }
 
     function selectProfile(profileId, updateHash = true) {
-      const profile = pricingConfig.profiles.find(candidate => candidate.id === profileId) ||
-        pricingConfig.profiles.find(candidate => candidate.id === pricingConfig.defaultProfile) ||
-        pricingConfig.profiles[0];
+      const profiles = availableProfiles();
+      const profile = profiles.find(candidate => candidate.id === profileId) ||
+        profiles.find(candidate => candidate.id === pricingConfig.defaultProfile) ||
+        profiles[0];
       activeProfile = profile;
       if (updateHash) syncProfileHash(profile);
       applyProfileUi();
@@ -3066,8 +3077,9 @@
     });
 
     window.addEventListener('hashchange', () => {
-      const profileId = profileIdFromHash();
-      if (!profileId || profileId === activeProfile?.id) return;
+      if (!pricingConfig) return;
+      const profileId = profileIdFromHash() || pricingConfig.defaultProfile;
+      if (profileId === activeProfile?.id) return;
       selectProfile(profileId);
       update();
     });
