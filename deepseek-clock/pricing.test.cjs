@@ -24,7 +24,7 @@ const functions = [
   'scheduleParts', 'scheduleDayParts', 'dateKeyInTimeZone', 'parseClockMinutes',
   'scheduleHasDay', 'isPublicHoliday', 'calendarDateNumber', 'isoDateNumber',
   'matchesScheduleWindow', 'isScheduleOffDay', 'isPeak', 'overridePeriodKey',
-  'periodKeyAt', 'validatePricingConfig', 'nextBoundary', 'pricingPeriodsBetween',
+  'periodKeyAt', 'availableProfiles', 'validatePricingConfig', 'nextBoundary', 'pricingPeriodsBetween',
   'outlookPeriods', 'isSpecialPeriodKey', 'drawNext24', 'formatWindow', 'sameLocalDate',
   'intervalsBetween', 'specialIntervalsBetween'
 ];

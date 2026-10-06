@@ -1299,7 +1299,6 @@
           <span class="offpeak" id="offPeakLegend" hidden><i></i><b id="offPeakLegendLabel">off-peak</b></span>
         </div>
         <div class="reset-legend" id="resetLegend" aria-label="Reset markers" hidden>
-          <span><i aria-hidden="true">✦</i><b>Global</b><time id="globalMarkerDate"></time></span>
           <span class="personal" id="personalMarkerLegend" hidden><i aria-hidden="true">✦</i><b>Yours</b><time id="personalMarkerDate"></time></span>
           <small id="resetOrbitHelp">On the ring: the next pass of the hour hand. Each step out means one later pass.</small>
         </div>
@@ -1334,27 +1333,8 @@
           <div class="reset-intro">
             <div class="reset-eyebrow">Codex · Usage resets</div>
             <h2>A fresh start.<br>On the dot.</h2>
-            <p>One global reset. One timer of your own.<br>Follow each star inward to its reset time.</p>
+            <p>Your own reset timer.<br>Follow the star inward to your reset time.</p>
           </div>
-
-          <section class="reset-card" aria-labelledby="globalResetTitle">
-            <div class="reset-card-heading">
-              <h3 id="globalResetTitle"><i class="reset-symbol" aria-hidden="true">✦</i><span id="globalResetName">Global reset</span></h3>
-              <span class="reset-state" id="globalResetState" role="status">Upcoming</span>
-            </div>
-            <div class="reset-countdown" id="globalCountdown" role="timer" aria-label="Time until global reset" aria-live="off">
-              <span><b>00</b><small>Days</small></span><span><b>00</b><small>Hours</small></span>
-              <span><b>00</b><small>Minutes</small></span><span><b>00</b><small>Seconds</small></span>
-            </div>
-            <time class="reset-date" id="globalResetDate"></time>
-            <p class="reset-meta" id="resetTimeZone"></p>
-            <p class="reset-meta" id="globalResetScope"></p>
-            <p class="reset-meta" id="globalResetSourceTime"></p>
-            <div class="reset-footnote">
-              <span>Unofficial countdown</span>
-              <a id="resetSourceLink" target="_blank" rel="noopener noreferrer">View announcement ↗</a>
-            </div>
-          </section>
 
           <section class="reset-card personal-reset" aria-labelledby="personalResetTitle">
             <div class="reset-card-heading">
@@ -1498,17 +1478,8 @@
       resetMarkers: document.getElementById('resetMarkers'),
       resetLegend: document.getElementById('resetLegend'),
       resetOrbitHelp: document.getElementById('resetOrbitHelp'),
-      globalMarkerDate: document.getElementById('globalMarkerDate'),
       personalMarkerDate: document.getElementById('personalMarkerDate'),
       personalMarkerLegend: document.getElementById('personalMarkerLegend'),
-      globalResetName: document.getElementById('globalResetName'),
-      globalResetState: document.getElementById('globalResetState'),
-      globalCountdown: document.getElementById('globalCountdown'),
-      globalResetDate: document.getElementById('globalResetDate'),
-      resetTimeZone: document.getElementById('resetTimeZone'),
-      globalResetScope: document.getElementById('globalResetScope'),
-      globalResetSourceTime: document.getElementById('globalResetSourceTime'),
-      resetSourceLink: document.getElementById('resetSourceLink'),
       personalCountdown: document.getElementById('personalCountdown'),
       personalResetDate: document.getElementById('personalResetDate'),
       personalResetState: document.getElementById('personalResetState'),
@@ -1555,16 +1526,8 @@
       return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
-    function globalResetEvent(now) {
-      const events = [...activeProfile.events].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
-      return events.find(event => Date.parse(event.at) > now.getTime()) || events[events.length - 1];
-    }
-
     function resetEvents(now) {
-      return [
-        { ...globalResetEvent(now), kind: 'global' },
-        ...(personalReset ? [{ ...personalReset, id: 'personal', name: 'Your reset', kind: 'personal' }] : [])
-      ];
+      return personalReset ? [{ ...personalReset, id: 'personal', name: 'Your reset', kind: 'personal' }] : [];
     }
 
     function updateCountdown(container, at, now) {
@@ -1741,21 +1704,9 @@
     }
 
     function updateResetView(now) {
-      const global = globalResetEvent(now);
-      const globalReached = Date.parse(global.at) <= now.getTime();
       el.app.classList.remove('is-peak', 'is-weekend', 'is-special');
-      el.globalResetName.textContent = global.name;
-      el.globalResetState.textContent = globalReached ? 'Time reached' : 'One-off event';
-      updateCountdown(el.globalCountdown, global.at, now);
-      setResetDate(el.globalResetDate, global.at);
-      setResetDate(el.globalMarkerDate, global.at);
-      el.globalResetScope.textContent = global.scope;
-      el.globalResetSourceTime.textContent = `Announced for ${global.sourceTime}`;
       const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      el.resetTimeZone.textContent = `Your local time · ${localZone}`;
       el.personalResetLabel.textContent = `Reset date and time · ${localZone}`;
-      el.resetSourceLink.href = activeProfile.source;
-      el.resetSourceLink.title = activeProfile.sourceNote || '';
       el.personalCountdown.hidden = !personalReset;
       el.personalMarkerLegend.hidden = !personalReset;
       el.clearPersonalReset.hidden = !personalReset;
@@ -1771,7 +1722,7 @@
         el.personalResetState.textContent = 'Only on this device';
       }
       const upcoming = resetEvents(now).filter(event => Date.parse(event.at) > now.getTime()).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
-      el.topStatus.textContent = upcoming.length ? `${upcoming[0].kind === 'global' ? 'Global reset' : 'Your reset'} ahead` : 'Reset time reached';
+      el.topStatus.textContent = upcoming.length ? 'Your reset ahead' : personalReset ? 'Reset time reached' : 'Set your reset';
       if (!dialTransitioning) drawResetMarkers(now);
       for (const event of resetEvents(now)) {
         const at = Date.parse(event.at);
@@ -2655,12 +2606,16 @@
       return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
     }
 
+    function availableProfiles(config = pricingConfig) {
+      return config.profiles.filter(profile => profile.enabled !== false);
+    }
+
     function profileIdFromHash() {
       const requestedProvider = new URLSearchParams(window.location.hash.slice(1)).get('provider');
       if (!requestedProvider || !pricingConfig) return null;
 
       const requestedKey = normalizedProviderKey(requestedProvider);
-      const profile = pricingConfig.profiles.find(candidate =>
+      const profile = availableProfiles().find(candidate =>
         normalizedProviderKey(candidate.slug) === requestedKey ||
         normalizedProviderKey(candidate.id) === requestedKey ||
         normalizedProviderKey(candidate.provider) === requestedKey
@@ -2679,9 +2634,12 @@
         throw new Error('pricing.json must contain at least one schema-version-1 profile');
       }
       for (const profile of config.profiles) {
+        if (profile.enabled !== undefined && typeof profile.enabled !== 'boolean') {
+          throw new Error(`Invalid enabled flag in ${profile.id || 'unknown'}`);
+        }
         if (isResetProfile(profile)) {
           if (!profile.id || !profile.slug || !/^https:\/\//.test(profile.source || '') ||
-              !Array.isArray(profile.events) || !profile.events.length ||
+              !Array.isArray(profile.events) ||
               profile.events.some(event => !event.id || !event.name || !event.scope || !event.sourceTime || !validResetInstant(event.at))) {
             throw new Error(`Invalid reset profile: ${profile.id || 'unknown'}`);
           }
@@ -2730,6 +2688,9 @@
             }
           }
         }
+      }
+      if (availableProfiles(config).length === 0) {
+        throw new Error('pricing.json must contain at least one enabled profile');
       }
     }
 
@@ -2792,7 +2753,7 @@
 
     function populateProfileMenu() {
       el.profileOptions.replaceChildren();
-      for (const profile of pricingConfig.profiles) {
+      for (const profile of availableProfiles()) {
         const option = document.createElement('button');
         const copy = document.createElement('span');
         const title = document.createElement('strong');
@@ -2882,9 +2843,10 @@
     }
 
     function selectProfile(profileId, updateHash = true) {
-      const profile = pricingConfig.profiles.find(candidate => candidate.id === profileId) ||
-        pricingConfig.profiles.find(candidate => candidate.id === pricingConfig.defaultProfile) ||
-        pricingConfig.profiles[0];
+      const profiles = availableProfiles();
+      const profile = profiles.find(candidate => candidate.id === profileId) ||
+        profiles.find(candidate => candidate.id === pricingConfig.defaultProfile) ||
+        profiles[0];
       activeProfile = profile;
       if (updateHash) syncProfileHash(profile);
       applyProfileUi();
@@ -2913,7 +2875,7 @@
       const reset = isResetProfile();
       el.app.classList.toggle('is-24h', is24);
       el.clockDesc.textContent = reset
-        ? `A ${dialHours}-hour local clock. Cyan and violet stars align with the global and personal reset times. A star on the ring resets the next time the hour hand reaches it. Each outer step adds one earlier pass before the reset, accounting for daylight-saving changes. Inward spirals connect later resets to their landing dots. Resets beyond the fifth pass are labeled "later"; dates and countdowns remain exact.`
+        ? `A ${dialHours}-hour local clock. A violet star aligns with your personal reset time. A star on the ring resets the next time the hour hand reaches it. Each outer step adds one earlier pass before the reset, accounting for daylight-saving changes. An inward spiral connects a later reset to its landing dot. Resets beyond the fifth pass are labeled "later"; the date and countdown remain exact.`
         : is24
         ? 'A 24-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 24 hours; muted arcs show windows 24 to 48 hours from now.'
         : 'A 12-hour local clock. Bright colored arcs show active or upcoming variable-rate windows within 12 hours; muted arcs show windows 12 to 24 hours from now.';
@@ -3066,8 +3028,9 @@
     });
 
     window.addEventListener('hashchange', () => {
-      const profileId = profileIdFromHash();
-      if (!profileId || profileId === activeProfile?.id) return;
+      if (!pricingConfig) return;
+      const profileId = profileIdFromHash() || pricingConfig.defaultProfile;
+      if (profileId === activeProfile?.id) return;
       selectProfile(profileId);
       update();
     });
