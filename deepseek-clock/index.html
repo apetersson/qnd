@@ -3035,6 +3035,28 @@
       update();
     });
 
+    function startHourlyRefresh() {
+      const refreshInterval = 60 * 60 * 1000;
+      const refreshAt = Date.now() + refreshInterval;
+      let reloading = false;
+
+      function refreshIfDue() {
+        if (reloading || Date.now() < refreshAt || navigator.onLine === false) return;
+        reloading = true;
+        // Reload both the app and its pricing data, keeping the current URL
+        // (including provider hash) and locally stored preferences intact.
+        window.location.reload();
+      }
+
+      setInterval(refreshIfDue, refreshInterval);
+      // Background tabs and sleeping devices can delay timers. Catch up as
+      // soon as the clock becomes visible or connectivity returns.
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshIfDue();
+      });
+      window.addEventListener('online', refreshIfDue);
+    }
+
     async function initialize() {
       try {
         const response = await fetch('./pricing.json', { cache: 'no-cache' });
@@ -3061,6 +3083,7 @@
       }
     }
 
+    startHourlyRefresh();
     initialize();
   </script>
 </body>
