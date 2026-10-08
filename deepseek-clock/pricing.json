@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-06",
+  "updatedAt": "2026-10-08",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -135,7 +135,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "above-deepseek-v4",
@@ -176,7 +176,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -254,7 +254,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-deepseek-v4",
@@ -372,7 +372,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -424,7 +424,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "zai-glm-5-3",
@@ -457,7 +457,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (Singapore time):",
         "sourceWindows": "14:00–18:00",
-        "sourceNote": "All plans support GLM-5.3 · Monday–Friday, Singapore Standard Time (UTC+8) · every other hour counts half against your quota · all-day off-peak promotion runs Sep 25–Oct 7, 2026 · ZCode's usage docs confirm account-linked weekly and five-hour reset cards with expiry; a Reddit report claims four of each, but that quantity and an end date are not published in Z.ai's pricing docs, so this is not encoded as a rate · no published end date for the standard plan"
+        "sourceNote": "All plans support GLM-5.3 · Monday–Friday, Singapore Standard Time (UTC+8) · every other hour counts half against your quota · all-day off-peak promotion ended Oct 7, 2026 (ran Sep 25–Oct 7) · ZCode's usage docs confirm account-linked weekly and five-hour reset cards with expiry; a Reddit report claims four of each, but that quantity and an end date are not published in Z.ai's pricing docs, so this is not encoded as a rate · no published end date for the standard plan"
       },
       "accountBenefit": {
         "text": "ZCode documents account-linked weekly and five-hour quota reset cards with expiry. A Reddit report claims four of each were issued, but Z.ai does not publish that quantity or an end date in its pricing docs; this is not a price multiplier.",
@@ -485,7 +485,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -495,7 +495,7 @@
       "product": "Coding Plan",
       "shortName": "GLM",
       "title": "GLM-5.3-Flash off-peak clock",
-      "policyNote": "The provider publishes an October 7 end date without an exact final overnight cutoff. This clock treats 23:00–09:00 as a window starting on each campaign date. The final night is unverified; confirm in Z.ai before relying on it.",
+      "policyNote": "The Flash campaign has ended. Its published October 7 end date did not specify the exact final overnight cutoff. Historical windows retain the start-date interpretation; the final night is unverified. Current hours use the standard Coding Plan rates.",
       "subtitle": "Z.ai Coding Plan quota hours in your local time",
       "kicker": "Coding Plan · off-peak hours count half against your quota",
       "schedule": {
@@ -528,7 +528,7 @@
         "offDayName": "Weekend",
         "sourceTitle": "Peak hours (Singapore time):",
         "sourceWindows": "14:00–18:00 weekdays",
-        "sourceNote": "All plans support GLM-5.3-Flash · Monday–Friday peak hours are 14:00–18:00 Singapore Standard Time (UTC+8) · off-peak usage is charged at 50% of the standard credit rate · paid-plan Flash campaign runs daily 23:00–09:00 from Sep 3 through Oct 7, 2026 (ZCode/AutoClaw unlimited, other agents 2× quota) · all-day off-peak promotion runs Sep 25–Oct 7, 2026 · ZCode's usage docs confirm account-linked weekly and five-hour reset cards with expiry; a Reddit report claims four of each, but that quantity and an end date are not published in Z.ai's pricing docs, so this is not encoded as a rate · no published end date for the standard plan · campaign requires ZCode 3.10+ when using ZCode; an exhausted five-hour/weekly quota must reset before participation"
+        "sourceNote": "All plans support GLM-5.3-Flash · Monday–Friday peak hours are 14:00–18:00 Singapore Standard Time (UTC+8) · off-peak usage is charged at 50% of the standard credit rate · expired paid-plan Flash campaign ran daily 23:00–09:00 from Sep 3 through Oct 7, 2026 (ZCode/AutoClaw unlimited, other agents 2× quota) · all-day off-peak promotion ended Oct 7, 2026 (ran Sep 25–Oct 7) · ZCode's usage docs confirm account-linked weekly and five-hour reset cards with expiry; a Reddit report claims four of each, but that quantity and an end date are not published in Z.ai's pricing docs, so this is not encoded as a rate · no published end date for the standard plan · campaign requires ZCode 3.10+ when using ZCode; an exhausted five-hour/weekly quota must reset before participation"
       },
       "accountBenefit": {
         "text": "ZCode documents account-linked weekly and five-hour quota reset cards with expiry. A Reddit report claims four of each were issued, but Z.ai does not publish that quantity or an end date in its pricing docs; this is not a price multiplier.",
@@ -600,7 +600,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "alibaba-deepseek-v4-token-plan",
@@ -637,7 +637,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -673,7 +673,7 @@
         }
       },
       "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "qoder-qwen3-7-max",
@@ -709,7 +709,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -747,7 +747,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -801,7 +801,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/events/flashoffer",
-      "verifiedAt": "2026-10-06",
+      "verifiedAt": "2026-10-08",
       "temporary": true
     },
     {
@@ -840,7 +840,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -915,7 +915,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "swarms-swarm-completions",
@@ -953,19 +953,19 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "baidu-qianfan-deepseek-v4",
       "slug": "baidu-qianfan-deepseek",
       "provider": "Baidu Qianfan",
       "model": "DeepSeek V4.1 Flash + V4 Pro 0813",
-      "product": "Qianfan API campaign",
+      "product": "Qianfan API",
       "shortName": "BD",
-      "temporary": true,
-      "title": "Baidu Qianfan DeepSeek campaign clock",
-      "subtitle": "Qianfan National Day campaign rates in your local time",
-      "kicker": "DeepSeek V4 · limited-time 40% off busy and idle rates",
+      "temporary": false,
+      "title": "Baidu Qianfan DeepSeek pricing clock",
+      "subtitle": "Qianfan API rates in your local time",
+      "kicker": "DeepSeek · idle hours cost half the busy rate",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -996,7 +996,7 @@
             ]
           }
         ],
-        "sourceNote": "Official Baidu Qianfan campaign lists DeepSeek V4.1 Flash and V4 Pro 0813 at 0.6× of the original busy and idle prices · busy 08:00–22:00 and idle 22:00–08:00 assumed Beijing time · campaign runs Sep 24, 2026 00:00 through Oct 7, 2026 23:59 assumed Beijing time, then original prices return · public-holiday treatment is not stated · published end date: 2026-10-07 23:59 (time zone not stated; Beijing assumed)"
+        "sourceNote": "Official Baidu Qianfan campaign lists DeepSeek V4.1 Flash and V4 Pro 0813 at 0.6× of the original busy and idle prices · busy 08:00–22:00 and idle 22:00–08:00 assumed Beijing time · campaign ended Oct 7, 2026 23:59 (ran from Sep 24, 2026 00:00), assumed Beijing time; original prices now apply · public-holiday treatment is not stated · published end date: 2026-10-07 23:59 (time zone not stated; Beijing assumed)"
       },
       "periods": {
         "peak": {
@@ -1026,7 +1026,7 @@
           "tone": "special"
         }
       },
-      "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
       "verifiedAt": "2026-10-02",
       "policyNote": "Time-zone assumption: the official campaign confirms the prices and Oct 7 at 23:59 deadline but does not explicitly label a time zone. This clock retains Beijing time; verify the cutoff in your console."
     },
@@ -1035,12 +1035,12 @@
       "slug": "baidu-qianfan-glm53",
       "provider": "Baidu Qianfan",
       "model": "GLM 5.3",
-      "product": "Qianfan API campaign",
+      "product": "Qianfan API",
       "shortName": "BD",
-      "temporary": true,
-      "title": "Baidu Qianfan GLM 5.3 campaign clock",
-      "subtitle": "Qianfan National Day campaign rates in your local time",
-      "kicker": "GLM 5.3 · limited-time 40% off all day",
+      "temporary": false,
+      "title": "Baidu Qianfan GLM 5.3 pricing clock",
+      "subtitle": "Qianfan API rates in your local time",
+      "kicker": "GLM 5.3 · standard API rate all day",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -1048,7 +1048,7 @@
           { "start": "00:00", "end": "00:00", "allDay": true }
         ],
         "windowName": "standard-rate",
-        "sourceTitle": "Campaign hours (Beijing time assumed):",
+        "sourceTitle": "Standard pricing:",
         "sourceWindows": "All day",
         "overrides": [
           {
@@ -1061,7 +1061,7 @@
             ]
           }
         ],
-        "sourceNote": "Official Baidu Qianfan campaign lists GLM 5.3 at 0.6× of the original list price all day · campaign runs Sep 24, 2026 00:00 through Oct 7, 2026 23:59 assumed Beijing time, then original prices return · published end date: 2026-10-07 23:59 (time zone not stated; Beijing assumed)"
+        "sourceNote": "Official Baidu Qianfan campaign lists GLM 5.3 at 0.6× of the original list price all day · campaign ended Oct 7, 2026 23:59 (ran from Sep 24, 2026 00:00), assumed Beijing time; original prices now apply · published end date: 2026-10-07 23:59 (time zone not stated; Beijing assumed)"
       },
       "periods": {
         "peak": {
@@ -1084,7 +1084,7 @@
           "tone": "special"
         }
       },
-      "source": "https://cloud.baidu.com/product/qianfan_home/campaign.html?track=home_banner",
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
       "verifiedAt": "2026-10-02",
       "policyNote": "Time-zone assumption: the official campaign confirms the prices and Oct 7 at 23:59 deadline but does not explicitly label a time zone. This clock retains Beijing time; verify the cutoff in your console."
     },
@@ -1142,7 +1142,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-glm53-flash",
@@ -1215,7 +1215,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-qwen38-flash",
@@ -1271,7 +1271,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-mimo26-pro",
@@ -1327,7 +1327,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-glm52",
@@ -1383,7 +1383,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/models/glm-5-2/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "bai-glm53",
@@ -1439,7 +1439,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/models/glm-5-3/",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "qoder-qwen3-8-max-service-account",
@@ -1477,7 +1477,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "qoder-qwen3-7-plus-service-account",
@@ -1515,7 +1515,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "alibaba-qwen3-7-plus-api-global",
@@ -1555,7 +1555,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     },
     {
       "id": "siliconflow-deepseek-v4-flash",
@@ -1595,7 +1595,7 @@
         }
       },
       "source": "https://docs.siliconflow.cn/docs/release-notes/overview",
-      "verifiedAt": "2026-10-06"
+      "verifiedAt": "2026-10-08"
     }
   ]
 }
