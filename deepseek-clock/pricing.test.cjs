@@ -259,8 +259,23 @@ test('Partially verified policies and disabled Codex keep previous verification 
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-06', profile.slug);
+    assert.equal(profile.verifiedAt, '2026-10-08', profile.slug);
   }
+});
+
+test('Expired Baidu campaign headings describe current standard pricing', () => {
+  for (const slug of ['baidu-qianfan-deepseek', 'baidu-qianfan-glm53']) {
+    const profile = config.profiles.find(p => p.slug === slug);
+    assert.equal(profile.product, 'Qianfan API');
+    assert.equal(profile.temporary, false);
+    assert.match(profile.source, /\/doc\/qianfan\//);
+    assert.doesNotMatch([profile.title, profile.subtitle, profile.kicker].join(' '), /campaign|limited-time|40% off/i);
+    assert.match(profile.schedule.sourceNote, /campaign ended Oct 7/);
+    assert.doesNotMatch(sample(slug, '2026-10-08T07:01:18Z').key, /^campaign/);
+  }
+  assert.equal(sample('baidu-qianfan-deepseek', '2026-10-08T07:01:18Z').badge, '2× idle');
+  assert.equal(sample('baidu-qianfan-glm53', '2026-10-08T07:01:18Z').badge, '1× base');
+  assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /campaign has ended/);
 });
 
 test('Baidu retains its stated cutoff and explicitly labels the unverified time zone', () => {
