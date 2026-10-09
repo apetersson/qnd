@@ -259,7 +259,7 @@ test('Partially verified policies and disabled Codex keep previous verification 
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-08', profile.slug);
+    assert.equal(profile.verifiedAt, '2026-10-09', profile.slug);
   }
 });
 
@@ -290,6 +290,17 @@ test('Baidu retains its stated cutoff and explicitly labels the unverified time 
     const outlook = context.renderedOutlook(slug, '2026-10-07T23:30:00+08:00');
     assert.equal(outlook.periods[0].end.toISOString(), '2026-10-07T16:00:00.000Z');
   }
+});
+
+test('Baidu Pro cached-input deadline is qualified without inventing future prices', () => {
+  const profile = config.profiles.find(p => p.slug === 'baidu-qianfan-deepseek');
+  assert.match(profile.policyNote, /V4 Pro 0813 cached-input prices are limited to Sep 9–Oct 30/);
+  assert.match(profile.policyNote, /year not stated/);
+  assert.match(profile.policyNote, /exact cutoff and subsequent cached-input rates are not published/);
+  assert.equal(profile.verifiedAt, '2026-10-02', 'Unverified time zone remains qualified');
+  assert.equal(profile.schedule.overrides.length, 2, 'No fabricated cached-price transition');
+  assert.equal(sample('baidu-qianfan-deepseek', '2026-10-31T10:00:00+08:00').badge, '2× idle');
+  assert.doesNotMatch(config.profiles.find(p => p.slug === 'baidu-qianfan-glm53').policyNote, /Oct 30/);
 });
 
 test('Z.ai date-only cutoff retains the documented final-night uncertainty', () => {
