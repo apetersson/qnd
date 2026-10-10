@@ -258,8 +258,22 @@ test('Partially verified policies and disabled Codex keep previous verification 
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-02', slug);
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
-  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-09', profile.slug);
+  assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-10-09');
+  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'mimo'].includes(p.slug))) {
+    assert.equal(profile.verifiedAt, '2026-10-10', profile.slug);
+  }
+});
+
+test('MiMo discloses legacy routing and conflicting switch times without inventing a rate change', () => {
+  const profile = config.profiles.find(p => p.slug === 'mimo');
+  assert.match(profile.policyNote, /automatically route to V2.6 Pro and V2.6 Flash on Oct 14, 2026/);
+  assert.match(profile.policyNote, /table says 10:00 Beijing/);
+  assert.match(profile.policyNote, /note and banner say 18:00 Beijing/);
+  assert.match(profile.policyNote, /invalid Oct 21, 2026 at 10:00 Beijing/);
+  assert.equal(profile.schedule.overrides, undefined);
+  for (const day of ['2026-10-10', '2026-10-14', '2026-10-21']) {
+    assert.equal(sample('mimo', `${day}T03:00:00+08:00`).badge, '0.8× credits');
+    assert.equal(sample('mimo', `${day}T12:00:00+08:00`).badge, '1× credits');
   }
 });
 
