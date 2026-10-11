@@ -258,9 +258,33 @@ test('Partially verified policies and disabled Codex keep previous verification 
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-02', slug);
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
-  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-09', profile.slug);
+  assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-10-09');
+  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'mimo'].includes(p.slug))) {
+    assert.equal(profile.verifiedAt, '2026-10-11', profile.slug);
   }
+});
+
+test('GoldFlow dated Flash route follows its own settlement-time supplier clock', () => {
+  const profile = config.profiles.find(p => p.slug === 'goldflow');
+  assert.equal(profile.schedule.timeZone, 'Asia/Shanghai');
+  assert.equal(profile.schedule.publicHolidayDates, undefined);
+  assert.equal(profile.id, 'goldflow-deepseek-v4-1-flash-260910');
+  assert.match(profile.policyNote, /settlement/);
+  assert.match(profile.policyNote, /Absolute prices depend on your supplier group/);
+  assert.match(profile.policyNote, /does not publish a public-holiday exemption/);
+  assert.match(profile.source, /^https:\/\/goldflow\.cc\/pricing\//);
+  for (const [time, key] of [['08:59:59','offPeak'], ['09:00:00','peak'], ['11:59:59','peak'], ['12:00:00','offPeak'], ['13:59:59','offPeak'], ['14:00:00','peak'], ['17:59:59','peak'], ['18:00:00','offPeak']]) {
+    assert.equal(sample('goldflow', `2026-10-12T${time}+08:00`).key, key, time);
+  }
+  for (const date of ['2026-10-10','2026-10-11']) {
+    assert.equal(sample('goldflow', `${date}T10:00:00+08:00`).badge, '1× off-peak');
+  }
+  assert.equal(sample('goldflow', '2026-10-01T10:00:00+08:00').key, 'peak');
+  assert.equal(sample('deepseek', '2026-10-01T10:00:00+08:00').key, 'offPeak');
+  const result = context.renderedOutlook('goldflow', '2026-10-12T08:30:00+08:00');
+  assert.equal(result.periods[0].end.toISOString(), '2026-10-12T01:00:00.000Z');
+  assert.match(result.html, /2× off-peak/);
+  assert.match(result.html, /1× off-peak/);
 });
 
 test('Expired Baidu campaign headings describe current standard pricing', () => {
