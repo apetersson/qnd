@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-11",
+  "updatedAt": "2026-10-13",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -135,7 +135,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "above-deepseek-v4",
@@ -176,7 +176,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -254,7 +254,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-deepseek-v4",
@@ -372,7 +372,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -424,7 +424,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "zai-glm-5-3",
@@ -485,7 +485,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -600,7 +600,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "alibaba-deepseek-v4-token-plan",
@@ -637,7 +637,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -710,7 +710,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -748,7 +748,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -802,7 +802,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/events/flashoffer",
-      "verifiedAt": "2026-10-11",
+      "verifiedAt": "2026-10-13",
       "temporary": true
     },
     {
@@ -841,7 +841,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -916,7 +916,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "swarms-swarm-completions",
@@ -926,8 +926,9 @@
       "product": "Swarms API",
       "shortName": "SW",
       "title": "Swarms night-rate clock",
-      "subtitle": "Multi-agent Swarm Completions token rates in your local time",
-      "kicker": "Night-time pricing · 50% off token costs",
+      "subtitle": "Swarm Completions billing-time windows in your local time",
+      "kicker": "Night-time pricing · 50% off model token costs",
+      "policyNote": "The discount is determined when the run is billed, after it finishes, not when you submit it. This clock shows the rate if billed now. Each agent uses its model's price plus a 15% service fee; the night window halves that token cost. The $0.01 per-agent fee is unchanged. Swarm Completions only, not other endpoints. Check /v1/models/pricing for current model prices and usage.billing_info for the actual charge. Per-model pricing effective Oct 12, 2026 (no exact time published); no published end date.",
       "schedule": {
         "timeZone": "America/Los_Angeles",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -937,24 +938,24 @@
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Pacific Time):",
         "sourceWindows": "06:00–20:00",
-        "sourceNote": "Daily 20:00–06:00 Pacific Time · official pricing page states 50% off token costs for Swarm Completions only · agent costs unchanged · no published effective date or end date"
+        "sourceNote": "Daily 20:00–06:00 Pacific Time, including daylight saving · judged at billing after completion · Swarm Completions token costs only · no published effective date or end date for the night window"
       },
       "periods": {
         "peak": {
           "name": "Standard token rate",
-          "status": "Standard token rate is active now",
+          "status": "Standard token rate if billed now",
           "badge": "1× tokens",
-          "detail": "Base token rate"
+          "detail": "Model token price + 15% fee"
         },
         "offPeak": {
           "name": "Night-time discount",
-          "status": "Night-time token discount is active now",
+          "status": "Night discount if billed now",
           "badge": "0.5× tokens",
-          "detail": "50% off token costs"
+          "detail": "Half the model token cost, fee included"
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "baidu-qianfan-deepseek-v4",
@@ -1143,7 +1144,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-glm53-flash",
@@ -1216,7 +1217,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-qwen38-flash",
@@ -1272,7 +1273,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-mimo26-pro",
@@ -1328,7 +1329,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-glm52",
@@ -1384,7 +1385,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/models/glm-5-2/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "bai-glm53",
@@ -1440,7 +1441,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/models/glm-5-3/",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "qoder-qwen3-8-max-service-account",
@@ -1478,7 +1479,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "qoder-qwen3-7-plus-service-account",
@@ -1516,7 +1517,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "alibaba-qwen3-7-plus-api-global",
@@ -1556,7 +1557,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "siliconflow-deepseek-v4-flash",
@@ -1596,7 +1597,7 @@
         }
       },
       "source": "https://docs.siliconflow.cn/docs/release-notes/overview",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     },
     {
       "id": "goldflow-deepseek-v4-1-flash-260910",
@@ -1636,7 +1637,7 @@
         }
       },
       "source": "https://goldflow.cc/pricing/deepseek-v4-1-flash-260910",
-      "verifiedAt": "2026-10-11"
+      "verifiedAt": "2026-10-13"
     }
   ]
 }

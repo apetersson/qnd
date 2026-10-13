@@ -260,8 +260,28 @@ test('Partially verified policies and disabled Codex keep previous verification 
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
   assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-10-09');
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'mimo'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-11', profile.slug);
+    assert.equal(profile.verifiedAt, '2026-10-13', profile.slug);
   }
+});
+
+test('Swarms night clock qualifies post-completion billing and per-model fees across DST', () => {
+  const profile = config.profiles.find(p => p.slug === 'swarms');
+  assert.match(profile.policyNote, /after it finishes, not when you submit/);
+  assert.match(profile.policyNote, /model's price plus a 15% service fee/);
+  assert.match(profile.policyNote, /\$0\.01 per-agent fee is unchanged/);
+  assert.match(profile.policyNote, /Swarm Completions only, not other endpoints/);
+  assert.match(profile.policyNote, /usage\.billing_info/);
+  for (const period of Object.values(profile.periods)) assert.match(period.status, /if billed now/);
+  // Pacific daylight time: 20:00 = 03:00Z; standard resumes at 06:00 = 13:00Z.
+  assert.equal(sample('swarms', '2026-10-13T02:59:59Z').key, 'peak');
+  assert.equal(sample('swarms', '2026-10-13T03:00:00Z').key, 'offPeak');
+  assert.equal(sample('swarms', '2026-10-13T12:59:59Z').key, 'offPeak');
+  assert.equal(sample('swarms', '2026-10-13T13:00:00Z').key, 'peak');
+  // Pacific standard time: both edges shift by an hour, weekends remain daily.
+  assert.equal(sample('swarms', '2026-11-08T03:59:59Z').key, 'peak');
+  assert.equal(sample('swarms', '2026-11-08T04:00:00Z').key, 'offPeak');
+  assert.equal(sample('swarms', '2026-11-08T13:59:59Z').key, 'offPeak');
+  assert.equal(sample('swarms', '2026-11-08T14:00:00Z').key, 'peak');
 });
 
 test('MiMo discloses legacy routing and conflicting switch times without inventing a rate change', () => {
