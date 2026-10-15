@@ -259,9 +259,41 @@ test('Partially verified policies and disabled Codex keep previous verification 
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
   assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-10-09');
-  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'mimo'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-13', profile.slug);
+  assert.equal(config.profiles.find(p => p.slug === 'goldflow').verifiedAt, '2026-10-13');
+  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'mimo', 'goldflow'].includes(p.slug))) {
+    assert.equal(profile.verifiedAt, '2026-10-15', profile.slug);
   }
+});
+
+test('QwenCloud uses its own daily UTC+8 night discount, exact model IDs and plan scope', () => {
+  for (const slug of ['qwencloud', 'qwencloud-deepseek']) {
+    const p = config.profiles.find(p => p.slug === slug);
+    assert.equal(p.provider, 'QwenCloud');
+    assert.equal(p.schedule.timeZone, 'Asia/Singapore');
+    assert.match(p.source, /^https:\/\/docs\.qwencloud\.com\//);
+    assert.match(p.policyNote, /Singapore region with Global deployment/);
+    assert.match(p.policyNote, /automated scripts and application backends are excluded/);
+    assert.match(p.policyNote, /No published effective date or end date/);
+    assert.equal(p.periodOverrides, undefined);
+    assert.equal(sample(slug, '2026-10-17T21:59:59+08:00').key, 'peak');
+    assert.equal(sample(slug, '2026-10-17T22:00:00+08:00').key, 'offPeak');
+    assert.equal(sample(slug, '2026-10-18T07:59:59+08:00').key, 'offPeak');
+    assert.equal(sample(slug, '2026-10-18T08:00:00+08:00').key, 'peak');
+    // No inherited DeepSeek holiday/weekend exemption or European DST shift.
+    assert.equal(sample(slug, '2026-10-01T12:00:00+08:00').key, 'peak');
+    assert.equal(sample(slug, '2026-10-25T14:00:00Z').key, 'offPeak');
+    assert.equal(sample(slug, '2026-11-01T14:00:00Z').key, 'offPeak');
+    const result = context.renderedOutlook(slug, '2026-10-15T13:00:00Z');
+    assert.ok(result.periods.length >= 3);
+  }
+  const q = config.profiles.find(p => p.slug === 'qwencloud');
+  assert.equal(q.periods.offPeak.badge, '0.4× credits');
+  assert.match(q.policyNote, /Individual only/);
+  assert.match(q.policyNote, /Team page does not publish this Qwen discount/);
+  const ds = config.profiles.find(p => p.slug === 'qwencloud-deepseek');
+  assert.equal(ds.periods.offPeak.badge, '0.5× credits');
+  assert.match(ds.policyNote, /Individual and Team only/);
+  assert.match(ds.policyNote, /undated deepseek-v4-pro ID is not listed/);
 });
 
 test('Swarms night clock qualifies post-completion billing and per-model fees across DST', () => {
