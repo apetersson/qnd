@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-13",
+  "updatedAt": "2026-10-15",
   "defaultProfile": "deepseek-v4",
   "profiles": [
     {
@@ -135,7 +135,7 @@
         }
       },
       "source": "https://ollama.com/pricing",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "above-deepseek-v4",
@@ -176,7 +176,7 @@
         }
       },
       "source": "https://above.dev/docs",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "aihubmix-deepseek-v4-1-flash",
@@ -254,7 +254,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-deepseek-v4",
@@ -372,7 +372,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-deepseek-v4-pro",
@@ -424,7 +424,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "zai-glm-5-3",
@@ -485,7 +485,7 @@
         }
       },
       "source": "https://docs.z.ai/devpack/overview",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "zai-glm-5-3-flash",
@@ -600,7 +600,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "alibaba-deepseek-v4-token-plan",
@@ -637,7 +637,7 @@
         }
       },
       "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "xiaomi-mimo-v2-5-token-plan",
@@ -710,7 +710,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "qoder-qwen3-8-max",
@@ -748,7 +748,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "qoder-qwen3-8-flash",
@@ -802,7 +802,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/events/flashoffer",
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-15",
       "temporary": true
     },
     {
@@ -841,7 +841,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "tencent-deepseek-v4-vendor-direct",
@@ -916,7 +916,7 @@
         }
       },
       "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "swarms-swarm-completions",
@@ -955,7 +955,7 @@
         }
       },
       "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "baidu-qianfan-deepseek-v4",
@@ -1144,7 +1144,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-glm53-flash",
@@ -1217,7 +1217,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-qwen38-flash",
@@ -1273,7 +1273,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-mimo26-pro",
@@ -1329,7 +1329,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-glm52",
@@ -1385,7 +1385,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/models/glm-5-2/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "bai-glm53",
@@ -1441,7 +1441,7 @@
         }
       },
       "source": "https://docs.b.ai/llmservice/models/glm-5-3/",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "qoder-qwen3-8-max-service-account",
@@ -1479,7 +1479,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "qoder-qwen3-7-plus-service-account",
@@ -1517,7 +1517,7 @@
         }
       },
       "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "alibaba-qwen3-7-plus-api-global",
@@ -1557,7 +1557,7 @@
         }
       },
       "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "siliconflow-deepseek-v4-flash",
@@ -1597,7 +1597,7 @@
         }
       },
       "source": "https://docs.siliconflow.cn/docs/release-notes/overview",
-      "verifiedAt": "2026-10-13"
+      "verifiedAt": "2026-10-15"
     },
     {
       "id": "goldflow-deepseek-v4-1-flash-260910",
@@ -1638,6 +1638,104 @@
       },
       "source": "https://goldflow.cc/pricing/deepseek-v4-1-flash-260910",
       "verifiedAt": "2026-10-13"
+    },
+    {
+      "id": "qwencloud-qwen38-token-plan",
+      "slug": "qwencloud",
+      "provider": "QwenCloud",
+      "model": "Qwen3.8 Max / Qwen3.8 Flash",
+      "product": "Individual Token Plan",
+      "shortName": "QW",
+      "temporary": true,
+      "title": "QwenCloud Qwen night-rate clock",
+      "subtitle": "Individual plan Credits in your local time",
+      "kicker": "Qwen3.8 night pricing · 60% fewer Credits off-peak",
+      "schedule": {
+        "timeZone": "Asia/Singapore",
+        "peakDays": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "peakWindows": [
+          {
+            "start": "08:00",
+            "end": "22:00"
+          }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (UTC+8):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Daily night discount 22:00–08:00 (UTC+8), including weekends. 60% off Credits for Qwen3.8 Max and Flash on Individual only. No published effective date or end date."
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard credits",
+          "status": "Standard credit rate is active now",
+          "badge": "1× credits"
+        },
+        "offPeak": {
+          "name": "Night discount",
+          "status": "Nightly 60% credit discount is active now",
+          "badge": "0.4× credits"
+        }
+      },
+      "source": "https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview",
+      "verifiedAt": "2026-10-15",
+      "policyNote": "QwenCloud Token Plan Individual only, Singapore region with Global deployment. Eligible IDs: qwen3.8-max and qwen3.8-flash. The Team page does not publish this Qwen discount. Not the pay-as-you-go API or Alibaba's China Beijing Token Plan. Interactive use in compatible AI tools only; automated scripts and application backends are excluded. No published effective date or end date."
+    },
+    {
+      "id": "qwencloud-deepseek-token-plan",
+      "slug": "qwencloud-deepseek",
+      "provider": "QwenCloud",
+      "model": "DeepSeek V4.1 Flash / V4 Pro 0813 / V4 Flash 0731",
+      "product": "Individual / Team Token Plan",
+      "shortName": "DS",
+      "temporary": true,
+      "title": "QwenCloud DeepSeek night-rate clock",
+      "subtitle": "Individual and Team plan Credits in your local time",
+      "kicker": "DeepSeek night pricing · 50% fewer Credits off-peak",
+      "schedule": {
+        "timeZone": "Asia/Singapore",
+        "peakDays": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "peakWindows": [
+          {
+            "start": "08:00",
+            "end": "22:00"
+          }
+        ],
+        "windowName": "standard-rate",
+        "sourceTitle": "Standard-rate hours (UTC+8):",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Daily night discount 22:00–08:00 (UTC+8), including weekends. 50% off Credits for the three listed DeepSeek IDs on Individual and Team. No published effective date or end date."
+      },
+      "periods": {
+        "peak": {
+          "name": "Standard credits",
+          "status": "Standard credit rate is active now",
+          "badge": "1× credits"
+        },
+        "offPeak": {
+          "name": "Night discount",
+          "status": "Nightly 50% credit discount is active now",
+          "badge": "0.5× credits"
+        }
+      },
+      "source": "https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview",
+      "verifiedAt": "2026-10-15",
+      "policyNote": "QwenCloud Token Plan Individual and Team only, Singapore region with Global deployment. Eligible IDs: deepseek-v4.1-flash, deepseek-v4-pro-0813 and deepseek-v4-flash-0731. The undated deepseek-v4-pro ID is not listed for this discount. Not the pay-as-you-go API or Alibaba's China Beijing Token Plan. Interactive use in compatible AI tools only; automated scripts and application backends are excluded. No published effective date or end date."
     }
   ]
 }
