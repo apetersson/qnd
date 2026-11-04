@@ -56,7 +56,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         }
         capture.onFrame = { [weak self] image in
             guard let self, self.isRunning else { return }
-            self.output.show(image: image)
+            if let image { self.output.show(image: image) } else { self.output.clear() }
         }
         capture.onError = { [weak self] error in self?.captureFailed(error) }
         NotificationCenter.default.addObserver(self, selector: #selector(screensChanged),

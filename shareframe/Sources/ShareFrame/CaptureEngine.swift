@@ -15,7 +15,7 @@ final class FrameReceiver: NSObject, SCStreamOutput, SCStreamDelegate {
     private var active = true
     private var deliveryPending = false
     private var needsRender = false
-    var onFrame: ((CGImage, UInt64) -> Void)?
+    var onFrame: ((CGImage?, UInt64) -> Void)?
     var onError: ((Error) -> Void)?
 
     init(selection: CGRect, screen: CGRect, revision: UInt64) {
@@ -44,13 +44,31 @@ final class FrameReceiver: NSObject, SCStreamOutput, SCStreamDelegate {
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
                 of type: SCStreamOutputType) {
-        guard active, type == .screen, sampleBuffer.isValid,
+        guard type == .screen else { return }
+        process(sampleBuffer)
+    }
+
+    /// Called on `queue`, including by buffer-level regression tests.
+    func process(_ sampleBuffer: CMSampleBuffer) {
+        guard active, sampleBuffer.isValid,
               let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, createIfNecessary: false)
                 as? [[SCStreamFrameInfo: Any]],
               let status = attachments.first?[.status] as? Int,
-              status == SCFrameStatus.complete.rawValue,
-              let buffer = sampleBuffer.imageBuffer else { return }
-        latestBuffer = buffer
+              let frameStatus = SCFrameStatus(rawValue: status) else { return }
+        switch frameStatus {
+        case .complete:
+            guard let buffer = sampleBuffer.imageBuffer else { return }
+            latestBuffer = buffer
+        case .blank, .suspended, .stopped:
+            // An unavailable display is different from an unchanged desktop.
+            // Clear both the output and the cache so moving the selection cannot
+            // bring back a frame from before the interruption.
+            latestBuffer = nil
+        case .idle, .started:
+            return
+        @unknown default:
+            latestBuffer = nil
+        }
         needsRender = true
         renderLatest()
     }
@@ -58,13 +76,19 @@ final class FrameReceiver: NSObject, SCStreamOutput, SCStreamDelegate {
     private func renderLatest() {
         // Menus and window drags can hold up the main queue. Keep at most one
         // rendered image in flight instead of accumulating 30 images per second.
-        guard active, !deliveryPending, needsRender, let buffer = latestBuffer else { return }
-        let crop = SelectionGeometry.pixelCrop(
-            selection: selection, screen: screen,
-            pixels: CGSize(width: CVPixelBufferGetWidth(buffer), height: CVPixelBufferGetHeight(buffer))
-        )
-        guard crop.width > 0, crop.height > 0,
-              let image = context.createCGImage(CIImage(cvPixelBuffer: buffer), from: crop) else { return }
+        guard active, !deliveryPending, needsRender else { return }
+        let image: CGImage?
+        if let buffer = latestBuffer {
+            let crop = SelectionGeometry.pixelCrop(
+                selection: selection, screen: screen,
+                pixels: CGSize(width: CVPixelBufferGetWidth(buffer), height: CVPixelBufferGetHeight(buffer))
+            )
+            guard crop.width > 0, crop.height > 0,
+                  let cropped = context.createCGImage(CIImage(cvPixelBuffer: buffer), from: crop) else { return }
+            image = cropped
+        } else {
+            image = nil
+        }
         let currentRevision = revision
         needsRender = false
         deliveryPending = true
@@ -90,7 +114,7 @@ final class CaptureEngine {
     private var selection = CGRect.zero
     private var epoch: UInt64 = 0
     private(set) var revision: UInt64 = 0
-    var onFrame: ((CGImage) -> Void)?
+    var onFrame: ((CGImage?) -> Void)?
     var onError: ((Error) -> Void)?
 
     func update(selection: CGRect) {

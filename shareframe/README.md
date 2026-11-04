@@ -27,7 +27,7 @@ SHAREFRAME_SIGN_IDENTITY='Apple Development: …' ./build.sh
 4. **Pause** in der Rahmenleiste oder **⌘P** bei aktiver ShareFrame-App blendet das Livebild aus und beendet die Aufnahme. **⌘1** holt das Freigabefenster nach vorne. **⌘B** blendet den Rahmen ein/aus. Diese Tastenkürzel gelten, wenn ShareFrame aktiv ist; es sind keine globalen Hotkeys.
 5. Über das Bildschirm-Symbol oder das Menüleistensymbol kannst du einen anderen Bildschirm auswählen, den Bereich zentrieren oder die App beenden. **⌘Q** beendet die App ebenfalls.
 
-Der Ausschnitt bleibt innerhalb eines Bildschirms. Retina-Skalierung und Bildschirme links/oberhalb des Hauptbildschirms werden berücksichtigt. Bei einer Änderung der Bildschirmkonfiguration, beim Ruhezustand oder beim Benutzerwechsel pausiert die App; vor dem Fortsetzen kannst du den Bereich prüfen. Die zuletzt gespeicherte Position wird pro Bildschirm wiederhergestellt.
+Der Ausschnitt bleibt innerhalb eines Bildschirms. Retina-Skalierung und Bildschirme links/oberhalb des Hauptbildschirms werden berücksichtigt. Bei einer Änderung der Bildschirmkonfiguration, beim Ruhezustand oder beim Benutzerwechsel pausiert die App; vor dem Fortsetzen kannst du den Bereich prüfen. Meldet macOS einen leeren Bildschirm oder eine ausgesetzte Aufnahme, wird das bisherige Bild gelöscht. Die zuletzt gespeicherte Position wird pro Bildschirm wiederhergestellt.
 
 ## Umfang und Grenzen
 
@@ -44,6 +44,6 @@ Der Ausschnitt bleibt innerhalb eines Bildschirms. Retina-Skalierung und Bildsch
 swift test
 ```
 
-Die Tests prüfen den Ausschnitt bei Retina-Skalierung und versetzten Bildschirmen, das Einhalten der Bildschirmgrenzen sowie Größenänderungen mit festem oberen linken Eckpunkt. Die Systemberechtigung und die Freigabe in einer Konferenz-App erfordern zusätzlich einen manuellen Test.
+Die Tests prüfen den Ausschnitt bei Retina-Skalierung und versetzten Bildschirmen, das Einhalten der Bildschirmgrenzen sowie Größenänderungen mit festem oberen linken Eckpunkt. Videobuffer-Tests prüfen außerdem das Löschen des Bildes bei unterbrochener Aufnahme und die weitere Verwendung eines unveränderten Desktops beim Verschieben. Die Systemberechtigung und die Freigabe in einer Konferenz-App erfordern zusätzlich einen manuellen Test.
 
 Grundlage: [Apple: Capturing screen content in macOS](https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-in-macos).
