@@ -4,6 +4,20 @@ A movable red frame marks the screen region you want to share. The separate **â€
 
 A transparent window does not contain the image data of the windows underneath it. ShareFrame therefore uses ScreenCaptureKit and a separate share window. The app excludes itself from capture to prevent its frame, controls, and share window from creating a feedback loop.
 
+## License
+
+ShareFrame is distributed under the [ShareFrame Software License](LICENSE):
+
+- **Free for personal use** unrelated to work for an employer, client, or other organization.
+- **Free for organizational use with fewer than 250 people** across the entire company group, including parent companies, subsidiaries, and entities under common control. Count all employees and individual contractors, including agency contractors working for the group. Count each individual once, regardless of working hours or whether they use ShareFrame.
+- **A separate paid commercial license is required for 250 or more people**, and for any other use outside the free license grant. There is **no revenue limit**.
+
+For example, a subsidiary with 20 employees in a group of 300 people requires a paid license. A group with 240 employees and 10 contractors also requires a paid license. A group of 249 people qualifies for free use regardless of revenue. Educational, nonprofit, and government organizations follow the same headcount rule.
+
+The model follows [Docker Desktop's distinction](https://docs.docker.com/subscription-billing/desktop-license/) between free personal/small-business use and paid larger-organization use, with ShareFrame's own eligibility rules and license wording. These are custom source-available terms. For a commercial license, [contact the maintainer](https://github.com/apetersson/qnd/issues); pricing and any support are agreed separately.
+
+The build bundles the full license at `ShareFrame.app/Contents/Resources/LICENSE.txt`. Keep it with any original or modified copies you distribute. The full license controls if this summary differs from it. This license applies to ShareFrame, rather than the other projects in this repository.
+
 ## Getting started
 
 Requirements: macOS 13 or later, and Xcode / Swift 5.9 or later to build. No external dependencies.

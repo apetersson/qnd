@@ -1,0 +1,140 @@
+ShareFrame Software License
+Version 1.0 — November 4, 2026
+
+Copyright (c) 2026 Andreas Petersson
+
+1. Scope and acceptance
+
+This license is offered by Andreas Petersson (the "Licensor") for ShareFrame:
+its source code, documentation, build scripts, and compiled application, together
+with copies and modified versions of those materials (the "Software"). In the
+qnd repository, it applies to the shareframe directory only. Other projects and
+third-party components remain subject to their own terms.
+
+By exercising any permission granted here, you accept the conditions attached to
+that permission. If you act for an organization, you must have authority to do
+so. This license does not grant rights in the screen content you capture or share.
+
+2. License grant
+
+Subject to the conditions below, the Licensor grants you a worldwide,
+non-exclusive license, without a license fee, to install, run, copy, build, and
+modify the Software for either of these purposes:
+
+  (a) Personal Use; or
+  (b) the internal operations of a Company Group whose total Headcount is
+      strictly fewer than 250 people.
+
+You may also redistribute the Software as provided in section 5. These
+permissions cover the Licensor's copyright and any patent claims controlled by
+the Licensor that are necessarily infringed by the permitted use of the Software.
+
+3. Specific limitations on use without a paid license
+
+"Personal Use" means use by an individual solely for that individual's private,
+non-business purposes. Use for an employer, client, or other organization is
+organizational use, even on a personally owned device or through a personal
+account, and must meet the Company Group limit or be covered by a paid license.
+
+"Company Group" means the company or other organization for whose benefit the
+Software is used, together with all entities that directly or indirectly control
+it, are controlled by it, or are under common control with it. This includes
+parent companies, subsidiaries, and sister companies. An organization includes
+a sole proprietorship, partnership, corporation, association, nonprofit,
+educational institution, or government body. "Control" means ownership of more
+than half of the voting rights or the power to direct management and business
+policies, whether through ownership, agreement, or another arrangement.
+
+"Headcount" means the total number of distinct individuals working as employees
+or individual contractors anywhere in the Company Group. Include contractors
+supplied through staffing agencies or personal service companies while they
+work for the group. Count full-time and part-time workers as one person each,
+regardless of their role, location, working hours, or whether they use ShareFrame.
+Count each person only once across the group; do not count only the team,
+department, subsidiary, or people using the Software.
+
+There is no revenue limit. Revenue, funding, and valuation do not affect
+eligibility. A Company Group with 249 people qualifies; one with 250 or more
+does not. Organizational use is assessed against the benefiting Company Group,
+including when the individual operating the Software is an external contractor.
+If a use benefits multiple Company Groups, each must qualify for free use or
+that use must be covered by a paid commercial license.
+There is no separate exemption for educational, nonprofit, or government use.
+
+Eligibility must continue throughout use. If growth, an acquisition, a change
+of employer or client, or another change makes the use ineligible, obtain a paid
+license before continuing that use. You may resume free use if it subsequently
+meets these conditions again. Personal Use remains free regardless of the size
+of the individual's employer, provided it is genuinely independent of that work.
+
+4. Paid commercial licensing
+
+Any use outside section 2, including organizational use by a Company Group with
+250 or more people, requires a separate paid commercial license agreed with the
+Licensor before that use begins or continues. Copying, building, or modifying
+the Software for such organizational use does not avoid this requirement.
+
+The commercial agreement specifies its fees, permitted users, duration, and any
+support or other commitments. No price, subscription, automatic charge, or
+support entitlement is created by this public license. If you do not obtain the
+required commercial license, you must refrain from the otherwise unlicensed use.
+Where a signed commercial agreement expressly replaces these terms, that
+agreement governs the use it covers.
+
+For commercial licensing, contact the maintainer through:
+https://github.com/apetersson/qnd/issues
+
+5. Copies, modifications, and redistribution
+
+You may share original or modified copies, in source or compiled form, provided
+that every copy retains this license and the applicable copyright notices.
+Clearly identify modifications you distribute. The original Software and your
+distributed modifications must remain available under these same terms; you
+may not remove the eligibility conditions or grant broader rights to them.
+
+Each recipient must independently qualify for free use or obtain the necessary
+commercial license. Redistribution, rebuilding from source, renaming, or making
+a fork does not exempt a recipient from the Headcount limit. Permission to
+redistribute does not itself permit otherwise ineligible organizational use.
+
+The Licensor retains ownership of the Software and grants only the rights
+expressly stated here. You retain ownership of your own original contributions,
+subject to the conditions on distributed modifications above. This license
+does not authorize use of trademarks or imply endorsement. Separate terms for
+third-party components continue to apply to those components.
+
+6. Warranty and support
+
+The Software is provided as available, without promised support, maintenance,
+security updates, or uninterrupted or error-free operation. To the extent
+permitted by applicable law, the Licensor provides no warranties, including
+warranties of merchantability, fitness for a particular purpose, title, or
+non-infringement. You are responsible for deciding whether the Software is
+suitable for your use and for the content you capture or share.
+
+7. Liability and mandatory rights
+
+To the extent permitted by applicable law, the Licensor is not liable for losses
+or damages arising from the Software or its use, including lost profits, lost
+data, business interruption, or unintended disclosure of screen content.
+
+Nothing in this license removes rights or excludes liability that applicable
+law does not allow to be removed or excluded, including mandatory consumer
+rights and any non-excludable liability for intentional misconduct, gross
+negligence, death, or personal injury. Statutory exceptions to copyright,
+including any applicable fair-use rights, remain unaffected.
+
+8. Duration and termination
+
+The permissions in this license continue while you comply with its conditions.
+A use outside those permissions is not authorized. A breach of these conditions
+ends your permissions under this license; you must stop exercising them unless
+the Licensor reinstates them or grants a separate license. Loss and recovery of
+Headcount eligibility are governed by section 3. Previously compliant use is
+not made a breach merely because your Headcount later changes.
+
+After termination, retain only copies that applicable law requires you to keep,
+and do not use them to run, build, modify, or redistribute the Software. The
+ownership, notices, warranty, liability, and mandatory-rights provisions survive
+termination. Compliant recipients' permissions do not end solely because their
+distributor breaches these terms.
