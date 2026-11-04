@@ -1,49 +1,49 @@
 # ShareFrame
 
-Ein verschiebbarer roter Rahmen markiert den Bildschirmbereich, den du teilen möchtest. Das separate Fenster **„ShareFrame – Freigabe“** zeigt diesen Ausschnitt live. Teile dieses Fenster in Teams, Zoom, Meet oder einer anderen App mit Fensterfreigabe.
+A movable red frame marks the screen region you want to share. The separate **“ShareFrame – Screen Share”** window shows that region live. Share this window in Teams, Zoom, Meet, or any other app that supports window sharing.
 
-Ein transparentes Fenster enthält selbst keine Bilddaten der darunterliegenden Fenster. ShareFrame verwendet deshalb ScreenCaptureKit und ein eigenes Freigabefenster. Die eigene App wird aus der Aufnahme ausgeschlossen, damit Rahmen, Bedienelemente und Freigabefenster keine Bildschleife erzeugen.
+A transparent window does not contain the image data of the windows underneath it. ShareFrame therefore uses ScreenCaptureKit and a separate share window. The app excludes itself from capture to prevent its frame, controls, and share window from creating a feedback loop.
 
-## Starten
+## Getting started
 
-Voraussetzungen: macOS 13 oder neuer, Xcode / Swift 5.9 oder neuer zum Bauen. Keine externen Abhängigkeiten.
+Requirements: macOS 13 or later, and Xcode / Swift 5.9 or later to build. No external dependencies.
 
 ```sh
 ./build.sh
 open build/ShareFrame.app
 ```
 
-Die fertige App liegt unter `build/ShareFrame.app`. Du kannst sie auch nach `/Applications` kopieren. Der Build verwendet standardmäßig eine lokale Ad-hoc-Signatur. Für eine stabile Bildschirmaufnahme-Berechtigung über mehrere Builds hinweg kannst du eine vorhandene Signieridentität verwenden:
+The built app is at `build/ShareFrame.app`. You can also copy it to `/Applications`. The build uses a local ad-hoc signature by default. To keep screen recording permission stable across rebuilds, you can use an existing signing identity:
 
 ```sh
 SHAREFRAME_SIGN_IDENTITY='Apple Development: …' ./build.sh
 ```
 
-## Verwenden
+## Usage
 
-1. **Bereich starten** anklicken und die macOS-Berechtigung für Bildschirmaufnahme erteilen. Falls nötig: Systemeinstellungen → Datenschutz & Sicherheit → Bildschirm- & Systemaudioaufnahme → ShareFrame aktivieren und ShareFrame neu starten. Die Bezeichnung hängt von der macOS-Version ab.
-2. An einem roten Rand oder an der dunklen Leiste ziehen, um den Bereich zu verschieben. Am Griff **unten rechts** ziehen, um seine Größe zu ändern. Im Inneren des Rahmens kannst du die darunterliegenden Apps normal bedienen.
-3. In der Konferenz-App die **Fensterfreigabe** auswählen und **„ShareFrame – Freigabe“** teilen. Das Freigabefenster geöffnet lassen und bei Bedarf zur Seite schieben. Es wird nicht in seine eigene Aufnahme übernommen.
-4. **Pause** in der Rahmenleiste oder **⌘P** bei aktiver ShareFrame-App blendet das Livebild aus und beendet die Aufnahme. **⌘1** holt das Freigabefenster nach vorne. **⌘B** blendet den Rahmen ein/aus. Diese Tastenkürzel gelten, wenn ShareFrame aktiv ist; es sind keine globalen Hotkeys.
-5. Über das Bildschirm-Symbol oder das Menüleistensymbol kannst du einen anderen Bildschirm auswählen, den Bereich zentrieren oder die App beenden. **⌘Q** beendet die App ebenfalls.
+1. Click **Start Capture** and grant macOS screen recording permission. If needed, open System Settings → Privacy & Security → Screen & System Audio Recording, enable ShareFrame, and restart ShareFrame. The setting's name varies by macOS version.
+2. Drag a red border or the dark toolbar to move the region. Drag the **bottom-right handle** to resize it. You can interact normally with the apps inside the frame.
+3. In your conferencing app, choose **window sharing** and select **“ShareFrame – Screen Share”**. Keep the share window open and move it aside if needed. It is excluded from its own capture.
+4. **Pause** in the toolbar or **⌘P** while ShareFrame is active clears the live image and stops capture. **⌘1** brings the share window to the front. **⌘B** shows or hides the frame. These shortcuts work while ShareFrame is active; they are not global hotkeys.
+5. Use the display icon or menu bar icon to select another display, center the region, or quit the app. **⌘Q** also quits the app.
 
-Der Ausschnitt bleibt innerhalb eines Bildschirms. Retina-Skalierung und Bildschirme links/oberhalb des Hauptbildschirms werden berücksichtigt. Bei einer Änderung der Bildschirmkonfiguration, beim Ruhezustand oder beim Benutzerwechsel pausiert die App; vor dem Fortsetzen kannst du den Bereich prüfen. Meldet macOS einen leeren Bildschirm oder eine ausgesetzte Aufnahme, wird das bisherige Bild gelöscht. Die zuletzt gespeicherte Position wird pro Bildschirm wiederhergestellt.
+The region stays within one display. Retina scaling and displays positioned to the left of or above the primary display are supported. The app pauses when the display configuration changes, the Mac sleeps, or the user session switches, so you can review the region before resuming. If macOS reports a blank display or suspended capture, the previous image is cleared. The last saved region is restored for each display.
 
-## Umfang und Grenzen
+## Features and limitations
 
-- Bis zu 30 Bilder pro Sekunde, mit Mauszeiger; kein Ton und keine Mikrofonaufnahme.
-- Lokale Verarbeitung. Keine Netzwerkverbindungen, Aufnahmen oder Videodateien.
-- macOS gewährt Bildschirmaufnahme für den Bildschirm. ShareFrame verarbeitet dessen Frames im Speicher; nur der zugeschnittene Bereich gelangt ins Freigabefenster.
-- Die Konferenz-App muss ein normales macOS-Fenster teilen können. Ein tatsächlicher Anruf und das Verhalten beim Minimieren sind je Konferenz-App zu prüfen; das Freigabefenster während der Freigabe nicht minimieren.
-- Geschützte Videoinhalte können von macOS geschwärzt werden.
-- Die lokale App ist nicht notarisiert. Für die Weitergabe an andere Macs wären eine Developer-ID-Signatur und Notarisierung sinnvoll.
+- Up to 30 frames per second, including the mouse pointer; no audio or microphone capture.
+- Local processing. No network connections, recordings, or video files.
+- macOS grants screen recording access to the display. ShareFrame processes its frames in memory; only the cropped region reaches the share window.
+- Your conferencing app must support sharing a normal macOS window. Test an actual call and minimize behavior in each conferencing app; keep the share window open and unminimized while sharing.
+- macOS may black out protected video content.
+- The local app is not notarized. Distribution to other Macs would benefit from Developer ID signing and notarization.
 
-## Prüfen
+## Verification
 
 ```sh
 swift test
 ```
 
-Die Tests prüfen den Ausschnitt bei Retina-Skalierung und versetzten Bildschirmen, das Einhalten der Bildschirmgrenzen sowie Größenänderungen mit festem oberen linken Eckpunkt. Videobuffer-Tests prüfen außerdem das Löschen des Bildes bei unterbrochener Aufnahme und die weitere Verwendung eines unveränderten Desktops beim Verschieben. Die Systemberechtigung und die Freigabe in einer Konferenz-App erfordern zusätzlich einen manuellen Test.
+Tests cover cropping with Retina scaling and offset displays, display boundaries, and resizing with a fixed top-left corner. Video buffer tests also verify clearing the image when capture is interrupted and reusing an unchanged desktop when the region moves. System permission and sharing in a conferencing app require an additional manual test.
 
-Grundlage: [Apple: Capturing screen content in macOS](https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-in-macos).
+Reference: [Apple: Capturing screen content in macOS](https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-in-macos).

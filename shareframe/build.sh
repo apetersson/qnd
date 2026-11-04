@@ -10,4 +10,4 @@ cp Info.plist "$bundle/Contents/Info.plist"
 # rebuilds. Ad-hoc signing keeps a first build runnable without Xcode setup.
 identity="${SHAREFRAME_SIGN_IDENTITY:--}"
 codesign --force --sign "$identity" "$bundle"
-printf '\nApp: %s\nStarten: open "%s"\n' "$bundle" "$bundle"
+printf '\nApp: %s\nLaunch: open "%s"\n' "$bundle" "$bundle"

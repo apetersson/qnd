@@ -4,10 +4,10 @@ import AppKit
 final class OutputView: NSView {
     private let imageLayer = CALayer()
     private let messageStack = NSStackView()
-    private let heading = NSTextField(labelWithString: "Ein Bereich. Ein Fenster.")
+    private let heading = NSTextField(labelWithString: "One region. One window.")
     private let detail = NSTextField(wrappingLabelWithString: "")
-    private let primaryButton = NSButton(title: "Bereich starten", target: nil, action: nil)
-    private let settingsButton = NSButton(title: "Bildschirmaufnahme erlauben …", target: nil, action: nil)
+    private let primaryButton = NSButton(title: "Start Capture", target: nil, action: nil)
+    private let settingsButton = NSButton(title: "Allow Screen Recording…", target: nil, action: nil)
     var onStart: (() -> Void)?
     var onSettings: (() -> Void)?
 
@@ -52,9 +52,9 @@ final class OutputView: NSView {
             messageStack.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -40),
             detail.widthAnchor.constraint(lessThanOrEqualToConstant: 440)
         ])
-        showMessage(title: "Ein Bereich. Ein Fenster.",
-                    detail: "1. Bereich starten und Bildschirmaufnahme erlauben.\n2. Den roten Rahmen verschieben und aufziehen.\n3. In deiner Konferenz-App dieses Fenster teilen:\n„ShareFrame – Freigabe“.",
-                    button: "Bereich starten")
+        showMessage(title: "One region. One window.",
+                    detail: "1. Start capture and allow screen recording.\n2. Move and resize the red frame.\n3. Share this window in your conferencing app:\n“ShareFrame – Screen Share”.",
+                    button: "Start Capture")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

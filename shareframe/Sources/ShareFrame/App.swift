@@ -34,7 +34,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 720, height: 450),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable],
                           backing: .buffered, defer: false)
-        window.title = "ShareFrame – Freigabe"
+        window.title = "ShareFrame – Screen Share"
         window.contentMinSize = NSSize(width: 520, height: 380)
         window.backgroundColor = .black
         window.isReleasedWhenClosed = false
@@ -71,19 +71,19 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         let main = NSMenu()
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Über ShareFrame", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(withTitle: "About ShareFrame", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Aufnahme pausieren / fortsetzen", action: #selector(toggleCapture), keyEquivalent: "p").target = self
-        appMenu.addItem(withTitle: "Freigabefenster anzeigen", action: #selector(showOutput), keyEquivalent: "1").target = self
-        appMenu.addItem(withTitle: "Rahmen ein- / ausblenden", action: #selector(toggleFrame), keyEquivalent: "b").target = self
+        appMenu.addItem(withTitle: "Pause / Resume Capture", action: #selector(toggleCapture), keyEquivalent: "p").target = self
+        appMenu.addItem(withTitle: "Show Share Window", action: #selector(showOutput), keyEquivalent: "1").target = self
+        appMenu.addItem(withTitle: "Show / Hide Frame", action: #selector(toggleFrame), keyEquivalent: "b").target = self
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "ShareFrame beenden", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit ShareFrame", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
         main.addItem(appItem)
         NSApp.mainMenu = main
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = NSImage(systemSymbolName: "viewfinder", accessibilityDescription: "ShareFrame")
-        statusItem.button?.toolTip = "ShareFrame – Bildschirmbereich teilen"
+        statusItem.button?.toolTip = "ShareFrame – Share a Screen Region"
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
@@ -91,11 +91,11 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
-        addItem(to: menu, title: "Freigabefenster anzeigen", action: #selector(showOutput))
-        addItem(to: menu, title: isRunning ? "Aufnahme pausieren" : "Aufnahme starten / fortsetzen", action: #selector(toggleCapture))
-        addItem(to: menu, title: frameVisible ? "Rahmen ausblenden" : "Rahmen anzeigen", action: #selector(toggleFrame))
+        addItem(to: menu, title: "Show Share Window", action: #selector(showOutput))
+        addItem(to: menu, title: isRunning ? "Pause Capture" : "Start / Resume Capture", action: #selector(toggleCapture))
+        addItem(to: menu, title: frameVisible ? "Hide Frame" : "Show Frame", action: #selector(toggleFrame))
         menu.addItem(.separator())
-        let label = NSMenuItem(title: "Aufnahmebildschirm", action: nil, keyEquivalent: "")
+        let label = NSMenuItem(title: "Capture Display", action: nil, keyEquivalent: "")
         label.isEnabled = false
         menu.addItem(label)
         for screen in NSScreen.screens {
@@ -106,9 +106,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
             menu.addItem(item)
         }
         menu.addItem(.separator())
-        addItem(to: menu, title: "Bereich zentrieren", action: #selector(resetSelection))
+        addItem(to: menu, title: "Center Region", action: #selector(resetSelection))
         menu.addItem(.separator())
-        addItem(to: menu, title: "ShareFrame beenden", action: #selector(quit))
+        addItem(to: menu, title: "Quit ShareFrame", action: #selector(quit))
     }
 
     private func addItem(to menu: NSMenu, title: String, action: Selector) {
@@ -143,8 +143,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         frameVisible = true
         overlay.setPaused(false)
         overlay.setVisible(true)
-        output.showMessage(title: "Bereich wird vorbereitet …",
-                           detail: "Erlaube ShareFrame bei Bedarf die Bildschirmaufnahme.\nDanach kannst du dieses Fenster in deiner Konferenz-App teilen.", button: nil)
+        output.showMessage(title: "Preparing Capture…",
+                           detail: "Allow ShareFrame to record your screen if prompted.\nThen share this window in your conferencing app.", button: nil)
         Task {
             do {
                 guard actionID == currentAction else { return }
@@ -164,7 +164,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         capture.stop()
         phase = .paused
         overlay.setPaused(true)
-        output.showMessage(title: "Pausiert", detail: "Der Bildschirmbereich wird gerade nicht übertragen.", button: "Fortsetzen")
+        output.showMessage(title: "Paused", detail: "Live capture of the selected screen region is paused.", button: "Resume")
         saveSelection()
     }
 
@@ -175,10 +175,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         overlay.setPaused(true)
         let permissionMissing = !CGPreflightScreenCaptureAccess()
         let explanation = permissionMissing
-            ? "Erlaube ShareFrame unter Systemeinstellungen → Datenschutz & Sicherheit → Bildschirm- & Systemaudioaufnahme. Starte die App danach bei Bedarf neu."
-            : "Die Aufnahme wurde beendet.\n\(error.localizedDescription)"
-        output.showMessage(title: permissionMissing ? "Bildschirmaufnahme erlauben" : "Aufnahme unterbrochen",
-                           detail: explanation, button: "Erneut versuchen", settings: permissionMissing)
+            ? "Allow ShareFrame in System Settings → Privacy & Security → Screen & System Audio Recording. Restart the app afterward if needed."
+            : "Capture has stopped.\n\(error.localizedDescription)"
+        output.showMessage(title: permissionMissing ? "Allow Screen Recording" : "Capture Interrupted",
+                           detail: explanation, button: "Try Again", settings: permissionMissing)
         showOutput()
     }
 

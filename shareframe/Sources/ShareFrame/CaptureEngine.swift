@@ -188,8 +188,8 @@ final class CaptureEngine {
         case displayUnavailable, applicationUnavailable
         var errorDescription: String? {
             switch self {
-            case .displayUnavailable: return "Der ausgewählte Bildschirm ist nicht mehr verfügbar."
-            case .applicationUnavailable: return "ShareFrame konnte seine eigenen Fenster nicht von der Aufnahme ausschließen. Bitte starte die App erneut."
+            case .displayUnavailable: return "The selected display is no longer available."
+            case .applicationUnavailable: return "ShareFrame could not exclude its own windows from capture. Please restart the app."
             }
         }
     }

@@ -40,16 +40,16 @@ final class OverlayController {
         }
         background.onDrag = { [weak self] point, _ in self?.drag(to: point, resize: false) }
         toolbar.contentView = background
-        let moveIcon = NSImageView(image: NSImage(systemSymbolName: "arrow.up.and.down.and.arrow.left.and.right", accessibilityDescription: "Rahmen verschieben")!)
+        let moveIcon = NSImageView(image: NSImage(systemSymbolName: "arrow.up.and.down.and.arrow.left.and.right", accessibilityDescription: "Move Frame")!)
         moveIcon.contentTintColor = .white
         moveIcon.setContentHuggingPriority(.required, for: .horizontal)
         sizeLabel.font = .monospacedDigitSystemFont(ofSize: 11, weight: .medium)
         sizeLabel.textColor = .white
-        sizeLabel.toolTip = "An dieser Leiste oder am roten Rand ziehen, um den Bereich zu verschieben."
-        configure(pauseButton, symbol: "pause.fill", tip: "Aufnahme pausieren / fortsetzen", action: #selector(togglePause))
+        sizeLabel.toolTip = "Drag this bar or the red border to move the region."
+        configure(pauseButton, symbol: "pause.fill", tip: "Pause / Resume Capture", action: #selector(togglePause))
         let outputButton = NSButton()
-        configure(outputButton, symbol: "macwindow", tip: "Freigabefenster anzeigen", action: #selector(showOutput))
-        configure(screenButton, symbol: "display", tip: "Bildschirm und Rahmenoptionen", action: #selector(showScreenMenu))
+        configure(outputButton, symbol: "macwindow", tip: "Show Share Window", action: #selector(showOutput))
+        configure(screenButton, symbol: "display", tip: "Display and Frame Options", action: #selector(showScreenMenu))
         let stack = NSStackView(views: [moveIcon, sizeLabel, pauseButton, outputButton, screenButton])
         stack.spacing = 10
         stack.alignment = .centerY
@@ -122,7 +122,7 @@ final class OverlayController {
     }
 
     func setPaused(_ paused: Bool) {
-        pauseButton.image = NSImage(systemSymbolName: paused ? "play.fill" : "pause.fill", accessibilityDescription: paused ? "Fortsetzen" : "Pausieren")
+        pauseButton.image = NSImage(systemSymbolName: paused ? "play.fill" : "pause.fill", accessibilityDescription: paused ? "Resume" : "Pause")
         for panel in panels {
             (panel.contentView as? DragSurface)?.paused = paused
             panel.contentView?.needsDisplay = true
