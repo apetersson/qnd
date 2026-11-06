@@ -43,6 +43,14 @@ SHAREFRAME_SIGN_IDENTITY='Apple Development: …' ./build.sh
 
 The region stays within one display. Retina scaling and displays positioned to the left of or above the primary display are supported. The app pauses when the display configuration changes, the Mac sleeps, or the user session switches, so you can review the region before resuming. If macOS reports a blank display or suspended capture, the previous image is cleared. The last saved region is restored for each display.
 
+## Image quality
+
+During live capture, the share window automatically follows the captured image's actual pixel dimensions. Each image pixel maps to one pixel in the window's backing store. Resize the red selection frame to change the shared region; the share window itself can be moved but cannot be resized, zoomed, or put into full screen during capture.
+
+Retina scaling is taken into account for the display hosting the share window, independently of the captured display. For example, a 1920 × 1080 pixel image needs a 960 × 540 point content area on a 2× Retina display, or 1920 × 1080 points on a 1× display. Moving the window between displays with different backing scales adjusts its size automatically. Pausing or displaying an error restores the normal message window.
+
+Large captures may create a window larger than the available desktop. ShareFrame deliberately does not shrink or fit the image to the screen. Use a suitable output display or reduce the selected region if needed. Check that your conferencing app captures the full window when parts of it are offscreen. The conferencing app may still scale and compress the shared image; ShareFrame's pixel mapping removes its own intermediate resize.
+
 ## Features and limitations
 
 - Up to 30 frames per second, including the mouse pointer; no audio or microphone capture.
@@ -58,6 +66,6 @@ The region stays within one display. Retina scaling and displays positioned to t
 swift test
 ```
 
-Tests cover cropping with Retina scaling and offset displays, display boundaries, and resizing with a fixed top-left corner. Video buffer tests also verify clearing the image when capture is interrupted and reusing an unchanged desktop when the region moves. System permission and sharing in a conferencing app require an additional manual test.
+Tests cover cropping with Retina scaling and offset displays, display boundaries, and resizing with a fixed top-left corner. Video buffer tests also verify clearing the image when capture is interrupted and reusing an unchanged desktop when the region moves. Window tests verify exact backing dimensions for odd-sized images, oversized captures, restoring the message window, and rendering a one-pixel checkerboard without changing its pixels. System permission, transitions between physical displays with different scales, and sharing in a conferencing app require an additional manual test.
 
 Reference: [Apple: Capturing screen content in macOS](https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-in-macos).

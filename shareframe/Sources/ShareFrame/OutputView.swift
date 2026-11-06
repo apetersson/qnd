@@ -3,6 +3,7 @@ import AppKit
 @MainActor
 final class OutputView: NSView {
     private let imageLayer = CALayer()
+    private var imagePixelSize: CGSize?
     private let messageStack = NSStackView()
     private let heading = NSTextField(labelWithString: "One region. One window.")
     private let detail = NSTextField(wrappingLabelWithString: "")
@@ -15,9 +16,9 @@ final class OutputView: NSView {
         super.init(frame: frameRect)
         wantsLayer = true
         layer?.backgroundColor = NSColor.black.cgColor
-        imageLayer.contentsGravity = .resizeAspect
-        imageLayer.magnificationFilter = .linear
-        imageLayer.minificationFilter = .trilinear
+        imageLayer.contentsGravity = .topLeft
+        imageLayer.magnificationFilter = .nearest
+        imageLayer.minificationFilter = .nearest
         layer?.addSublayer(imageLayer)
 
         let icon = NSImageView(image: NSImage(systemSymbolName: "viewfinder", accessibilityDescription: nil)!)
@@ -61,18 +62,40 @@ final class OutputView: NSView {
 
     override func layout() {
         super.layout()
+        layoutImage()
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        (window as? ShareWindow)?.refreshCaptureSize()
+        layoutImage()
+    }
+
+    private func layoutImage() {
+        let scale = window?.backingScaleFactor ?? 1
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        imageLayer.frame = bounds
+        imageLayer.contentsScale = scale
+        if let pixels = imagePixelSize {
+            let size = CGSize(width: pixels.width / scale, height: pixels.height / scale)
+            imageLayer.frame = CGRect(x: bounds.minX, y: bounds.maxY - size.height,
+                                      width: size.width, height: size.height)
+        } else {
+            imageLayer.frame = bounds
+        }
         CATransaction.commit()
     }
 
     func show(image: CGImage) {
+        let pixels = CGSize(width: image.width, height: image.height)
+        imagePixelSize = pixels
+        (window as? ShareWindow)?.presentCapture(pixelSize: pixels)
         messageStack.isHidden = true
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         imageLayer.contents = image
         CATransaction.commit()
+        layoutImage()
     }
 
     func clear() {
@@ -84,6 +107,8 @@ final class OutputView: NSView {
 
     func showMessage(title: String, detail text: String, button: String?, settings: Bool = false) {
         clear()
+        imagePixelSize = nil
+        (window as? ShareWindow)?.presentMessage()
         heading.stringValue = title
         detail.stringValue = text
         primaryButton.title = button ?? ""

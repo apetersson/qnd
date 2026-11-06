@@ -18,7 +18,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
     private let capture = CaptureEngine()
     private let overlay = OverlayController()
     private let output = OutputView(frame: CGRect(x: 0, y: 0, width: 720, height: 450))
-    private var window: NSWindow!
+    private var window: ShareWindow!
     private var statusItem: NSStatusItem!
     private var selectedScreen: NSScreen!
     private var selection = CGRect.zero
@@ -31,11 +31,12 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, NS
         installMenu()
         selectedScreen = NSScreen.main ?? NSScreen.screens.first!
         selection = restoredSelection(on: selectedScreen)
-        window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 720, height: 450),
+        window = ShareWindow(contentRect: CGRect(x: 0, y: 0, width: 720, height: 450),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable],
                           backing: .buffered, defer: false)
         window.title = "ShareFrame – Screen Share"
         window.contentMinSize = NSSize(width: 520, height: 380)
+        window.collectionBehavior.insert(.fullScreenNone)
         window.backgroundColor = .black
         window.isReleasedWhenClosed = false
         window.delegate = self
