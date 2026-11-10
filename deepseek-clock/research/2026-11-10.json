@@ -1,0 +1,347 @@
+{
+  "checkedAt": "2026-11-10",
+  "timeZone": "Europe/Vienna",
+  "method": "Read-only parallel audit of official provider sources via fresh web_fetch, followed by centralized local data edits and Node regression tests. Relevant full markdown or official page-data documents used where HTML was truncated. No account access, settled-billing check, commit, push or deployment.",
+  "summary": [
+    "Qoder Qwen3.7 Plus ordinary/Service Account: historical discount ends October 22 at 22:00 UTC+8; current standard 0.1× all day.",
+    "Qoder Flash: historical individual free offer ends November 7 at 00:00 UTC+8. Current paid/Pro Trial night rate 0.04× versus standard 0.1×; ordinary 22:00–08:00, new Service Account clock 01:00–07:00.",
+    "B.AI Qwen Flash: 30% reference offer ends October 22 at 17:00 UTC+8; 80% reference offer starts then with no published end.",
+    "Swarms night discount is paid-members-only. OpenRouter free-model agents have zero token and agent fees; other fee classes remain separate.",
+    "Disable both B.AI MiMo promotional profiles because the public promotional evidence vanished. Preserve historical data and verification dates; no guessed expiry.",
+    "Update DeepSeek/Tencent/Alibaba/QwenCloud Flash 1017 scope. Remove retired Tencent non-vendor 0731 from current eligibility; retain explicitly listed vendor-direct 0731.",
+    "Replace Xiaomi MiMo future retirement warning with current legacy-ID invalidation. Preserve historical routing-time conflict only as history.",
+    "Add all 29 officially published 2027 Chinese holiday dates only to DeepSeek and B.AI holiday-aware policies. Makeup weekends remain weekends under provider Monday–Friday rules.",
+    "Strengthen stale Baidu Pro cached-input warning without inventing replacement rates."
+  ],
+  "supplementalSources": [
+    "https://api-docs.deepseek.com/news/news261017/",
+    "https://api-docs.deepseek.com/news/news260910/",
+    "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/deepseek-v4-1-flash.md",
+    "https://docs.z.ai/devpack/overview.md",
+    "https://docs.z.ai/devpack/notice/event-glm-5.3-flash.md",
+    "https://www-sg.tencentcloud.com/document/product/1300/81489.md",
+    "https://www-sg.tencentcloud.com/jp/announce/detail/101537",
+    "https://docs.swarms.ai/docs/documentation/resources/pricing.md",
+    "https://bce.bdstatic.com/p3m/bce-doc/online/qianfan/doc/qianfan/s/page-data/wmh4sv6ya/page-data.json",
+    "https://docs.b.ai/llmservice/models/mimo-v2.6-flash/",
+    "https://docs.b.ai/llmservice/models/mimo-v2.6-pro/",
+    "https://docs.b.ai/llmservice/models/qwen3-8-flash/",
+    "https://mimo.mi.com/docs/en-US/updates/deprecate",
+    "https://docs.qwencloud.com/token-plan/team/token-plan-team-overview",
+    "https://www.siliconflow.cn/pricing",
+    "https://www.gov.cn/zhengce/content/202611/content_7085101.htm",
+    "https://english.beijing.gov.cn/latest/news/202611/t20261109_4937887.html"
+  ],
+  "validations": [
+    {
+      "id": "deepseek-v4",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "status": "Current Flash 1017 table and clock confirmed; older Pro-routing announcement still conflicts with separate Pro pricing."
+    },
+    {
+      "id": "codex-reset",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-02",
+      "enabled": false,
+      "source": "https://chatgpt.com/codex",
+      "status": "Operator-disabled personal timer, not a provider pricing policy."
+    },
+    {
+      "id": "ollama-deepseek-v4",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://ollama.com/pricing",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "above-deepseek-v4",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://above.dev/docs",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "aihubmix-deepseek-v4-1-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-01",
+      "enabled": true,
+      "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
+      "status": "Fresh HTML truncated before relevant route/schedule details. Title prices alone cannot verify a route-wide clock."
+    },
+    {
+      "id": "alibaba-model-studio-deepseek-v4",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-15",
+      "enabled": true,
+      "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "status": "Official Flash-specific documentation confirms alias and 1017 snapshot schedule. Aggregate DeepSeek table was truncated before legacy Pro/0731 sections."
+    },
+    {
+      "id": "bai-deepseek-v4",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "bai-deepseek-v4-pro",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "zai-glm-5-3",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.z.ai/devpack/overview",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "zai-glm-5-3-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "source": "https://docs.z.ai/devpack/overview",
+      "status": "Current standard clock confirmed; historical October 7 final overnight campaign cutoff remains ambiguous."
+    },
+    {
+      "id": "alibaba-qwen3-8-max",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "alibaba-deepseek-v4-token-plan",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "xiaomi-mimo-v2-5-token-plan",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-7-max",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-8-max",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-8-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-7-plus",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "tencent-deepseek-v4-vendor-direct",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "tencent-deepseek-v4-ga",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://www-sg.tencentcloud.com/document/product/1300/81489",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "swarms-swarm-completions",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "baidu-qianfan-deepseek-v4",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
+      "status": "Pricing data confirms clock but time zone unstated; Sep 9–Oct 30 Pro cache label has no year/cutoff/replacement. Post-window cache prices unverified."
+    },
+    {
+      "id": "baidu-qianfan-glm53",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
+      "status": "Current standard prices confirmed; historical campaign cutoff time zone remains unstated."
+    },
+    {
+      "id": "bai-mimo26-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-15",
+      "enabled": false,
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "status": "Promotion absent from current official index and dotted-version model page; continuation/end instant unknown. Disabled, without inventing an expiry."
+    },
+    {
+      "id": "bai-glm53-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "bai-qwen38-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "bai-mimo26-pro",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-15",
+      "enabled": false,
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "status": "Promotion absent from current official index and dotted-version model page; continuation/end instant unknown. Disabled, without inventing an expiry."
+    },
+    {
+      "id": "bai-glm52",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.b.ai/llmservice/models/glm-5-2/",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "bai-glm53",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.b.ai/llmservice/models/glm-5-3/",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-8-max-service-account",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-7-plus-service-account",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "alibaba-qwen3-7-plus-api-global",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "siliconflow-deepseek-v4-flash",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.siliconflow.cn/docs/release-notes/overview",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "goldflow-deepseek-v4-1-flash-260910",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-10-13",
+      "enabled": true,
+      "source": "https://goldflow.cc/pricing/deepseek-v4-1-flash-260910",
+      "status": "Fresh primary HTML truncated before target pricing/schedule. Supplemental ModelSell docs now HTTP 200, but do not reverify pricing."
+    },
+    {
+      "id": "qwencloud-qwen38-token-plan",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qwencloud-deepseek-token-plan",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview",
+      "status": "Current published policy verified; see live profile for exact schedule, eligibility and rates."
+    },
+    {
+      "id": "qoder-qwen3-8-flash-service-account",
+      "checkedAt": "2026-11-10",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "status": "New clock: current Flash discount and Service Account window explicitly confirmed; no separate Service Account effective instant published."
+    }
+  ],
+  "deferred": [
+    {
+      "provider": "SiliconFlow V4.1 Flash",
+      "reason": "Separate current pricing table publishes daily 02:00–08:00 half-price CNY input/cache/output 1/.02/4 versus 2/.04/8. Time zone is not explicitly repeated for this new row; do not silently extend the old V4 Flash clock to a new model ID."
+    },
+    {
+      "provider": "B.AI Hy4",
+      "reason": "Promotion index directly mentions 50% reference token offer, excluding Hy4 Preview. No separate model-page audit or exact start/end available in this run; not added."
+    }
+  ],
+  "historicalUncertainties": [
+    "Z.ai October 7 campaign final overnight cutoff remains unverified.",
+    "MiMo October 14 automatic routing table says 10:00 Beijing while note/banner says 18:00. Current legacy retirement on October 21 at 10:00 is consistent.",
+    "Qoder individual free access had quota/account conditions. Historical free period is preserved, not certification of unlimited usage for every account."
+  ],
+  "verification": {
+    "command": "node --test deepseek-clock/*.test.cjs",
+    "tests": 52,
+    "pass": 52,
+    "fail": 0
+  },
+  "deployment": "Local changes only; no commit, push or deployment."
+}

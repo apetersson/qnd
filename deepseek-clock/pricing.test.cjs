@@ -93,17 +93,17 @@ test('Qoder CN Flash remains free after the superseded September deadline', () =
   const profile = config.profiles.find(p => p.slug === 'qoder-qwen38-flash');
   assert.equal(profile.provider, 'Qoder CN');
   assert.match(profile.schedule.sourceNote, /Teams and Enterprise editions are excluded/);
-  assert.equal(profile.schedule.overrides[0].endAt, undefined);
+  assert.equal(profile.schedule.overrides[0].endAt, '2026-11-07T00:00:00+08:00');
 });
 
 test('Open-ended offers never display the search horizon as a campaign end', () => {
-  const result = context.renderedOutlook('qoder-qwen38-flash', '2026-10-02T12:00:00+08:00');
+  const result = context.renderedOutlook('bai-qwen38-flash', '2026-11-10T12:00:00+08:00');
   assert.equal(result.periods.length, 1);
   assert.equal(result.periods[0].hasKnownEnd, false);
-  assert.match(result.html, /Now · Free promotion/);
+  assert.match(result.html, /Now · Campaign · 80%/);
   assert.doesNotMatch(result.html, /h remaining|Oct 11|Oct 3/);
   assert.match(result.track, /width:100%/);
-  const arcs = context.campaignArc('qoder-qwen38-flash', '2026-10-02T12:00:00+08:00');
+  const arcs = context.campaignArc('bai-qwen38-flash', '2026-11-10T12:00:00+08:00');
   assert.equal(arcs.length, 1);
   assert.equal(arcs[0].end - arcs[0].start, 24 * 3600000);
   assert.equal(arcs[0].actualEnd, null);
@@ -124,6 +124,26 @@ test('Alibaba Global API uses billing-time day/night list-price discounts', () =
   }
   const profile = config.profiles.find(p => p.slug === 'alibaba-qwen37-plus-api');
   assert.match(profile.schedule.sourceNote, /excludes regional deployments and the dated/);
+});
+
+test('2027 Chinese holidays suppress only DeepSeek and B.AI weekday peaks', () => {
+  const dates = ['2027-01-01', '2027-02-05', '2027-02-08', '2027-02-12', '2027-04-05', '2027-05-03', '2027-05-05', '2027-06-09', '2027-09-15', '2027-10-01', '2027-10-07'];
+  for (const date of dates) {
+    assert.equal(sample('deepseek', date + 'T09:00:00+08:00').key, 'offPeak', date);
+    assert.equal(sample('bai', date + 'T09:00:00+08:00').badge, '0.6× off-peak', date);
+    assert.equal(sample('bai-v4-pro', date + 'T09:00:00+08:00').key, 'offPeak', date);
+  }
+  for (const date of ['2027-01-04', '2027-02-04', '2027-02-15', '2027-04-06', '2027-05-06', '2027-06-10', '2027-09-16', '2027-10-08']) {
+    assert.equal(sample('deepseek', date + 'T09:00:00+08:00').key, 'peak', date);
+    assert.equal(sample('bai-v4-pro', date + 'T09:00:00+08:00').key, 'peak', date);
+  }
+  for (const date of ['2027-01-31', '2027-02-14', '2027-05-08', '2027-09-26', '2027-10-09']) {
+    assert.equal(sample('deepseek', date + 'T09:00:00+08:00').key, 'offPeak', date);
+  }
+  for (const p of config.profiles.filter(p => p.schedule?.publicHolidayDates)) {
+    assert.equal(p.schedule.publicHolidayDates.filter(date => date.startsWith('2027-')).length, 29);
+    assert.equal(new Set(p.schedule.publicHolidayDates).size, p.schedule.publicHolidayDates.length);
+  }
 });
 
 test('DeepSeek holiday ends October 7; weekends stay off-peak', () => {
@@ -254,14 +274,18 @@ test('Partially verified policies and disabled Codex keep previous verification 
   const codex = config.profiles.find(p => p.slug === 'codex');
   assert.equal(codex.verifiedAt, '2026-10-02');
   assert.equal(codex.enabled, false);
-  for (const slug of ['deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53']) {
+  for (const slug of ['deepseek', 'zai-glm53-flash', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53']) {
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-02', slug);
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
-  assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-10-09');
+  assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-11-10');
+  assert.equal(config.profiles.find(p => p.slug === 'alibaba-model-studio').verifiedAt, '2026-10-15');
   assert.equal(config.profiles.find(p => p.slug === 'goldflow').verifiedAt, '2026-10-13');
-  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'tencent', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'mimo', 'goldflow'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-10-15', profile.slug);
+  for (const slug of ['bai-mimo26-flash', 'bai-mimo26-pro']) {
+    assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-15');
+  }
+  for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'goldflow', 'alibaba-model-studio', 'bai-mimo26-flash', 'bai-mimo26-pro'].includes(p.slug))) {
+    assert.equal(profile.verifiedAt, '2026-11-10', profile.slug);
   }
 });
 
@@ -318,10 +342,10 @@ test('Swarms night clock qualifies post-completion billing and per-model fees ac
 
 test('MiMo discloses legacy routing and conflicting switch times without inventing a rate change', () => {
   const profile = config.profiles.find(p => p.slug === 'mimo');
-  assert.match(profile.policyNote, /automatically route to V2.6 Pro and V2.6 Flash on Oct 14, 2026/);
-  assert.match(profile.policyNote, /table says 10:00 Beijing/);
-  assert.match(profile.policyNote, /note and banner say 18:00 Beijing/);
-  assert.match(profile.policyNote, /invalid Oct 21, 2026 at 10:00 Beijing/);
+  assert.match(profile.policyNote, /retired on Oct 21, 2026 at 10:00 Beijing/);
+  assert.match(profile.policyNote, /model IDs no longer work/);
+  assert.match(profile.policyNote, /historical Oct 14 notice conflicted/);
+  assert.doesNotMatch(profile.model, /ends Oct 21/);
   assert.equal(profile.schedule.overrides, undefined);
   for (const day of ['2026-10-10', '2026-10-14', '2026-10-21']) {
     assert.equal(sample('mimo', `${day}T03:00:00+08:00`).badge, '0.8× credits');
@@ -383,9 +407,9 @@ test('Baidu retains its stated cutoff and explicitly labels the unverified time 
 
 test('Baidu Pro cached-input deadline is qualified without inventing future prices', () => {
   const profile = config.profiles.find(p => p.slug === 'baidu-qianfan-deepseek');
-  assert.match(profile.policyNote, /V4 Pro 0813 cached-input prices are limited to Sep 9–Oct 30/);
-  assert.match(profile.policyNote, /year not stated/);
-  assert.match(profile.policyNote, /exact cutoff and subsequent cached-input rates are not published/);
+  assert.match(profile.policyNote, /Sep 9–Oct 30 Pro 0813 cached-input price window has elapsed if it refers to 2026/);
+  assert.match(profile.policyNote, /without a year, exact cutoff or replacement cache rates/);
+  assert.match(profile.policyNote, /pricing after that window is unverified/);
   assert.equal(profile.verifiedAt, '2026-10-02', 'Unverified time zone remains qualified');
   assert.equal(profile.schedule.overrides.length, 2, 'No fabricated cached-price transition');
   assert.equal(sample('baidu-qianfan-deepseek', '2026-10-31T10:00:00+08:00').badge, '2× idle');
@@ -401,6 +425,67 @@ test('Z.ai date-only cutoff retains the documented final-night uncertainty', () 
   assert.equal(sample('zai-glm53-flash', '2026-10-08T14:00:00+08:00').key, 'peak');
   assert.equal(sample('zai-glm53-flash', '2026-10-08T23:00:00+08:00').key, 'offPeak');
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
+});
+
+test('Qoder Plus night promotion stops at the published October 22 cutoff', () => {
+  for (const slug of ['qoder-qwen37-plus', 'qoder-qwen37-plus-service-account']) {
+    assert.equal(sample(slug, '2026-10-22T03:00:00+08:00').badge, '0.04× credits');
+    for (const instant of ['2026-10-22T22:00:00+08:00', '2026-10-23T03:00:00+08:00', '2026-11-10T23:00:00+08:00']) {
+      assert.equal(sample(slug, instant).badge, '0.1× credits');
+    }
+    const p = config.profiles.find(p => p.slug === slug);
+    assert.equal(p.periods.offPeak.badge, '0.1× credits', 'Persistent off-peak legend cannot advertise an expired discount');
+    assert.equal(p.schedule.sourceWindows, 'All day');
+    const result = context.renderedOutlook(slug, '2026-11-10T03:00:00+08:00');
+    assert.equal(result.periods.length, 1);
+    assert.doesNotMatch(result.html, /Discounted 0\.04/);
+  }
+});
+
+test('Qoder Flash free offer ends exactly at midnight November 7 and uses separate night windows', () => {
+  assert.equal(sample('qoder-qwen38-flash', '2026-11-06T23:59:59.999+08:00').badge, 'Free');
+  assert.equal(sample('qoder-qwen38-flash', '2026-11-07T00:00:00+08:00').badge, '0.04× credits');
+  for (const date of ['2026-11-07', '2026-11-08', '2026-11-10']) {
+    for (const [time, ordinary, service] of [
+      ['00:59:59', '0.04× credits', '0.1× credits'], ['01:00:00', '0.04× credits', '0.04× credits'],
+      ['06:59:59', '0.04× credits', '0.04× credits'], ['07:00:00', '0.04× credits', '0.1× credits'],
+      ['08:00:00', '0.1× credits', '0.1× credits'], ['21:59:59', '0.1× credits', '0.1× credits'],
+      ['22:00:00', '0.04× credits', '0.1× credits']
+    ]) {
+      assert.equal(sample('qoder-qwen38-flash', date + 'T' + time + '+08:00').badge, ordinary);
+      assert.equal(sample('qoder-qwen38-flash-service-account', date + 'T' + time + '+08:00').badge, service);
+    }
+  }
+  const result = context.renderedOutlook('qoder-qwen38-flash', '2026-11-10T00:00:00+08:00');
+  assert.doesNotMatch(result.html, /Free promotion/);
+  assert.match(config.profiles.find(p => p.slug === 'qoder-qwen38-flash').policyNote, /paying users, including Teams and Enterprise/);
+});
+
+test('B.AI Qwen Flash switches from 30% to 80% at October 22 17:00 Beijing', () => {
+  assert.equal(sample('bai-qwen38-flash', '2026-10-22T16:59:59.999+08:00').badge, '0.3× base');
+  assert.equal(sample('bai-qwen38-flash', '2026-10-22T17:00:00+08:00').badge, '0.8× base');
+  assert.equal(sample('bai-qwen38-flash', '2026-10-22T11:00:00+02:00').badge, '0.8× base');
+  assert.equal(sample('bai-qwen38-flash', '2026-11-10T00:00:00+01:00').badge, '0.8× base');
+});
+
+test('Current model scope distinguishes retired non-vendor Tencent from vendor and Token Plan IDs', () => {
+  const ga = config.profiles.find(p => p.slug === 'tencent-v4-ga');
+  assert.match(ga.model, /Flash 1017/);
+  assert.doesNotMatch(ga.model, /Flash 0731/);
+  assert.match(config.profiles.find(p => p.slug === 'tencent').model, /Flash 0731/);
+  for (const slug of ['alibaba-deepseek', 'qwencloud-deepseek']) {
+    const p = config.profiles.find(p => p.slug === slug);
+    assert.match(p.model, /Flash 1017/);
+    assert.match(p.schedule.sourceNote + p.policyNote, /deepseek-v4.1-flash-1017|four listed/);
+    assert.equal(sample(slug, '2026-11-10T22:00:00+08:00').badge, '0.5× credits');
+  }
+});
+
+test('Swarms makes paid membership and free-model fee exceptions explicit', () => {
+  const p = config.profiles.find(p => p.slug === 'swarms');
+  assert.match(p.product, /paid members/);
+  assert.match(p.policyNote, /Free accounts pay full rate at all hours/);
+  assert.match(p.policyNote, /OpenRouter free models have zero token and agent fees/);
 });
 
 test('Expired Qoder Max discounts do not survive their exact end instant', () => {

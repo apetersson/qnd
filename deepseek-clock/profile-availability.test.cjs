@@ -52,12 +52,21 @@ function harness() {
   return context;
 }
 
-test('Codex is reversibly disabled; all other profiles remain available', () => {
+test('Codex and unsupported MiMo offers are reversibly disabled', () => {
   const h = harness();
   const codex = h.config.profiles.find(profile => profile.slug === 'codex');
   assert.equal(codex.enabled, false);
   assert.deepEqual(Array.from(codex.events), [], 'The global reset has been removed');
-  const expected = config.profiles.filter(profile => profile.id !== codex.id).map(profile => profile.id);
+  const expected = config.profiles.filter(profile => profile.enabled !== false).map(profile => profile.id);
+  for (const slug of ['bai-mimo26-flash', 'bai-mimo26-pro']) {
+    const profile = h.config.profiles.find(p => p.slug === slug);
+    assert.equal(profile.enabled, false);
+    assert.match(profile.disabledReason, /continued eligibility and the offer end time are unverified/);
+    assert.equal(h.initialSelection('#provider=' + slug), 'deepseek-v4');
+    h.selectProfile('ollama-deepseek-v4');
+    h.navigate('#provider=' + slug);
+    assert.equal(h.selected(), 'deepseek-v4');
+  }
   assert.deepEqual(Array.from(h.menuIds()), expected);
   h.validatePricingConfig(h.config);
 });
