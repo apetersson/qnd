@@ -1,0 +1,587 @@
+{
+  "checkedAt": "2026-11-10",
+  "timeZone": "Europe/Vienna",
+  "scope": "Additional provider discovery and independent fresh revalidation after commit 4b4938f.",
+  "sourceSnapshots": [
+    {
+      "profileId": "openrouter-tencent-hy3",
+      "url": "https://openrouter.ai/api/v1/models/tencent/hy3/endpoints",
+      "modelId": "tencent/hy3",
+      "endpoint": {
+        "name": "Tencent | tencent/hy3-20260706",
+        "provider_name": "Tencent",
+        "tag": "tencent/fp8",
+        "pricing": {
+          "prompt": "0.0000000825",
+          "completion": "0.00000033",
+          "input_cache_read": "0.000000020625",
+          "discount": 0,
+          "overrides": [
+            {
+              "utc_start": 0,
+              "utc_end": 1600,
+              "prompt": "0.000000132",
+              "completion": "0.000000528",
+              "input_cache_read": "0.000000033"
+            },
+            {
+              "utc_start": 1600,
+              "utc_end": 0,
+              "prompt": "0.0000000825",
+              "completion": "0.00000033",
+              "input_cache_read": "0.000000020625"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "profileId": "openrouter-tencent-hy4-preview",
+      "url": "https://openrouter.ai/api/v1/models/tencent/hy4-preview/endpoints",
+      "modelId": "tencent/hy4-preview",
+      "endpoint": {
+        "name": "Tencent | tencent/hy4-preview-20260827",
+        "provider_name": "Tencent",
+        "tag": "tencent/fp8",
+        "pricing": {
+          "prompt": "0.0000007506",
+          "completion": "0.0000022509",
+          "input_cache_read": "0.0000000378",
+          "discount": 0,
+          "overrides": [
+            {
+              "utc_start": 0,
+              "utc_end": 1600,
+              "prompt": "0.000000834",
+              "completion": "0.000002501",
+              "input_cache_read": "0.000000042"
+            },
+            {
+              "utc_start": 1600,
+              "utc_end": 0,
+              "prompt": "0.0000007506",
+              "completion": "0.0000022509",
+              "input_cache_read": "0.0000000378"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "profileId": "openrouter-minimax-m3-1-flash",
+      "url": "https://openrouter.ai/api/v1/models/minimax/minimax-m3.1-flash/endpoints",
+      "modelId": "minimax/minimax-m3.1-flash",
+      "endpoint": {
+        "name": "Minimax | minimax/minimax-m3.1-flash-20261019",
+        "provider_name": "Minimax",
+        "tag": "minimax",
+        "pricing": {
+          "prompt": "0.000000075",
+          "completion": "0.0000003",
+          "input_cache_read": "0.0000000075",
+          "discount": 0,
+          "overrides": [
+            {
+              "utc_start": 1500,
+              "utc_end": 100,
+              "prompt": "0.000000075",
+              "completion": "0.0000003",
+              "input_cache_read": "0.0000000075"
+            },
+            {
+              "utc_start": 100,
+              "utc_end": 1500,
+              "prompt": "0.00000015",
+              "completion": "0.0000006",
+              "input_cache_read": "0.000000015"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "profileId": "openrouter-alibaba-deepseek-v4-1-flash",
+      "url": "https://openrouter.ai/api/v1/models/deepseek/deepseek-v4.1-flash/endpoints",
+      "modelId": "deepseek/deepseek-v4.1-flash",
+      "endpoint": {
+        "name": "Alibaba | deepseek/deepseek-v4.1-flash-20260910",
+        "provider_name": "Alibaba",
+        "tag": "alibaba",
+        "pricing": {
+          "prompt": "0.000000105",
+          "completion": "0.00000042",
+          "input_cache_read": "0.0000000105",
+          "discount": 0,
+          "overrides": [
+            {
+              "utc_start": 0,
+              "utc_end": 1400,
+              "prompt": "0.00000021",
+              "completion": "0.00000084",
+              "input_cache_read": "0.000000021"
+            },
+            {
+              "utc_start": 1400,
+              "utc_end": 0,
+              "prompt": "0.000000105",
+              "completion": "0.00000042",
+              "input_cache_read": "0.0000000105"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "semanticsSource": "https://openrouter.ai/docs/guides/overview/models.md",
+  "routingSource": "https://openrouter.ai/docs/guides/routing/provider-selection.md",
+  "checkedAtInstant": "2026-11-10T22:10:15.574Z",
+  "method": "Parallel independent official-source discovery and fresh revalidation, followed by centralized local edits. web_search used for leads only; web_fetch followed official pages/markdown/JSON. Oversized GoldFlow and Alibaba HTML fully retrieved via Python urllib in memory and filtered for exact model records. No account access or settled-billing validation. New clocks are tariff schedules, not batch/queued/flex/spot discounts. No push or deployment in this round.",
+  "summary": {
+    "existingProfilesReviewed": 36,
+    "newProfiles": 7,
+    "totalProfiles": 43,
+    "enabledProfiles": 40,
+    "currentRateWindowChanges": "No changed existing numeric clock window found; AIHubMix exact-2× claim corrected to approximate, routing/rate conflicts surfaced.",
+    "newProviderFamilies": [
+      "Volcengine Ark",
+      "Qiniu enterprise Token Plan",
+      "Pareto Inference (normal week, unspecified holidays)",
+      "OpenRouter: pinned Tencent, Minimax and Alibaba endpoints"
+    ]
+  },
+  "providerEvidence": [
+    {
+      "profileId": "volcengine-ark-deepseek-v4-1-flash",
+      "url": "https://ark.volcengine.com/region:cn-beijing/docs/model-pricing.md",
+      "quote": "实际费用以请求完成时间对应的计费时段为准。高峰时段：北京时间周一至周五 09:00–12:00、14:00–18:00。空闲时段：除上述高峰时段外，其余均为空闲时段。",
+      "regularCnyPerMillion": {
+        "peak": {
+          "input": 2,
+          "cachedInput": 0.04,
+          "output": 8
+        },
+        "offPeak": {
+          "input": 1,
+          "cachedInput": 0.02,
+          "output": 4
+        }
+      },
+      "economyCnyPerMillion": {
+        "peak": {
+          "input": 1.6,
+          "cachedInput": 0.032,
+          "output": 6.4
+        },
+        "offPeak": {
+          "input": 0.8,
+          "cachedInput": 0.016,
+          "output": 3.2
+        }
+      },
+      "storageCnyPerMillionTokenHour": 0.017,
+      "effectiveDate": null,
+      "endDate": null,
+      "holidayException": "Not stated; no inherited exception."
+    },
+    {
+      "profileId": "qiniu-enterprise-token-plan",
+      "url": "https://www.qiniu.com/ai/tokenplan",
+      "supplementalUrl": "https://developer.qiniu.com/aitokenapi/13330/subscription-introduction",
+      "quote": "闲时时段以北京时间（UTC+8）为准；每日 18:00 - 次日 08:00 为闲时。闲时按闲时倍率（×0.3）、正常时段按正常倍率（×1.0）折算积分。",
+      "eligibility": "Enterprise subscription API key, available quota, participating DeepSeek V4 Flash/V4 Pro/V4.1 Flash and GLM-5.3 only. Not every model in the plan; no assumption that merely-listed snapshots qualify.",
+      "billingBasis": "Subscription points, with model-specific coefficients; not a universal pay-as-you-go token price. Advertised minimum 1.2折 stacks annual subscription discount and is not the clock multiplier.",
+      "effectiveDate": null,
+      "endDate": null
+    },
+    {
+      "profileId": "pareto-deepseek-v4-1-flash",
+      "url": "https://docs.paretoinference.com/pricing.md",
+      "modelUrl": "https://paretoinference.com/models/deepseek-v4.1-flash",
+      "quote": "Peak hours are 01:00 to 04:00 and 06:00 to 10:00 UTC, Monday to Friday. All other hours are off-peak. Some public holidays are off-peak all day. A request costs the price at the time that Pareto accepts it.",
+      "status": "Normal weekly schedule only; holiday calendar unspecified and deliberately not borrowed from another provider. Visible warning and conditional status.",
+      "usdPerMillion": {
+        "peak": {
+          "input": 0.21,
+          "cachedInput": 0.0042,
+          "output": 0.84
+        },
+        "offPeak": {
+          "input": 0.105,
+          "cachedInput": 0.0021,
+          "output": 0.42
+        }
+      },
+      "effectiveDate": null,
+      "endDate": null
+    }
+  ],
+  "existingValidations": [
+    {
+      "id": "deepseek-v4",
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "status": "Current Flash/Pro table confirmed, but older Pro-routing notice conflict retained; 2027 holiday calendar was independently validated in earlier same-day audit, not all dates re-fetched in this round."
+    },
+    {
+      "id": "codex-reset",
+      "source": "https://chatgpt.com/codex",
+      "verifiedAt": "2026-10-02",
+      "enabled": false,
+      "status": "Operator-disabled personal timer; not a provider pricing policy and not re-enabled."
+    },
+    {
+      "id": "ollama-deepseek-v4",
+      "source": "https://ollama.com/pricing",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "above-deepseek-v4",
+      "source": "https://above.dev/docs",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "aihubmix-deepseek-v4-1-flash",
+      "source": "https://aihubmix.com/model/deepseek-v4.1-flash",
+      "verifiedAt": "2026-10-01",
+      "enabled": true,
+      "status": "PARTIAL: machine pricing_lines now recovered, daily UTC01–04/06–10; peak/default ratio≈1.99871 not exactly2. Top-level prices .1408/.002816/.5632 conflict with tier default .155/.0031/.62. Chosen-route/fallback settlement guarantee unresolved. Retain old verifiedAt."
+    },
+    {
+      "id": "alibaba-model-studio-deepseek-v4",
+      "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Fully recovered aggregate Flash alias+1017/0731/Pro0813 rows; daily UTC+8 08–22 busy. Unversioned Pro remains flat/excluded."
+    },
+    {
+      "id": "bai-deepseek-v4",
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "bai-deepseek-v4-pro",
+      "source": "https://docs.b.ai/llmservice/pricing-and-usage/",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "zai-glm-5-3",
+      "source": "https://docs.z.ai/devpack/overview",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "zai-glm-5-3-flash",
+      "source": "https://docs.z.ai/devpack/overview",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "status": "Current standard policy verified; historical final October7 overnight cutoff still ambiguous."
+    },
+    {
+      "id": "alibaba-qwen3-8-max",
+      "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "alibaba-deepseek-v4-token-plan",
+      "source": "https://help.aliyun.com/en/model-studio/token-plan-personal-overview",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "xiaomi-mimo-v2-5-token-plan",
+      "source": "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/team",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qoder-qwen3-7-max",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qoder-qwen3-8-max",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qoder-qwen3-8-flash",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qoder-qwen3-7-plus",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "tencent-deepseek-v4-vendor-direct",
+      "source": "https://intl.cloud.tencent.com/zh/document/product/1300/78937",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current general TokenHub API USD-per-million-token pricing, weekday Beijing clock and request-reception billing confirmed. Removed unsupported Enterprise-Pro-only/credit-unit restriction after independent review; no subscription conversion inferred."
+    },
+    {
+      "id": "tencent-deepseek-v4-ga",
+      "source": "https://intl.cloud.tencent.com/zh/document/product/1300/78937",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current general TokenHub API USD-per-million-token pricing, weekday Beijing clock and request-reception billing confirmed. Removed unsupported Enterprise-Pro-only/credit-unit restriction after independent review; no subscription conversion inferred."
+    },
+    {
+      "id": "swarms-swarm-completions",
+      "source": "https://docs.swarms.ai/docs/documentation/resources/pricing",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "baidu-qianfan-deepseek-v4",
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "status": "Current busy/idle prices published; timezone unstated. Pro0813 Sep9–Oct30 cached-price label lacks year/cutoff/replacement. Historical Sep24–Oct7 promo absent current table. Retain explicit assumptions and old verifiedAt."
+    },
+    {
+      "id": "baidu-qianfan-glm53",
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
+      "verifiedAt": "2026-10-02",
+      "enabled": true,
+      "status": "Current all-day flat price verified; historical campaign now absent and its timezone still unverified."
+    },
+    {
+      "id": "bai-mimo26-flash",
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "verifiedAt": "2026-10-15",
+      "enabled": false,
+      "status": "DISABLED: current official promo index/model page do not support prior discount; no guessed expiry or re-enable."
+    },
+    {
+      "id": "bai-glm53-flash",
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "bai-qwen38-flash",
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "bai-mimo26-pro",
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "verifiedAt": "2026-10-15",
+      "enabled": false,
+      "status": "DISABLED: current official promo index/model page do not support prior discount; no guessed expiry or re-enable."
+    },
+    {
+      "id": "bai-glm52",
+      "source": "https://docs.b.ai/llmservice/models/glm-5-2/",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current all-day offer verified; source provides only historical start date, exact midnight/timezone assumption now visibly qualified."
+    },
+    {
+      "id": "bai-glm53",
+      "source": "https://docs.b.ai/llmservice/models/glm-5-3/",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current all-day offer verified; source provides only historical start date, exact midnight/timezone assumption now visibly qualified."
+    },
+    {
+      "id": "qoder-qwen3-8-max-service-account",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qoder-qwen3-7-plus-service-account",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "alibaba-qwen3-7-plus-api-global",
+      "source": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "siliconflow-deepseek-v4-flash",
+      "source": "https://docs.siliconflow.cn/docs/release-notes/overview",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "goldflow-deepseek-v4-1-flash-260910",
+      "source": "https://goldflow.cc/pricing/deepseek-v4-1-flash-260910",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Fully recovered exact-model embedded billing_expr with Asia/Shanghai weekdays09–12/14–18, weekend .5; settlement-time and separate tool fees confirmed."
+    },
+    {
+      "id": "qwencloud-qwen38-token-plan",
+      "source": "https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qwencloud-deepseek-token-plan",
+      "source": "https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    },
+    {
+      "id": "qoder-qwen3-8-flash-service-account",
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "verifiedAt": "2026-11-10",
+      "enabled": true,
+      "status": "Current published schedule/rate and listed model/plan scope freshly corroborated; historical campaign endpoints are not all independently re-certified."
+    }
+  ],
+  "supplementalExistingSources": [
+    "https://aihubmix.com/api/v1/models?type=llm&sort_by=order&model=deepseek-v4.1-flash",
+    "https://docs.z.ai/devpack/overview.md",
+    "https://docs.z.ai/devpack/notice/event-glm-5.3-flash.md",
+    "https://www-sg.tencentcloud.com/document/product/1300/81489.md",
+    "https://intl.cloud.tencent.com/zh/document/product/1300/78937",
+    "https://docs.swarms.ai/docs/documentation/resources/pricing.md",
+    "https://bce.bdstatic.com/p3m/bce-doc/online/qianfan/doc/qianfan/s/page-data/wmh4sv6ya/page-data.json",
+    "https://docs.b.ai/llmservice/models/mimo-v2.6-flash/",
+    "https://docs.b.ai/llmservice/models/mimo-v2.6-pro/",
+    "https://docs.qwencloud.com/token-plan/team/token-plan-team-overview",
+    "https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/subscription"
+  ],
+  "deferred": [
+    {
+      "provider": "SiliconFlow V4.1 Flash",
+      "source": "https://www.siliconflow.cn/pricing",
+      "reason": "Half-price 02–08 row verified, but timezone not explicitly stated for this new ID. Older V4 Flash Beijing notice is not sufficient to transfer scope."
+    },
+    {
+      "provider": "SiliconFlow Hunyuan-A13B-Instruct",
+      "source": "https://www.siliconflow.cn/pricing",
+      "reason": "09–18 vs other-hours price split, but timezone absent and November16 retirement lacks precise cutoff."
+    },
+    {
+      "provider": "Baidu ERNIE5.5Flash",
+      "source": "https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya",
+      "reason": "08–22 vs22–08 half-price rows verified, but timezone and promotional period unstated. Do not infer Beijing for a new clock."
+    },
+    {
+      "provider": "AIHubMix Flash1017 promo",
+      "source": "https://aihubmix.com/api/v1/models?type=llm&sort_by=order&model=deepseek-v4.1-flash",
+      "reason": "50% offer has exact Oct29 07Z–Nov12 07Z bounds; legacy_ratio billing reference and route guarantee unresolved, so no guessed computed rates."
+    },
+    {
+      "provider": "B.AI Hy4",
+      "source": "https://docs.b.ai/llmservice/models/hy4/",
+      "reason": "50% all-day offer confirmed, only hy4 not preview; no daily peak schedule or effective/end instant. Outside new timed-provider scope."
+    },
+    {
+      "provider": "Qiniu pay-as-you-go DeepSeek",
+      "source": "https://www.qiniu.com/ai/models",
+      "reason": "Peak/idle prices recovered from full model JSON, but independent precise schedule/calendar not established; do not transplant enterprise Token Plan or direct DeepSeek clock."
+    }
+  ],
+  "rejected": [
+    {
+      "provider": "Fireworks",
+      "source": "https://fireworks.ai/pricing",
+      "reason": "Batch asynchronous and Spot best-effort capacity, not fixed wall-clock tariff."
+    },
+    {
+      "provider": "Together",
+      "source": "https://www.together.ai/blog/batch-api",
+      "reason": "Asynchronous Batch off-peak label without fixed wall-clock schedule."
+    },
+    {
+      "provider": "Anthropic",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+      "reason": "Batch asynchronous50%, no qualifying fixed schedule verified."
+    },
+    {
+      "provider": "Azure OpenAI",
+      "source": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/",
+      "reason": "Batch24-hour completion discount and reserved PTU commitment, not TOD."
+    },
+    {
+      "provider": "Parasail",
+      "source": "https://docs.parasail.io/parasail-docs/billing/pricing.md",
+      "reason": "Fixed serverless/Elastic pricing and GPU scaling, not wall-clock tariff."
+    },
+    {
+      "provider": "Novita",
+      "source": "https://blogs.novita.ai/vidu-q3-turbo-on-novita/",
+      "reason": "off_peak true selects lower-priority queue completed within48h, not a clock."
+    },
+    {
+      "provider": "MiniMax direct",
+      "source": "https://platform.minimax.io/docs/pricing/overview.md",
+      "reason": "Flat Standard/Priority/context tiers; new MiniMax clock applies only to the OpenRouter endpoint, not direct vendor API."
+    },
+    {
+      "provider": "Tencent Hy4 final direct",
+      "source": "https://intl.cloud.tencent.com/zh/document/product/1300/78937",
+      "reason": "All-day promo until Dec31, not recurring peak tariff. Do not confuse with OpenRouter Hy4-preview route."
+    },
+    {
+      "provider": "StepFun",
+      "source": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+      "reason": "Usage/context/cache rules and planned rate change, no qualifying recurring tariff."
+    },
+    {
+      "provider": "Kimi",
+      "source": "https://platform.kimi.com/docs/pricing/chat",
+      "reason": "Token/cache/Batch pricing, no qualifying fixed wall-clock schedule verified."
+    },
+    {
+      "provider": "Zhipu direct API",
+      "source": "https://docs.bigmodel.cn/cn/guide/start/pricing.md",
+      "reason": "Flat API token prices; separate CodingPlan peak quotas do not transfer."
+    }
+  ],
+  "discoveryLimits": "OpenRouter top-provider catalog scanned469 models; endpoint-level search found additional Alibaba clock. This is not exhaustive proof about every endpoint/provider. Some OpenAI/AWS/Groq/Cerebras pages truncated; SenseNova unavailable and iFlytek JS-only. Failed or incomplete sources are not certified as having no time-based pricing.",
+  "verification": {
+    "command": "node --test deepseek-clock/*.test.cjs",
+    "tests": 58,
+    "pass": 58,
+    "fail": 0,
+    "whitespace": "git diff --check passed",
+    "review": "Independent read-only reviewer confirmed Tencent correction; no remaining actionable findings. Reviewer reran 58/58 tests and git diff --check successfully."
+  },
+  "deployment": "Local changes only. No commit, push or deployment authorized/performed in this round.",
+  "reviewCorrections": [
+    "Independent reviewer found the new Tencent Enterprise-Pro-only restriction was unsupported by the cited general API USD/M-token pricing source. Corrected product, subtitle, periods, badges and visible scope to API token prices; preserved exact model selection and request-reception-time rule. Added regression assertions."
+  ]
+}

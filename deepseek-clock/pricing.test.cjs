@@ -61,6 +61,123 @@ function sample(slug, instant) {
   return context.sample(slug, instant);
 }
 
+test('New OpenRouter clocks match official endpoint snapshots and inclusive/exclusive UTC boundaries', () => {
+  const audit = JSON.parse(fs.readFileSync(path.join(__dirname, 'research/2026-11-10-discovery.json'), 'utf8'));
+  const expected = {
+    'openrouter-tencent-hy3': '0.625× peak',
+    'openrouter-tencent-hy4-preview': '0.9× peak',
+    'openrouter-minimax-m3-1-flash': '0.5× peak',
+    'openrouter-alibaba-deepseek-v4-1-flash': '0.5× peak'
+  };
+  assert.equal(audit.sourceSnapshots.length, 4);
+  const minuteOf = hhmm => Math.floor(hhmm / 100) * 60 + hhmm % 100;
+  for (const snapshot of audit.sourceSnapshots) {
+    const p = config.profiles.find(p => p.id === snapshot.profileId);
+    assert.equal(p.source, snapshot.url);
+    assert.equal(p.schedule.timeZone, 'UTC');
+    assert.deepEqual(p.schedule.peakDays, [0, 1, 2, 3, 4, 5, 6]);
+    assert.deepEqual(p.routing, { only: [snapshot.endpoint.tag], allow_fallbacks: false });
+    assert.ok(p.policyNote.includes(snapshot.modelId));
+    assert.ok(p.policyNote.includes(snapshot.endpoint.tag));
+    assert.match(p.policyNote, /not other|not.*direct API/);
+    assert.match(p.policyNote, /effective.end dates are not published/);
+    assert.equal(p.schedule.publicHolidayDates, undefined);
+    assert.equal(p.schedule.overrides, undefined, 'No model-created timestamp is invented as effective time');
+    const rows = snapshot.endpoint.pricing.overrides;
+    const low = rows.reduce((a, b) => +a.prompt < +b.prompt ? a : b);
+    const high = rows.reduce((a, b) => +a.prompt > +b.prompt ? a : b);
+    const ratio = parseFloat(expected[p.id]);
+    for (const field of ['prompt', 'completion', 'input_cache_read']) {
+      assert.ok(Math.abs(+low[field] / +high[field] - ratio) < 1e-10);
+    }
+    assert.equal(p.periods.offPeak.badge, expected[p.id]);
+    for (const row of rows) {
+      assert.equal(row.utc_days, undefined, 'Official source applies daily');
+      const key = row === low ? 'offPeak' : 'peak';
+      for (const day of [10, 14, 15]) {
+        const start = Date.UTC(2026, 10, day) + minuteOf(row.utc_start) * 60000;
+        const duration = (minuteOf(row.utc_end) - minuteOf(row.utc_start) + 1440) % 1440;
+        const end = start + duration * 60000;
+        assert.equal(sample(p.slug, new Date(start).toISOString()).key, key);
+        assert.equal(sample(p.slug, new Date(end - 1).toISOString()).key, key);
+        assert.notEqual(sample(p.slug, new Date(start - 1).toISOString()).key, key);
+        assert.notEqual(sample(p.slug, new Date(end).toISOString()).key, key);
+      }
+    }
+  }
+});
+
+test('Volcengine uses completion-time weekday peaks, not inherited holidays or cache-storage discounts', () => {
+  const p = config.profiles.find(p => p.slug === 'volcengine');
+  assert.match(p.policyNote, /request completion time, not submission/);
+  assert.match(p.policyNote, /cache storage stays CNY 0.017/);
+  assert.match(p.policyNote, /not other DeepSeek models, low-priority inference or Batch/);
+  for (const [time, key] of [['08:59:59', 'offPeak'], ['09:00:00', 'peak'], ['11:59:59', 'peak'], ['12:00:00', 'offPeak'], ['13:59:59', 'offPeak'], ['14:00:00', 'peak'], ['17:59:59', 'peak'], ['18:00:00', 'offPeak']]) {
+    assert.equal(sample('volcengine', '2026-11-10T' + time + '+08:00').key, key);
+  }
+  for (const date of ['2026-11-14', '2026-11-15']) assert.equal(sample('volcengine', date + 'T10:00:00+08:00').key, 'offPeak');
+  assert.equal(sample('volcengine', '2027-01-01T10:00:00+08:00').key, 'peak');
+  assert.equal(p.schedule.publicHolidayDates, undefined);
+  const view = context.renderedOutlook('volcengine', '2026-11-10T08:00:00+08:00');
+  assert.match(view.html, /completion time, not request submission/);
+  assert.match(p.periods.peak.status, /if completed now/);
+});
+
+test('Qiniu enterprise discounts subscription points daily at 18:00–08:00 Beijing', () => {
+  const p = config.profiles.find(p => p.slug === 'qiniu-token-plan');
+  assert.match(p.policyNote, /dedicated subscription API key/);
+  assert.match(p.policyNote, /not a universal CNY token price or pay-as-you-go discount/);
+  assert.match(p.policyNote, /do not extend the offer to every model/);
+  for (const date of ['2026-11-10', '2026-11-14', '2027-01-01']) {
+    for (const [time, badge] of [['00:00:00', '0.3× points'], ['07:59:59', '0.3× points'], ['08:00:00', '1× points'], ['17:59:59', '1× points'], ['18:00:00', '0.3× points']]) {
+      assert.equal(sample(p.slug, date + 'T' + time + '+08:00').badge, badge);
+    }
+  }
+  assert.equal(sample(p.slug, '2026-11-10T11:00:00+01:00').badge, '0.3× points');
+  assert.equal(sample(p.slug, '2026-07-10T12:00:00+02:00').badge, '0.3× points');
+  const view = context.renderedOutlook(p.slug, '2026-11-10T17:00:00+08:00');
+  assert.equal(view.periods[0].end.toISOString(), '2026-11-10T10:00:00.000Z');
+  assert.equal(view.periods[1].end.toISOString(), '2026-11-11T00:00:00.000Z');
+});
+
+test('Pareto clearly qualifies its normal-week clock and does not invent holiday dates', () => {
+  const p = config.profiles.find(p => p.slug === 'pareto');
+  assert.match(p.policyNote, /time.*accepts the request|when Pareto accepts the request/);
+  assert.match(p.policyNote, /can overstate peak pricing on those holidays/);
+  assert.match(p.kicker, /holiday exceptions unverified/);
+  assert.match(p.periods.peak.status, /holiday exceptions unverified/);
+  assert.equal(p.schedule.publicHolidayDates, undefined);
+  for (const [time, key] of [['00:59:59', 'offPeak'], ['01:00:00', 'peak'], ['04:00:00', 'offPeak'], ['06:00:00', 'peak'], ['10:00:00', 'offPeak']]) {
+    assert.equal(sample(p.slug, '2026-11-10T' + time + 'Z').key, key);
+  }
+  assert.equal(sample(p.slug, '2026-11-14T02:00:00Z').key, 'offPeak');
+});
+
+test('Recovered AIHubMix catalog data retains visible route and conflicting-rate qualifications', () => {
+  const p = config.profiles.find(p => p.slug === 'aihubmix');
+  assert.equal(sample('aihubmix', '2026-11-14T02:00:00Z').badge, '≈2×');
+  assert.equal(sample('aihubmix', '2026-11-14T04:00:00Z').badge, '1×');
+  assert.match(p.policyNote, /top-level prices.*conflict with those tier defaults/);
+  assert.match(p.policyNote, /chosen-route price guarantee is unverified/);
+  assert.equal(p.verifiedAt, '2026-10-01');
+});
+
+test('Visible caveats preserve B.AI date-only starts and Tencent reception-time semantics', () => {
+  for (const slug of ['bai-glm52', 'bai-glm53']) {
+    const p = config.profiles.find(p => p.slug === slug);
+    assert.match(p.policyNote, /not an exact hour or time zone/);
+    assert.match(p.policyNote, /assumption, not a verified effective instant/);
+  }
+  for (const slug of ['tencent', 'tencent-v4-ga']) {
+    const p = config.profiles.find(p => p.slug === slug);
+    assert.match(p.source, /78937$/);
+    assert.match(p.policyNote, /request reception time, not completion/);
+    assert.equal(p.product, 'TokenHub API · listed token prices');
+    assert.doesNotMatch(p.periods.peak.badge, /credits/);
+    assert.doesNotMatch(p.policyNote, /Enterprise Pro Plan only/);
+  }
+});
+
 test('JSON and inline JavaScript parse; profiles and URL slugs are unique', () => {
   assert.equal(new Set(config.profiles.map(p => p.id)).size, config.profiles.length);
   assert.equal(new Set(config.profiles.map(p => p.slug)).size, config.profiles.length);
@@ -279,8 +396,8 @@ test('Partially verified policies and disabled Codex keep previous verification 
   }
   assert.match(config.profiles.find(p => p.slug === 'zai-glm53-flash').policyNote, /final night is unverified/);
   assert.equal(config.profiles.find(p => p.slug === 'mimo').verifiedAt, '2026-11-10');
-  assert.equal(config.profiles.find(p => p.slug === 'alibaba-model-studio').verifiedAt, '2026-10-15');
-  assert.equal(config.profiles.find(p => p.slug === 'goldflow').verifiedAt, '2026-10-13');
+  assert.equal(config.profiles.find(p => p.slug === 'alibaba-model-studio').verifiedAt, '2026-11-10', 'Full aggregate legacy-model rows recovered');
+  assert.equal(config.profiles.find(p => p.slug === 'goldflow').verifiedAt, '2026-11-10', 'Exact embedded settlement expression recovered');
   for (const slug of ['bai-mimo26-flash', 'bai-mimo26-pro']) {
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-15');
   }
