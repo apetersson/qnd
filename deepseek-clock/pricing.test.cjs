@@ -247,7 +247,7 @@ test('2027 Chinese holidays suppress only DeepSeek and B.AI weekday peaks', () =
   const dates = ['2027-01-01', '2027-02-05', '2027-02-08', '2027-02-12', '2027-04-05', '2027-05-03', '2027-05-05', '2027-06-09', '2027-09-15', '2027-10-01', '2027-10-07'];
   for (const date of dates) {
     assert.equal(sample('deepseek', date + 'T09:00:00+08:00').key, 'offPeak', date);
-    assert.equal(sample('bai', date + 'T09:00:00+08:00').badge, '0.6× off-peak', date);
+    assert.equal(sample('bai', date + 'T09:00:00+08:00').badge, '0.5× off-peak', date);
     assert.equal(sample('bai-v4-pro', date + 'T09:00:00+08:00').key, 'offPeak', date);
   }
   for (const date of ['2027-01-04', '2027-02-04', '2027-02-15', '2027-04-06', '2027-05-06', '2027-06-10', '2027-09-16', '2027-10-08']) {
@@ -320,10 +320,10 @@ test('B.AI outlook shows the changeover and does not invent an offer expiry', ()
   assert.equal(before.periods[0].end.toISOString(), '2026-10-04T02:00:00.000Z');
   assert.match(before.html, /0\.3× base/);
   assert.match(before.html, /0\.7× base/);
-  const after = context.renderedOutlook('bai-glm53-flash', '2026-10-04T02:00:00Z');
+  const after = context.renderedOutlook('bai-glm53-flash', '2026-11-19T09:00:00Z');
   assert.equal(after.periods.length, 1);
   assert.equal(after.periods[0].hasKnownEnd, false);
-  assert.match(after.html, /Now · Campaign · 70%/);
+  assert.match(after.html, /Now · Campaign · 60%/);
   assert.doesNotMatch(after.html, /h remaining/);
   const flash = context.renderedOutlook('bai', '2026-10-08T08:30:00+08:00');
   assert.match(flash.html, /0\.6× peak/);
@@ -342,13 +342,21 @@ test('B.AI model-page offers remain scoped and no new offer has an invented end 
   for (const slug of ['bai', 'bai-glm53-flash']) {
     const profile = config.profiles.find(p => p.slug === slug);
     assert.doesNotMatch(profile.kicker + ' ' + profile.policyNote, /Oct 3(?:\s|,|$)/);
-    const offers = profile.schedule.overrides.filter(o => o.startAt === '2026-10-04T10:00:00+08:00');
+    const offers = profile.schedule.overrides.filter(o => o.startAt === '2026-11-19T09:53:27+01:00');
+    assert.match(profile.policyNote, /not a verified billing cutoff/);
     assert.equal(offers.length, slug === 'bai' ? 2 : 1);
     for (const rule of offers) {
       assert.equal(rule.endAt, undefined);
       assert.equal(rule.endDate, undefined);
     }
   }
+});
+
+test('Current B.AI Flash prices preserve the peak and off-peak reference rates', () => {
+  assert.equal(sample('bai', '2026-11-19T09:00:00+08:00').badge, '0.6× peak');
+  assert.equal(sample('bai', '2026-11-19T17:00:00+08:00').badge, '0.5× peak');
+  assert.equal(sample('bai', '2026-11-19T18:00:00+08:00').badge, '0.5× off-peak');
+  assert.equal(sample('bai-glm53-flash', '2026-11-19T09:00:00Z').badge, '0.6× base');
 });
 
 test('SiliconFlow CN Flash has half-price tokens at 02:00–08:00 every day', () => {
