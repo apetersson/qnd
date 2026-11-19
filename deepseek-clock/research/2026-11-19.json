@@ -8,6 +8,10 @@
     {
       "source": "https://openrouter.ai/api/v1/models/minimax/minimax-m3.1-flash-20261019/endpoints",
       "finding": "Dated MiniMax route has identical UTC windows and rates to the alias."
+    },
+    {
+      "source": "https://docs.qoder.cn/en/product-overview/qwen-3-7-series-model-staggering-discount",
+      "finding": "Current Qwen3.8 Max and Flash terms explicitly include Service Accounts in daily 22:00–08:00 Beijing discount at unchanged 0.2× and 0.04× credits. Changeover is unpublished."
     }
   ],
   "unchangedChecks": [
@@ -19,5 +23,5 @@
     "https://ark.volcengine.com/region:cn-beijing/docs/model-pricing.md"
   ],
   "deferred": "Baidu Token Plan official search leads show differing 21:00 and 22:00 offer descriptions and do not establish explicit timezone and exact plan-specific scope. No new provider added. This was a targeted recheck, not a full revalidation.",
-  "testsPassed": 59
+  "testsPassed": 60
 }

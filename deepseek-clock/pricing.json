@@ -1708,19 +1708,19 @@
       "shortName": "Q",
       "temporary": true,
       "title": "Qoder Qwen3.8-Max Service Account clock",
-      "policyNote": "Service Accounts only. Night discount: 01:00–07:00 Beijing daily. No published end date.",
+      "policyNote": "Service Accounts only. Night discount: 22:00–08:00 Beijing daily, matching other accounts. Qoder does not date the change from the previously documented 01:00–07:00 window. No published end date.",
       "subtitle": "Service Account credit rates in your local time",
-      "kicker": "Service Account · 60% fewer Credits from 01:00–07:00 Beijing",
+      "kicker": "Service Account · 60% fewer Credits from 22:00–08:00 Beijing",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
         "peakWindows": [
-          { "start": "07:00", "end": "01:00" }
+          { "start": "08:00", "end": "22:00" }
         ],
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
-        "sourceWindows": "07:00–01:00 next day",
-        "sourceNote": "Qoder Service Accounts only · daily 01:00–07:00 Beijing off-peak, including weekends and public holidays · the same model multipliers apply as on other products, which instead use 22:00–08:00 · no published effective date for the Service Account window and no published end date"
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Qoder Service Accounts only · daily 22:00–08:00 Beijing off-peak, including weekends and public holidays · matches the same schedule and model multipliers as other products · no published effective date for the Service Account window and no published end date"
       },
       "periods": {
         "peak": {
@@ -1995,8 +1995,8 @@
       "shortName": "Q",
       "title": "Qoder CN Flash Service Account clock",
       "subtitle": "Service Account credit rates in your local time",
-      "kicker": "Service Accounts · 0.04× credits from 01:00–07:00 Beijing",
-      "policyNote": "Service Accounts only. Night discount: 01:00–07:00 Beijing daily, 0.04× credits versus 0.1× otherwise. Pro Trial and paying users with available Credits. Flash night program starts Nov 7, 2026 at 00:00 Beijing; no separate Service Account effective instant or end date is published. Historical individual-account free access is not applied here.",
+      "kicker": "Service Accounts · 0.04× credits from 22:00–08:00 Beijing",
+      "policyNote": "Service Accounts only. Night discount: 22:00–08:00 Beijing daily, 0.04× credits versus 0.1× otherwise. Pro Trial and paying users with available Credits. Flash night program starts Nov 7, 2026 at 00:00 Beijing; no separate Service Account effective instant or end date is published. Historical individual-account free access is not applied here. Qoder does not date the change from 01:00–07:00; the clock uses the November 19 audit boundary, not an official cutoff.",
       "schedule": {
         "timeZone": "Asia/Shanghai",
         "peakDays": [0, 1, 2, 3, 4, 5, 6],
@@ -2005,15 +2005,24 @@
         ],
         "windowName": "standard-rate",
         "sourceTitle": "Standard-rate hours (Beijing):",
-        "sourceWindows": "07:00–01:00 next day",
-        "sourceNote": "Service Accounts only. Night discount: 01:00–07:00 Beijing daily, 0.04× credits versus 0.1× otherwise. Pro Trial and paying users with available Credits. Flash night program starts Nov 7, 2026 at 00:00 Beijing; no separate Service Account effective instant or end date is published. Historical individual-account free access is not applied here.",
+        "sourceWindows": "08:00–22:00",
+        "sourceNote": "Service Accounts only. Night discount: 22:00–08:00 Beijing daily, 0.04× credits versus 0.1× otherwise. Pro Trial and paying users with available Credits. Flash night program starts Nov 7, 2026 at 00:00 Beijing; no separate Service Account effective instant or end date is published. Historical individual-account free access is not applied here. Qoder does not date the change from 01:00–07:00; the clock uses the November 19 audit boundary, not an official cutoff.",
         "overrides": [
           {
             "period": "offPeak",
             "startAt": "2026-11-07T00:00:00+08:00",
+            "endAt": "2026-11-19T09:00:00Z",
             "days": [0, 1, 2, 3, 4, 5, 6],
             "windows": [
               { "start": "01:00", "end": "07:00" }
+            ]
+          },
+          {
+            "period": "offPeak",
+            "startAt": "2026-11-19T09:00:00Z",
+            "days": [0, 1, 2, 3, 4, 5, 6],
+            "windows": [
+              { "start": "22:00", "end": "08:00" }
             ]
           }
         ]

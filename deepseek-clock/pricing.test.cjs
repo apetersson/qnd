@@ -190,10 +190,10 @@ test('JSON and inline JavaScript parse; profiles and URL slugs are unique', () =
 
 for (const [model, standard, discounted] of [['max', '0.5× credits', '0.2× credits'], ['plus', '0.1× credits', '0.04× credits']]) {
   const slug = model === 'max' ? 'qoder-qwen38-max' : 'qoder-qwen37-plus';
-  test(`${slug}: Service Accounts use 01:00–07:00, including holidays/weekends`, () => {
+  test(`${slug}: Service Account windows match current Max and historical Plus terms`, () => {
     for (const date of ['2026-10-02', '2026-10-03']) {
       for (const [time, badge] of [['00:59:59', standard], ['01:00:00', discounted], ['06:59:59', discounted], ['07:00:00', standard], ['22:00:00', standard]]) {
-        assert.equal(sample(slug + '-service-account', `${date}T${time}+08:00`).badge, badge, time);
+        assert.equal(sample(slug + '-service-account', `${model === 'max' ? (date === '2026-10-02' ? '2026-11-21' : '2026-11-22') : date}T${time}+08:00`).badge, model === 'max' ? discounted : badge, time);
       }
     }
     assert.equal(sample(slug, '2026-10-02T22:00:00+08:00').badge, discounted);
@@ -584,6 +584,14 @@ test('Qoder Flash free offer ends exactly at midnight November 7 and uses separa
   const result = context.renderedOutlook('qoder-qwen38-flash', '2026-11-10T00:00:00+08:00');
   assert.doesNotMatch(result.html, /Free promotion/);
   assert.match(config.profiles.find(p => p.slug === 'qoder-qwen38-flash').policyNote, /paying users, including Teams and Enterprise/);
+});
+
+test('Qoder Service Accounts now share the daily 22:00–08:00 Beijing window', () => {
+  for (const [slug, day, night] of [['max', '0.5× credits', '0.2× credits'], ['flash', '0.1× credits', '0.04× credits']]) {
+    for (const [time, expected] of [['07:59:59', night], ['08:00:00', day], ['21:59:59', day], ['22:00:00', night]]) {
+      assert.equal(sample(`qoder-qwen38-${slug}-service-account`, `2026-11-21T${time}+08:00`).badge, expected);
+    }
+  }
 });
 
 test('B.AI Qwen Flash switches from 30% to 80% at October 22 17:00 Beijing', () => {
