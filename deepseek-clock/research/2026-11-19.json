@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-19",
+  "updates": [
+    {
+      "source": "https://docs.b.ai/llmservice/promotions-and-pricing-notices/",
+      "finding": "DeepSeek V4.1 Flash is billed at 50% of each applicable reference rate and GLM-5.3-Flash at 60% of reference. Exact changeovers and ends unpublished; clock uses an explicitly labeled audit boundary."
+    },
+    {
+      "source": "https://openrouter.ai/api/v1/models/minimax/minimax-m3.1-flash-20261019/endpoints",
+      "finding": "Dated MiniMax route has identical UTC windows and rates to the alias."
+    }
+  ],
+  "unchangedChecks": [
+    "https://api-docs.deepseek.com/quick_start/pricing/",
+    "https://docs.paretoinference.com/pricing.md",
+    "https://docs.z.ai/devpack/overview.md",
+    "https://ollama.com/pricing",
+    "https://www.qiniu.com/ai/tokenplan",
+    "https://ark.volcengine.com/region:cn-beijing/docs/model-pricing.md"
+  ],
+  "deferred": "Baidu Token Plan official search leads show differing 21:00 and 22:00 offer descriptions and do not establish explicit timezone and exact plan-specific scope. No new provider added. This was a targeted recheck, not a full revalidation.",
+  "testsPassed": 59
+}
