@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-20",
+  "source": "https://live-turing-docs.cn.llm.tcljd.com/api-guides/billing/usage/",
+  "findings": [
+    "Turing published two UTC+8 bands: weekday 09:00–12:00 and 14:00–18:00 peaks for official and Ark routes; daily 08:00–22:00 peak for listed DashScope routes. Off-peak token rates are half. Entire request billed at span end. Retired routes excluded; no published changeover or expiry.",
+    "Targeted official rechecks confirmed existing B.AI, Qoder and direct DeepSeek terms. Baidu timezone still unverified."
+  ],
+  "testsPassed": 61
+}
