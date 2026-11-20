@@ -178,6 +178,19 @@ test('Visible caveats preserve B.AI date-only starts and Tencent reception-time 
   }
 });
 
+test('Turing settlement-time tariffs use route-specific Beijing windows', () => {
+  for (const [day, time, weekday, dashscope] of [
+    ['20', '08:59:59', 'offPeak', 'peak'], ['20', '09:00:00', 'peak', 'peak'],
+    ['20', '12:00:00', 'offPeak', 'peak'], ['20', '14:00:00', 'peak', 'peak'],
+    ['20', '18:00:00', 'offPeak', 'peak'], ['20', '22:00:00', 'offPeak', 'offPeak'],
+    ['21', '07:59:59', 'offPeak', 'offPeak'], ['21', '08:00:00', 'offPeak', 'peak']
+  ]) {
+    const instant = `2026-11-${day}T${time}+08:00`;
+    assert.equal(sample('turing-weekday', instant).key, weekday);
+    assert.equal(sample('turing-dashscope', instant).key, dashscope);
+  }
+});
+
 test('JSON and inline JavaScript parse; profiles and URL slugs are unique', () => {
   assert.equal(new Set(config.profiles.map(p => p.id)).size, config.profiles.length);
   assert.equal(new Set(config.profiles.map(p => p.slug)).size, config.profiles.length);
@@ -410,7 +423,7 @@ test('Partially verified policies and disabled Codex keep previous verification 
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-15');
   }
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'goldflow', 'alibaba-model-studio', 'bai-mimo26-flash', 'bai-mimo26-pro'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, '2026-11-10', profile.slug);
+    assert.equal(profile.verifiedAt, profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
   }
 });
 
