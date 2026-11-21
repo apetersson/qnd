@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-11-21",
+  "added": {
+    "profile": "tencent-adp",
+    "source": "https://cloud.tencent.cn/document/product/1759/127343.md",
+    "evidence": "New ADP subscription plans use published PU tables for listed DeepSeek rows; weekday Beijing peaks 09:00–12:00 and 14:00–18:00, off-peak half. Distinct from TokenHub. No settlement timestamp rule or end date established."
+  },
+  "spotChecks": [
+    "B.AI Flash remains at 50% of applicable rates",
+    "Qoder Service Accounts still share the 22:00–08:00 Beijing window"
+  ],
+  "excluded": {
+    "source": "https://ai.byteplus.com/ark/region%3Aap-southeast-1/docs/online-inference-flex",
+    "reason": "Higher off-peak quotas, not a scheduled token-price change established by this document."
+  },
+  "testsPassed": 62
+}
