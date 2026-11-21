@@ -178,6 +178,13 @@ test('Visible caveats preserve B.AI date-only starts and Tencent reception-time 
   }
 });
 
+test('Tencent ADP uses weekday Beijing peaks and PU rates', () => {
+  for (const [day, time, key] of [[20, '08:59:59', 'offPeak'], [20, '09:00:00', 'peak'], [20, '12:00:00', 'offPeak'], [20, '14:00:00', 'peak'], [20, '18:00:00', 'offPeak'], [21, '09:00:00', 'offPeak']]) {
+    assert.equal(sample('tencent-adp', `2026-11-${day}T${time}+08:00`).key, key);
+  }
+  assert.equal(sample('tencent-adp', '2026-11-21T09:00:00+08:00').badge, '0.5× peak');
+});
+
 test('Turing settlement-time tariffs use route-specific Beijing windows', () => {
   for (const [day, time, weekday, dashscope] of [
     ['20', '08:59:59', 'offPeak', 'peak'], ['20', '09:00:00', 'peak', 'peak'],
@@ -423,7 +430,7 @@ test('Partially verified policies and disabled Codex keep previous verification 
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-15');
   }
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'goldflow', 'alibaba-model-studio', 'bai-mimo26-flash', 'bai-mimo26-pro'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
+    assert.equal(profile.verifiedAt, profile.slug === 'tencent-adp' ? '2026-11-21' : profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
   }
 });
 
