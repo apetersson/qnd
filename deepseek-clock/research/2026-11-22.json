@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-11-22",
+  "added": {
+    "profile": "sference",
+    "source": "https://sference.com/",
+    "evidence": "Official FAQ: chat requests arriving 22:00–06:00 receive 50% off, following Europe/Berlin daylight saving. Arrival controls; priority retains its premium; no further discount for Batch API or decisions models."
+  },
+  "spotChecks": [
+    "Pareto still lists normal weekday UTC peaks and unspecified holidays",
+    "Turing still documents settlement-time route-specific pricing"
+  ],
+  "testsPassed": 63
+}

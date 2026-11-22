@@ -178,6 +178,17 @@ test('Visible caveats preserve B.AI date-only starts and Tencent reception-time 
   }
 });
 
+test('Sference uses Berlin local time in winter and summer', () => {
+  for (const [date, hour] of [['2026-11-22', 21], ['2026-07-19', 20]]) {
+    const start = Date.parse(`${date}T${hour}:00:00Z`);
+    const at = delta => sample('sference', new Date(start + delta).toISOString()).key;
+    assert.equal(at(-1), 'peak');
+    assert.equal(at(0), 'offPeak');
+    assert.equal(at(8 * 3600000 - 1), 'offPeak');
+    assert.equal(at(8 * 3600000), 'peak');
+  }
+});
+
 test('Tencent ADP uses weekday Beijing peaks and PU rates', () => {
   for (const [day, time, key] of [[20, '08:59:59', 'offPeak'], [20, '09:00:00', 'peak'], [20, '12:00:00', 'offPeak'], [20, '14:00:00', 'peak'], [20, '18:00:00', 'offPeak'], [21, '09:00:00', 'offPeak']]) {
     assert.equal(sample('tencent-adp', `2026-11-${day}T${time}+08:00`).key, key);
@@ -430,7 +441,7 @@ test('Partially verified policies and disabled Codex keep previous verification 
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-15');
   }
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'goldflow', 'alibaba-model-studio', 'bai-mimo26-flash', 'bai-mimo26-pro'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, profile.slug === 'tencent-adp' ? '2026-11-21' : profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
+    assert.equal(profile.verifiedAt, profile.slug === 'sference' ? '2026-11-22' : profile.slug === 'tencent-adp' ? '2026-11-21' : profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
   }
 });
 
