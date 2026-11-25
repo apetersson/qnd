@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-25",
+  "sources": [
+    "https://api.zabio.ai/v1/public/prices",
+    "https://zabio.ai/docs/cloud/billing/"
+  ],
+  "findings": [
+    "Zabio catalog snapshot as of 2026-11-24T14:00:04Z lists six timed rows across DeepSeek and Alibaba International. All six specify China holidays and charged_by null, so the documented default of both arrival and completion in off-peak applies. No expiration published.",
+    "Sference and Qoder spot checks matched current profiles. Nessa Labs search lead was not confirmed in the fetched page."
+  ],
+  "testsPassed": 64
+}
