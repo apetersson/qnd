@@ -178,6 +178,16 @@ test('Visible caveats preserve B.AI date-only starts and Tencent reception-time 
   }
 });
 
+test('Zabio windows distinguish direct and Alibaba pricing, including holidays', () => {
+  for (const [slug, start, end] of [['zabio-deepseek', '01:00:00', '04:00:00'], ['zabio-alibaba', '00:00:00', '14:00:00']]) {
+    assert.equal(sample(slug, `2026-11-25T${start}Z`).key, 'peak');
+    assert.equal(sample(slug, `2026-11-25T${end}Z`).badge, '0.5× list');
+    assert.equal(sample(slug, `2027-01-01T${start}Z`).key, 'offPeak');
+  }
+  assert.equal(sample('zabio-alibaba', '2026-11-28T09:00:00Z').key, 'peak');
+  assert.equal(sample('zabio-deepseek', '2026-11-28T09:00:00Z').key, 'offPeak');
+});
+
 test('Sference uses Berlin local time in winter and summer', () => {
   for (const [date, hour] of [['2026-11-22', 21], ['2026-07-19', 20]]) {
     const start = Date.parse(`${date}T${hour}:00:00Z`);
@@ -441,7 +451,7 @@ test('Partially verified policies and disabled Codex keep previous verification 
     assert.equal(config.profiles.find(p => p.slug === slug).verifiedAt, '2026-10-15');
   }
   for (const profile of config.profiles.filter(p => !['aihubmix', 'codex', 'deepseek', 'zai-glm53-flash', 'baidu-qianfan-deepseek', 'baidu-qianfan-glm53', 'goldflow', 'alibaba-model-studio', 'bai-mimo26-flash', 'bai-mimo26-pro'].includes(p.slug))) {
-    assert.equal(profile.verifiedAt, profile.slug === 'sference' ? '2026-11-22' : profile.slug === 'tencent-adp' ? '2026-11-21' : profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
+    assert.equal(profile.verifiedAt, profile.slug.startsWith('zabio-') ? '2026-11-25' : profile.slug === 'sference' ? '2026-11-22' : profile.slug === 'tencent-adp' ? '2026-11-21' : profile.slug.startsWith('turing-') ? '2026-11-20' : '2026-11-10', profile.slug);
   }
 });
 
